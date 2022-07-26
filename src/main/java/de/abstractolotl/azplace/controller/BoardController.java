@@ -58,7 +58,7 @@ public class BoardController {
     }
     private void setPixelInBlob(Canvas canvas, int x, int y, byte color) {
         //TODO canvas id
-        int offset = getBlobOffsetForPixel(canvas.getWidth(), canvas.getHeight(), x, y);
+        int offset = getBlobOffsetForPixel(canvas.getWidth(), canvas.getHeight(), x, y) * 8;
         jedis.bitfield(canvas.getRedisKey(), "SET", "u8", String.valueOf(offset), String.valueOf(color));
     }
 
