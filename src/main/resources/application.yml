@@ -1,0 +1,29 @@
+debug: true
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
+
+management:
+  endpoints:
+    enabled-by-default: false # disable all actuator endpoints by default
+    jmx:
+      exposure:
+        include: '*'
+    web:
+      base-path: /actuator
+      exposure:
+        include: health
+
+  endpoint: # enable only those endpoints we want
+    health:
+      enabled: true
+      group: # special health endpoints for kubernetes probes
+        readyness:
+          include: readyness
+        liveness:
+          include: liveness
+
+
