@@ -17,8 +17,10 @@ public class Canvas {
     private ColorPalette colorPalette;
     private long startData;
     private long duration;
-    @Lob
-    private Blob boardData;
+    //@Lob private Blob boardData;
+    private String redisKey;
+    private int width;
+    private int height;
 
 }
 
