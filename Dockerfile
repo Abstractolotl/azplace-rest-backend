@@ -8,5 +8,7 @@ RUN mvn clean package
 
 RUN cp target/*.jar /azplace-backend.jar
 
+RUN rm -rf /app
+
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/azplace-backend.jar"]
