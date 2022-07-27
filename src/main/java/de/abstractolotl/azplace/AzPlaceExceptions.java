@@ -7,19 +7,19 @@ public class AzPlaceExceptions {
 
     public static class CanvasNotFoundExeption extends ResponseStatusException {
         public CanvasNotFoundExeption(int canvasId) {
-            super(HttpStatus.I_AM_A_TEAPOT, "Could not find Canvas with ID: " + canvasId);
+            super(HttpStatus.BAD_REQUEST, "Could not find Canvas with ID: " + canvasId);
         }
     }
 
     public static class PixelOutOfBoundsException extends ResponseStatusException {
         public PixelOutOfBoundsException(int x, int y, int w, int h) {
-            super(HttpStatus.I_AM_A_TEAPOT, "Pixel coordinates are out of canvas bounds:\nCanvas: (" + w + ", " + h + ")\nRequested Pixel: (" + x + ", " + y + ")");
+            super(HttpStatus.BAD_REQUEST, "Pixel coordinates are out of canvas bounds:\nCanvas: (" + w + ", " + h + ")\nRequested Pixel: (" + x + ", " + y + ")");
         }
     }
 
     public static class IllegalPixelCoordsException extends ResponseStatusException {
         public IllegalPixelCoordsException() {
-            super(HttpStatus.I_AM_A_TEAPOT, "Pixel coordinates cannot be negative!");
+            super(HttpStatus.BAD_REQUEST, "Pixel coordinates cannot be negative!");
         }
     }
 

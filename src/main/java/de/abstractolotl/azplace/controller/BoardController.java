@@ -6,29 +6,36 @@ import de.abstractolotl.azplace.model.User;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.repositorys.CanvasRepo;
 import de.abstractolotl.azplace.repositorys.PixelOwnerRepo;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import de.abstractolotl.azplace.AzPlaceExceptions.*;
 import redis.clients.jedis.Jedis;
 
-@RestController
+@RestController("/board")
 public class BoardController {
 
     @Autowired private Jedis jedis;
     @Autowired private CanvasRepo canvasRepo;
     @Autowired private PixelOwnerRepo pixelOwnerRepo;
 
-    @PostMapping("/place")
-    private void place(@RequestBody PlaceRequest request) {
+    @Operation(
+            summary = "Place a Pixel",
+            description = "Placed a pixel on the specified Board." +
+                    "This endpoint is ready for multi board support." +
+                    "for now just use the canasId as 0"
+    )
+    @PostMapping("{canvasId}/place")
+    private void place(@PathVariable int canvasId, @RequestBody PlaceRequest request) {
         checkPixelCords(request.getX(), request.getY());
-        User user = getUserFromSession();
+        final User user = getUserFromSession();
         if(user == null) throw new RuntimeException("No user in Session"); //TODO
 
-        var canvasResp = canvasRepo.findById(request.getCanvasId());
-        if(canvasResp.isEmpty()) throw  new CanvasNotFoundExeption(request.getCanvasId());
+        var canvasResp = canvasRepo.findById(canvasId);
+        if(canvasResp.isEmpty()) throw  new CanvasNotFoundExeption(canvasId);
 
-        Canvas canvas = canvasResp.get();
+        final Canvas canvas = canvasResp.get();
         if(canvas.getWidth() <= request.getX() || canvas.getHeight() <= request.getY())
             throw new PixelOutOfBoundsException(request.getX(), request.getY(), canvas.getWidth(), canvas.getHeight());
 
@@ -36,13 +43,32 @@ public class BoardController {
         setPixelInBlob(canvas, request.getX(), request.getY(), request.getColor());
     }
 
-    @GetMapping("/board/{canvasId}")
+    @Operation(
+            summary = "Board Data",
+            description = "Returns the raw binary data of the board. \n" +
+                    "See the outdated presentation for further information: \n" +
+                    "https://discord.com/channels/@me/758720519804682248/1001125420055400589"
+    )
+    @GetMapping("/{canvasId}/data")
     public byte[] boardData(@PathVariable int canvasId) {
         var canvasRsp = canvasRepo.findById(canvasId);
         if(canvasRsp.isEmpty()) throw new CanvasNotFoundExeption(canvasId);
 
-        Canvas canvas = canvasRsp.get();
+        final Canvas canvas = canvasRsp.get();
         return jedis.get(canvas.getRedisKey().getBytes());
+    }
+
+    @Operation(
+            summary = "Board Info",
+            description = "Returns the meta information about a Board."
+    )
+    @GetMapping("/{canvasId}/info")
+    public Canvas boardInfo(@PathVariable int canvasId) {
+        var canvasRsp = canvasRepo.findById(canvasId);
+        if(canvasRsp.isEmpty()) throw new CanvasNotFoundExeption(canvasId);
+
+        final Canvas canvas = canvasRsp.get();
+        return canvas;
     }
 
     private User getUserFromSession() {
@@ -55,6 +81,7 @@ public class BoardController {
         user.setTimestampLastPixel(System.currentTimeMillis());
         return user;
     }
+    
     private void setPixelInBlob(Canvas canvas, int x, int y, byte color) {
         //TODO canvas id
         int offset = getBlobOffsetForPixel(canvas.getWidth(), canvas.getHeight(), x, y) * 8;

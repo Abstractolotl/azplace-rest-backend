@@ -3,6 +3,7 @@ package de.abstractolotl.azplace.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -12,7 +13,8 @@ public class WebSocketServer {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private int id;
-    private String adress;
+    private String address;
     private long timestampOnlineSince;
+    private String secret;
 
 }
