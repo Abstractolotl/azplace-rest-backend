@@ -3,7 +3,6 @@ package de.abstractolotl.azplace.model;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.UUID;
 
 @Entity
 @Data
