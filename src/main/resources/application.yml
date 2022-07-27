@@ -26,4 +26,21 @@ management:
         liveness:
           include: liveness
 
+spring:
+  jpa:
+    hibernate:
+      ddl-auto:update
+    url: jdbc:mysql://noucake.ddns.net:3306/aztube
+    username: root
+    password: rootpw
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
