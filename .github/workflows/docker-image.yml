@@ -19,3 +19,10 @@ jobs:
       run: docker build . --file Dockerfile --tag ghcr.io/abstractolotl/azplace-rest-backend:$(echo $(date +%s)) --tag ghcr.io/abstractolotl/azplace-rest-backend:latest
     - name: Push the Docker image
       run: docker push ghcr.io/abstractolotl/azplace-rest-backend --all-tags
+
+    - name: Trigger helmchart action
+      run: |
+        curl -XPOST -u "$USERNAME:$CR_PAT" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/Abstractolotl/azplace-helmcharts/dispatches --data '{"event_type": "azplace-rest-backend update"}'
+      env:
+        CR_PAT: ${{ secrets.CR_PAT }}
+        USERNAME: ${{ secrets.USERNAME }}
