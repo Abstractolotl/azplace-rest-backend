@@ -11,6 +11,12 @@ public class AzPlaceExceptions {
         }
     }
 
+    public static class NoUserInSession extends ResponseStatusException {
+        public NoUserInSession() {
+            super(HttpStatus.BAD_REQUEST, "Could not get User from Session");
+        }
+    }
+
     public static class PixelOutOfBoundsException extends ResponseStatusException {
         public PixelOutOfBoundsException(int x, int y, int w, int h) {
             super(HttpStatus.BAD_REQUEST, "Pixel coordinates are out of canvas bounds:\nCanvas: (" + w + ", " + h + ")\nRequested Pixel: (" + x + ", " + y + ")");

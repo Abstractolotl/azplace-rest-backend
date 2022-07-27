@@ -31,7 +31,7 @@ public class BoardController {
     private void place(@PathVariable int canvasId, @RequestBody PlaceRequest request) {
         checkPixelCords(request.getX(), request.getY());
         final User user = getUserFromSession();
-        if(user == null) throw new RuntimeException("No user in Session"); //TODO
+        if(user == null) throw new NoUserInSession();
 
         var canvasResp = canvasRepo.findById(canvasId);
         if(canvasResp.isEmpty()) throw  new CanvasNotFoundExeption(canvasId);
