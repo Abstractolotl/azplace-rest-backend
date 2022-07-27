@@ -1,22 +1,22 @@
 package de.abstractolotl.azplace.endpoints;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController("/auth")
 public class AuthEndpoint {
 
-    private final String URL = "https://login.united-internet.org/ims-sso";
+    private final String CAS_URL = "https://login.united-internet.org/ims-sso";
+    private final String APP_URL = "https://place.azubi.server.lan";
 
     /**
      * Get ticket
@@ -25,35 +25,20 @@ public class AuthEndpoint {
      * Endpoint
      */
 
-    @PostMapping("verify")
-    public String verifyTicket(@RequestParam("ticket") String ticket) {
-        System.out.println("verify");
-
-        String app = "https://united-internet.org";
-        final String requestString = URL + "/serviceValidate?service=" + app + "&ticket=" + ticket;
-        HttpRequest request = HttpRequest.newBuilder().GET()
-                                         .uri(URI.create(requestString)).build();
-        HttpClient client = HttpClient.newBuilder().build();
+    @GetMapping(path="/verify", produces = MediaType.TEXT_HTML_VALUE)
+    @ResponseBody
+    public String loginInside(@RequestParam String ticket){
+        final String url = CAS_URL + "/serviceValidate?service=" + APP_URL + "&ticket=" + ticket;
+        final RestTemplate template = new RestTemplate();
+        String response;
         try {
-            final HttpResponse<Void> httpResponse = client.send(request, HttpResponse.BodyHandlers.discarding());
-            final int                      statusCode   = httpResponse.statusCode();
-            final Void                     body         = httpResponse.body();
-            System.out.println("response  \t:" + httpResponse);
-            System.out.println("statusCode\t:" + statusCode);
-            System.out.println("body      \t:" + body);
-            System.out.println("x         \t:" + httpResponse.headers());
-            System.out.println("x         \t:" + httpResponse.previousResponse());
-            System.out.println("x         \t:" + httpResponse.request());
-        } catch (IOException | InterruptedException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            response = template.getForObject(url, String.class);
+        } catch (HttpClientErrorException e) {
+            throw new ResponseStatusException(HttpStatus.I_AM_A_TEAPOT, e.getResponseBodyAsString());
         }
+        System.out.println("Response: " + response);
 
-        //TODO: verify ticket by CAS Server
-        // generate sessionKey
-        // store sessionKey in DB
-        // return session Key
-
-        return "Works!";
+        return "<meta http-equiv=\"refresh\" content=\"0; url=" + APP_URL + "\" />";
     }
 
     private String createSessionKey() {
