@@ -14,7 +14,7 @@ import de.abstractolotl.azplace.AzPlaceExceptions.*;
 import redis.clients.jedis.Jedis;
 
 @RestController
-@RequestMapping("/board")
+@RequestMapping("/api/board")
 public class BoardController {
 
     @Autowired private Jedis jedis;
