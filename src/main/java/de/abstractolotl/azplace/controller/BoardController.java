@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import de.abstractolotl.azplace.AzPlaceExceptions.*;
 import redis.clients.jedis.Jedis;
 
-@RestController("/board")
+@RestController
+@RequestMapping("/board")
 public class BoardController {
 
     @Autowired private Jedis jedis;
@@ -81,7 +82,7 @@ public class BoardController {
         user.setTimestampLastPixel(System.currentTimeMillis());
         return user;
     }
-    
+
     private void setPixelInBlob(Canvas canvas, int x, int y, byte color) {
         //TODO canvas id
         int offset = getBlobOffsetForPixel(canvas.getWidth(), canvas.getHeight(), x, y) * 8;
