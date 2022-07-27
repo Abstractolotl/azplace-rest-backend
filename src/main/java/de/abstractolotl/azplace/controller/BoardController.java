@@ -16,7 +16,6 @@ import redis.clients.jedis.Jedis;
 public class BoardController {
 
     @Autowired private Jedis jedis;
-
     @Autowired private CanvasRepo canvasRepo;
     @Autowired private PixelOwnerRepo pixelOwnerRepo;
 

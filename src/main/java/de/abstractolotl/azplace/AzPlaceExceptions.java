@@ -5,21 +5,21 @@ import org.springframework.web.server.ResponseStatusException;
 
 public class AzPlaceExceptions {
 
-    public static class CanvasNotFoundExeption extends RuntimeException {
+    public static class CanvasNotFoundExeption extends ResponseStatusException {
         public CanvasNotFoundExeption(int canvasId) {
-            super("Could not find Canvas with ID: " + canvasId);
+            super(HttpStatus.I_AM_A_TEAPOT, "Could not find Canvas with ID: " + canvasId);
         }
     }
 
-    public static class PixelOutOfBoundsException extends RuntimeException {
+    public static class PixelOutOfBoundsException extends ResponseStatusException {
         public PixelOutOfBoundsException(int x, int y, int w, int h) {
-            super("Pixel coordinates are out of canvas bounds:\nCanvas: (" + w + ", " + h + ")\nRequested Pixel: (" + x + ", " + y + ")");
+            super(HttpStatus.I_AM_A_TEAPOT, "Pixel coordinates are out of canvas bounds:\nCanvas: (" + w + ", " + h + ")\nRequested Pixel: (" + x + ", " + y + ")");
         }
     }
 
-    public static class IllegalPixelCoordsException extends RuntimeException {
+    public static class IllegalPixelCoordsException extends ResponseStatusException {
         public IllegalPixelCoordsException() {
-            super("Pixel coordinates cannot be negative!");
+            super(HttpStatus.I_AM_A_TEAPOT, "Pixel coordinates cannot be negative!");
         }
     }
 

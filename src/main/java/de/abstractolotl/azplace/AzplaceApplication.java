@@ -9,7 +9,7 @@ import redis.clients.jedis.Jedis;
 public class AzplaceApplication {
     @Bean
     public Jedis jedis() {
-        Jedis jedis = new Jedis("192.168.1.242", 6379);
+        Jedis jedis = new Jedis("noucake.ddns.net", 6379);
         return jedis;
     }
 
