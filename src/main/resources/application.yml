@@ -1,5 +1,10 @@
 debug: true
 
+app:
+  cas:
+    url: https://login.united-internet.org/ims-sso
+    redirectUrl: https://place.azubi.server.lan
+
 springdoc:
   api-docs:
     path: /api-docs
