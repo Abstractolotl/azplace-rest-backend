@@ -1,4 +1,4 @@
-package de.abstractolotl.azplace.repositories;
+package de.abstractolotl.azplace.repositorys;
 
 import de.abstractolotl.azplace.model.ColorPalette;
 import org.springframework.data.repository.CrudRepository;
