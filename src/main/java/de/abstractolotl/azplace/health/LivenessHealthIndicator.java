@@ -1,4 +1,4 @@
-package de.abstractolotl.azplace.config;
+package de.abstractolotl.azplace.health;
 
 
 import org.springframework.boot.actuate.health.Health;

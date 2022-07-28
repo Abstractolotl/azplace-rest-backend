@@ -1,10 +1,27 @@
 debug: true
 
+spring:
+  elasticsearch:
+    uris: http://elastic.azplace.azubi.server.lan
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://noucake.ddns.net:3306/aztube
+    username: root
+    password: rootpw
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
 springdoc:
   api-docs:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui
+
+logging:
+  level:
+    root: INFO
 
 management:
   endpoints:
