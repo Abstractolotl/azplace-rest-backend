@@ -21,13 +21,16 @@ public interface AuthAPI {
 
     @GetMapping(path="/verify", produces = MediaType.TEXT_HTML_VALUE)
     @ResponseBody
+    @CrossOrigin(origins = {"*"})
     String verify(@RequestParam("ticket") String ticket);
 
     @GetMapping(path="/logout", produces = MediaType.TEXT_HTML_VALUE)
     @ResponseBody
+    @CrossOrigin(origins = {"*"})
     String logout(@RequestParam("session") String sessionKey);
 
-    @GetMapping(path="/xmlShit", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(path="/xmlShit", produces = MediaType.TEXT_HTML_VALUE) //TODO: only test usage
     @ResponseBody
+    @CrossOrigin(origins = {"*"})
     String xmlShit(@RequestParam("xml") String xml);
 }

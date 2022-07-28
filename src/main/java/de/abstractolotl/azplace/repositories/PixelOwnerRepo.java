@@ -1,4 +1,4 @@
-package de.abstractolotl.azplace.repositorys;
+package de.abstractolotl.azplace.repositories;
 
 import de.abstractolotl.azplace.model.PixelOwner;
 import org.springframework.data.repository.CrudRepository;
