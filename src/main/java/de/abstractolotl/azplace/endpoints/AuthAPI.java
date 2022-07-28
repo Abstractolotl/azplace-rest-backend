@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController("/auth")
 public interface AuthAPI {
 
-
     /**
      * Get ticket
      * <p>
@@ -27,5 +26,7 @@ public interface AuthAPI {
     @ResponseBody
     String logout(@RequestParam("session") String sessionKey);
 
-
+    @GetMapping(path="/xmlShit", produces = MediaType.TEXT_HTML_VALUE)
+    @ResponseBody
+    String xmlShit(@RequestParam("xml") String xml);
 }
