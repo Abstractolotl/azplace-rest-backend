@@ -27,6 +27,7 @@ public class BoardController {
                     "This endpoint is ready for multi board support." +
                     "for now just use the canasId as 0"
     )
+    @CrossOrigin(origins = {"*"})
     @PostMapping("{canvasId}/place")
     private void place(@PathVariable int canvasId, @RequestBody PlaceRequest request) {
         checkPixelCords(request.getX(), request.getY());
@@ -50,6 +51,7 @@ public class BoardController {
                     "See the outdated presentation for further information: \n" +
                     "https://discord.com/channels/@me/758720519804682248/1001125420055400589"
     )
+    @CrossOrigin(origins = {"*"})
     @GetMapping("/{canvasId}/data")
     public byte[] boardData(@PathVariable int canvasId) {
         var canvasRsp = canvasRepo.findById(canvasId);
@@ -63,6 +65,7 @@ public class BoardController {
             summary = "Board Info",
             description = "Returns the meta information about a Board."
     )
+    @CrossOrigin(origins = {"*"})
     @GetMapping("/{canvasId}/info")
     public Canvas boardInfo(@PathVariable int canvasId) {
         var canvasRsp = canvasRepo.findById(canvasId);
