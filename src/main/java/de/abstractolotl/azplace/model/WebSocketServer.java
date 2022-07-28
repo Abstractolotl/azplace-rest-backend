@@ -5,13 +5,15 @@ import lombok.Data;
 import javax.persistence.*;
 
 @Entity
-@Table(name="palette")
 @Data
-public class ColorPalette {
+@Table(name = "websockets")
+public class WebSocketServer {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private int id;
-    private String[] hexColors;
+    private String address;
+    private long timestampOnlineSince;
+    private String secret;
 
 }
