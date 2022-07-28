@@ -4,6 +4,7 @@ app:
   cas:
     url: https://login.united-internet.org/ims-sso
     redirectUrl: https://place.azubi.server.lan
+  defaultKeyValidTime: 120
 
 springdoc:
   api-docs:
@@ -34,7 +35,8 @@ management:
 spring:
   jpa:
     hibernate:
-      ddl-auto:update
+      ddl-auto: update
+  datasource:
     url: jdbc:mysql://noucake.ddns.net:3306/aztube
     username: root
     password: rootpw
