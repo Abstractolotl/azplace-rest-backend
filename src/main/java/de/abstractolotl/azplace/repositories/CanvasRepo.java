@@ -1,4 +1,4 @@
-package de.abstractolotl.azplace.repositorys;
+package de.abstractolotl.azplace.repositories;
 
 import de.abstractolotl.azplace.model.Canvas;
 import org.springframework.data.repository.CrudRepository;

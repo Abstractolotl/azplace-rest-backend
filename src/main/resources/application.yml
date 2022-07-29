@@ -1,5 +1,11 @@
 debug: true
 
+app:
+  cas:
+    url: https://login.united-internet.org/ims-sso
+    redirectUrl: https://place.azubi.server.lan
+  defaultKeyValidTime: 120
+
 springdoc:
   api-docs:
     path: /api-docs
@@ -15,6 +21,8 @@ app:
 
 
 spring:
+  elasticsearch:
+    uris: http://elastic.azplace.azubi.server.lan
   jpa:
     hibernate:
       ddl-auto: update
