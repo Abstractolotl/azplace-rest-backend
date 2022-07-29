@@ -1,9 +1,9 @@
 package de.abstractolotl.azplace.controller;
 
 import de.abstractolotl.azplace.model.ColorPalette;
+import de.abstractolotl.azplace.repositories.CanvasRepo;
+import de.abstractolotl.azplace.repositories.PaletteRepo;
 import de.abstractolotl.azplace.model.logging.LogData;
-import de.abstractolotl.azplace.repositorys.CanvasRepo;
-import de.abstractolotl.azplace.repositorys.PaletteRepo;
 import de.abstractolotl.azplace.service.ElasticService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
