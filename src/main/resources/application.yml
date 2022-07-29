@@ -15,7 +15,6 @@ app:
   redis:
     url: noucake.ddns.net
     port: 6379
-    username:
     password:
 
 
