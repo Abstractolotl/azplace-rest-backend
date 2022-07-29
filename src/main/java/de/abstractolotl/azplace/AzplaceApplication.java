@@ -7,6 +7,7 @@ import redis.clients.jedis.Jedis;
 
 @SpringBootApplication
 public class AzplaceApplication {
+
     @Bean
     public Jedis jedis() {
         Jedis jedis = new Jedis("noucake.ddns.net", 6379);
