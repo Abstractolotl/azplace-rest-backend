@@ -3,7 +3,8 @@ debug: true
 app:
   cas:
     url: https://login.united-internet.org/ims-sso
-    redirectUrl: https://place.azubi.server.lan
+    apiurl: https://api.azubi.server.lan
+    redirecturl: https://place.azubi.server.lan
   defaultKeyValidTime: 120
 
 springdoc:

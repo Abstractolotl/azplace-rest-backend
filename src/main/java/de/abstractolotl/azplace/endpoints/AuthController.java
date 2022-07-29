@@ -29,7 +29,9 @@ public class AuthController implements AuthAPI {
 
     @Value("${app.cas.url}")
     private String casUrl;
-    @Value("${app.cas.redirectUrl}")
+    @Value("${app.cas.apiurl}")
+    private String apiUrl;
+    @Value("${app.cas.redirecturl}")
     private String redirectUrl;
     @Value("${app.defaultKeyValidTime}")
     private int    defaultKeyValidTime;
@@ -50,7 +52,7 @@ public class AuthController implements AuthAPI {
 
     @Override
     public String verify(@RequestParam("ticket") String ticket) {
-        final String       requestUrl = casUrl + "/serviceValidate?service=" + redirectUrl + "&ticket=" + ticket;
+        final String       requestUrl = casUrl + "/serviceValidate?service=" + apiUrl + "&ticket=" + ticket;
         final RestTemplate template   = new RestTemplate();
         String             response;
         try {
