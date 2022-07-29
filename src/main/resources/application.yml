@@ -6,6 +6,21 @@ springdoc:
   swagger-ui:
     path: /swagger-ui
 
+app:
+  redis:
+    url: noucake.ddns.net
+    port: 6379
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://noucake.ddns.net:3306/aztube
+    username: root
+    password: rootpw
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
 management:
   endpoints:
     enabled-by-default: false # disable all actuator endpoints by default
@@ -25,5 +40,3 @@ management:
           include: readyness
         liveness:
           include: liveness
-
-
