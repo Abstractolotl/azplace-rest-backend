@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class Canvas {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
     @ManyToOne
     @JoinColumn(name = "palette_id", nullable = false)

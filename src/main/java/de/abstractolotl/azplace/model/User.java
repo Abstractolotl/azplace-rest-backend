@@ -11,7 +11,7 @@ import javax.persistence.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
     private String fullname;
     private String insideNetIdentifier; //TODO: how is a inside net user identified? what does the CAS return.
