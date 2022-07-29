@@ -5,8 +5,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import redis.clients.jedis.DefaultJedisClientConfig;
-import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 
 @SpringBootApplication
@@ -16,23 +14,17 @@ public class AzplaceApplication {
     private String redisUrl;
     @Value("${app.redis.port}")
     private int    redisPort;
-    @Value("${app.redis.username}")
-    private String redisUserName;
     @Value("${app.redis.password}")
     private String redisPassword;
 
     @Bean
     public Jedis jedis() {
-        if (redisUserName.isBlank() || redisPassword.isBlank()) {
+        if (redisPassword.isBlank()) {
             return new Jedis(redisUrl, redisPort);
         }
-        HostAndPort hostAndPort = new HostAndPort(redisUrl, redisPort);
-        DefaultJedisClientConfig jedisClientConfiguration = DefaultJedisClientConfig
-                .builder()
-                .user(redisUserName)
-                .password(redisPassword)
-                .build();
-        return new Jedis(hostAndPort, jedisClientConfiguration);
+        final Jedis jedis = new Jedis(redisUrl, redisPort);
+        jedis.auth(redisPassword);
+        return jedis;
     }
 
     public static void main(String[] args) {
