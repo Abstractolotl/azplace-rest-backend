@@ -16,7 +16,7 @@ public class AzplaceApplication {
     private String redisUrl;
     @Value("${app.redis.port}")
     private int    redisPort;
-    @Value("${app.redis.userName}")
+    @Value("${app.redis.username}")
     private String redisUserName;
     @Value("${app.redis.password}")
     private String redisPassword;
