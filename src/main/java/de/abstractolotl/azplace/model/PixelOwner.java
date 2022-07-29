@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class PixelOwner {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
     @ManyToOne()
     @JoinColumn(name = "user_id", nullable = false)
