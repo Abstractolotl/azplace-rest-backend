@@ -16,16 +16,22 @@ public class AzplaceApplication {
     private String redisUrl;
     @Value("${app.redis.port}")
     private int    redisPort;
+    @Value("${app.redis.userName}")
+    private String redisUserName;
+    @Value("${app.redis.password}")
+    private String redisPassword;
 
     @Bean
     public Jedis jedis() {
+        if (redisUserName.isBlank() || redisPassword.isBlank()) {
+            return new Jedis(redisUrl, redisPort);
+        }
         HostAndPort hostAndPort = new HostAndPort(redisUrl, redisPort);
         DefaultJedisClientConfig jedisClientConfiguration = DefaultJedisClientConfig
                 .builder()
-                .user()
-                .password()
+                .user(redisUserName)
+                .password(redisPassword)
                 .build();
-
         return new Jedis(hostAndPort, jedisClientConfiguration);
     }
 
