@@ -6,6 +6,10 @@ springdoc:
   swagger-ui:
     path: /swagger-ui
 
+server:
+  error:
+    include-message: always
+
 app:
   cas:
     url: https://login.united-internet.org/ims-sso

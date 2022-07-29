@@ -1,21 +1,26 @@
 package de.abstractolotl.azplace.model;
 
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name="user")
 public class User {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
-    private String fullname;
-    private String insideNetIdentifier; //TODO: how is a inside net user identified? what does the CAS return.
-    private long timestampLastPixel; //TODO: Discuss how the timestamp should be saved / handeld
+    private String firstName;
+    private String lastName;
+    private String insideNetIdentifier;
     private long timestampRegistered;
 
 }
