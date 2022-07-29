@@ -11,6 +11,7 @@ app:
     url: noucake.ddns.net
     port: 6379
 
+
 spring:
   jpa:
     hibernate:
