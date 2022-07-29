@@ -1,11 +1,5 @@
 debug: true
 
-app:
-  cas:
-    url: https://login.united-internet.org/ims-sso
-    redirectUrl: https://place.azubi.server.lan
-  defaultKeyValidTime: 120
-
 springdoc:
   api-docs:
     path: /api-docs
@@ -13,6 +7,11 @@ springdoc:
     path: /swagger-ui
 
 app:
+  cas:
+    url: https://login.united-internet.org/ims-sso
+    redirectUrl: https://place.azubi.server.lan
+  defaultKeyValidTime: 120
+
   redis:
     url: noucake.ddns.net
     port: 6379
