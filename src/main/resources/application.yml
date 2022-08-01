@@ -6,10 +6,14 @@ springdoc:
   swagger-ui:
     path: /swagger-ui
 
+server:
+  error:
+    include-message: always
+
 app:
   cas:
     url: https://login.united-internet.org/ims-sso
-    apiurl: https://api.azubi.server.lan
+    apiurl: https://api.azubi.server.lan/verify
     redirecturl: https://azplace.azubi.server.lan
   defaultKeyValidTime: 120
 
