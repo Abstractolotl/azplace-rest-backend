@@ -134,7 +134,7 @@ public class AuthController implements AuthAPI {
             return User.builder()
                     .firstName(getValueString(attributes, "firstName", false))
                     .lastName(getValueString(attributes, "lastname", false))
-                    .insideNetIdentifier(getValueString(attributes, "personid", true))
+                    .insideNetIdentifier(getValueString(attributes, "personId", true))
                     .build();
         }
     }
