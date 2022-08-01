@@ -1,6 +1,6 @@
 package de.abstractolotl.azplace.model.logging;
 
-import de.abstractolotl.azplace.model.canvas.Canvas;
+import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.user.User;
 import lombok.Data;
 

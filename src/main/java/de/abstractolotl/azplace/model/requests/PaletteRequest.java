@@ -1,7 +1,7 @@
 package de.abstractolotl.azplace.model.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.abstractolotl.azplace.model.canvas.ColorPalette;
+import de.abstractolotl.azplace.model.board.ColorPalette;
 import lombok.Data;
 
 @Data

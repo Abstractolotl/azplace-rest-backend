@@ -1,7 +1,7 @@
 package de.abstractolotl.azplace.api;
 
-import de.abstractolotl.azplace.model.canvas.Canvas;
-import de.abstractolotl.azplace.model.canvas.ColorPalette;
+import de.abstractolotl.azplace.model.board.Canvas;
+import de.abstractolotl.azplace.model.board.ColorPalette;
 import de.abstractolotl.azplace.model.requests.CanvasRequest;
 import de.abstractolotl.azplace.model.requests.PaletteRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@RequestMapping(value = "operation")
 @Validated
 @Tag(name = "OperationAPI", description = "Endpoints for operations")
 @ApiResponses(value = {
@@ -34,6 +33,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
                 responseCode = "500", description = "Internal server error",
                 content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema()))
 })
+@RequestMapping(value = "operation")
 public interface OperationAPI {
 
     @GetMapping(value = "/canvas/{id}", produces = APPLICATION_JSON_VALUE)
@@ -42,6 +42,7 @@ public interface OperationAPI {
             @ApiResponse(responseCode = "200", description = "Canvas found and returned",
                     content = @Content(schema = @Schema(implementation = Canvas.class)))
     })
+    @CrossOrigin(origins = {"*"})
     Canvas getCanvas(@PathVariable Integer id);
 
     @PostMapping(value = "/canvas",
@@ -56,6 +57,7 @@ public interface OperationAPI {
             @ApiResponse(responseCode = "201", description = "Canvas created successfully",
                     content = @Content(schema = @Schema(implementation = Canvas.class)))
     })
+    @CrossOrigin(origins = {"*"})
     @ResponseStatus(HttpStatus.CREATED)
     Canvas createCanvas(@RequestBody CanvasRequest canvas);
 
@@ -71,6 +73,7 @@ public interface OperationAPI {
             @ApiResponse(responseCode = "200", description = "Canvas updated successfully",
                     content = @Content(schema = @Schema(implementation = Canvas.class)))
     })
+    @CrossOrigin(origins = {"*"})
     Canvas updateCanvas(@PathVariable Integer id, @RequestBody CanvasRequest canvas);
 
     @DeleteMapping(value = "/canvas/{id}",
@@ -80,6 +83,7 @@ public interface OperationAPI {
             @ApiResponse(responseCode = "200", description = "Canvas deleted successfully",
                     content = @Content(schema = @Schema(implementation = ResponseEntity.class))),
     })
+    @CrossOrigin(origins = {"*"})
     ResponseEntity<?> deleteCanvas(@PathVariable Integer id);
 
     @GetMapping(value = "/palette/{id}", produces = APPLICATION_JSON_VALUE)
@@ -88,6 +92,7 @@ public interface OperationAPI {
             @ApiResponse(responseCode = "200", description = "Palette found and returned",
                     content = @Content(schema = @Schema(implementation = ColorPalette.class)))
     })
+    @CrossOrigin(origins = {"*"})
     ColorPalette getPalette(@PathVariable Integer id);
 
     @PostMapping(value = "/palette",
@@ -102,6 +107,7 @@ public interface OperationAPI {
             @ApiResponse(responseCode = "201", description = "Palette created successfully",
                     content = @Content(schema = @Schema(implementation = ColorPalette.class)))
     })
+    @CrossOrigin(origins = {"*"})
     @ResponseStatus(HttpStatus.CREATED)
     ColorPalette createPalette(@RequestBody PaletteRequest palette);
 
@@ -117,6 +123,7 @@ public interface OperationAPI {
             @ApiResponse(responseCode = "200", description = "Palette updated successfully",
                     content = @Content(schema = @Schema(implementation = ColorPalette.class))),
     })
+    @CrossOrigin(origins = {"*"})
     ColorPalette updatePalette(@PathVariable Integer id, @RequestBody PaletteRequest palette);
 
     @DeleteMapping(value = "/palette/{id}",
@@ -126,6 +133,7 @@ public interface OperationAPI {
             @ApiResponse(responseCode = "200", description = "Palette deleted successfully",
                     content = @Content(schema = @Schema(implementation = ResponseEntity.class))),
     })
+    @CrossOrigin(origins = {"*"})
     ResponseEntity<?> deletePalette(@PathVariable Integer id);
 
 }

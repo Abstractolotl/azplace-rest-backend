@@ -1,4 +1,4 @@
-package de.abstractolotl.azplace.model.canvas;
+package de.abstractolotl.azplace.model.board;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

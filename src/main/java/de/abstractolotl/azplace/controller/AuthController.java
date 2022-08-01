@@ -3,6 +3,9 @@ package de.abstractolotl.azplace.controller;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import de.abstractolotl.azplace.api.AuthAPI;
+import de.abstractolotl.azplace.model.user.Session;
+import de.abstractolotl.azplace.model.user.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -16,9 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-import de.abstractolotl.azplace.model.Session;
-import de.abstractolotl.azplace.model.User;
-import de.abstractolotl.azplace.model.UserSession;
+import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.repositories.SessionRepo;
 import de.abstractolotl.azplace.repositories.UserRepo;
 
@@ -98,18 +99,23 @@ public class AuthController implements AuthAPI {
         final User    userDataFromCASResponse = getUserDataFromCASResponse(casResponse);
         final User    user                    = updateUserDataInDB(userDataFromCASResponse);
         final Session session                 = Session.createKey(defaultKeyValidTime, user);
+
         sessionRepo.save(session);
         userSession.setSession(session);
     }
 
     private User updateUserDataInDB(User userData) {
         final List<User> allByInsideNetIdentifier = userRepo.findAllByInsideNetIdentifier(userData.getInsideNetIdentifier());
+
         if (allByInsideNetIdentifier.isEmpty()) {
             userRepo.save(userData);
         }
+
         final User user = allByInsideNetIdentifier.get(0);
+
         user.setFirstName(userData.getFirstName());
         user.setLastName(userData.getLastName());
+
         return user;
     }
 
