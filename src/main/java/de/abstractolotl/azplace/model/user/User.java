@@ -23,6 +23,7 @@ public class User {
     private String firstName;
     private String lastName;
 
+    @Builder.Default
     private String role = "user";
 
     private String insideNetIdentifier;
