@@ -9,10 +9,12 @@ import de.abstractolotl.azplace.model.user.UserSession;
 import de.abstractolotl.azplace.repositories.CanvasRepo;
 import de.abstractolotl.azplace.repositories.PaletteRepo;
 import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
+import de.abstractolotl.azplace.service.AuthenticationService;
 import de.abstractolotl.azplace.service.OperationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import redis.clients.jedis.Jedis;
@@ -30,11 +32,11 @@ public class OperationController implements OperationAPI {
 
     @Autowired private Jedis jedis;
     @Autowired private OperationService operationService;
-    @Autowired private UserSession userSession;
+    @Autowired private AuthenticationService authenticationService;
 
     @Override
-    public Canvas getCanvas(Integer id) {
-        if(!operationService.checkRole(userSession.getSession().getUser()))
+    public Canvas getCanvas(Integer id, String sessionKey) {
+        if(!authenticationService.hasRole(authenticationService.getSession(sessionKey).getUser(), "admin"))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
         Optional<Canvas> canvas = canvasRepo.findById(id);
@@ -46,8 +48,8 @@ public class OperationController implements OperationAPI {
     }
 
     @Override
-    public Canvas createCanvas(CanvasRequest canvas) {
-        if(!operationService.checkRole(userSession.getSession().getUser()))
+    public Canvas createCanvas(CanvasRequest canvas, String sessionKey) {
+        if(!authenticationService.hasRole(authenticationService.getSession(sessionKey).getUser(), "admin"))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
         Optional<ColorPalette> palette = paletteRepo.findById(canvas.getColorPalette());
@@ -61,16 +63,16 @@ public class OperationController implements OperationAPI {
     }
 
     @Override
-    public Canvas updateCanvas(Integer id, CanvasRequest canvas) {
-        if(!operationService.checkRole(userSession.getSession().getUser()))
+    public Canvas updateCanvas(Integer id, CanvasRequest canvas, String sessionKey) {
+        if(!authenticationService.hasRole(authenticationService.getSession(sessionKey).getUser(), "admin"))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
         return operationService.updateCanvas(id, canvas);
     }
 
     @Override
-    public ResponseEntity<?> deleteCanvas(Integer id) {
-        if(!operationService.checkRole(userSession.getSession().getUser()))
+    public ResponseEntity<?> deleteCanvas(Integer id, String sessionKey) {
+        if(!authenticationService.hasRole(authenticationService.getSession(sessionKey).getUser(), "admin"))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
         Optional<Canvas> canvas = canvasRepo.findById(id);
@@ -90,8 +92,8 @@ public class OperationController implements OperationAPI {
     }
 
     @Override
-    public ColorPalette getPalette(Integer id) {
-        if(!operationService.checkRole(userSession.getSession().getUser()))
+    public ColorPalette getPalette(Integer id, String sessionKey) {
+        if(!authenticationService.hasRole(authenticationService.getSession(sessionKey).getUser(), "admin"))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
         Optional<ColorPalette> palette = paletteRepo.findById(id);
@@ -103,24 +105,24 @@ public class OperationController implements OperationAPI {
     }
 
     @Override
-    public ColorPalette createPalette(PaletteRequest canvas) {
-        if(!operationService.checkRole(userSession.getSession().getUser()))
+    public ColorPalette createPalette(PaletteRequest canvas, String sessionKey) {
+        if(!authenticationService.hasRole(authenticationService.getSession(sessionKey).getUser(), "admin"))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
         return paletteRepo.save(canvas.convert());
     }
 
     @Override
-    public ColorPalette updatePalette(Integer id, PaletteRequest palette) {
-        if(!operationService.checkRole(userSession.getSession().getUser()))
+    public ColorPalette updatePalette(Integer id, PaletteRequest palette, String sessionKey) {
+        if(!authenticationService.hasRole(authenticationService.getSession(sessionKey).getUser(), "admin"))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
         return operationService.updatePalette(id, palette);
     }
 
     @Override
-    public ResponseEntity<?> deletePalette(Integer id) {
-        if(!operationService.checkRole(userSession.getSession().getUser()))
+    public ResponseEntity<?> deletePalette(Integer id, String sessionKey) {
+        if(!authenticationService.hasRole(authenticationService.getSession(sessionKey).getUser(), "admin"))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
         Optional<ColorPalette> palette = paletteRepo.findById(id);
@@ -128,7 +130,7 @@ public class OperationController implements OperationAPI {
         if(palette.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 
-        if(canvasRepo.findAllByColorPalette(palette.get()).size() > 0)
+        if(canvasRepo.existsByColorPalette(palette.get()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "The Color palette is still in use and cannot be deleted");
 
