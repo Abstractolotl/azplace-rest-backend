@@ -22,10 +22,6 @@ public class OperationService {
     @Autowired private CanvasRepo canvasRepo;
     @Autowired private PaletteRepo paletteRepo;
 
-    public boolean checkRole(User user){
-        return user.getRole().equalsIgnoreCase("admin");
-    }
-
     public Canvas updateCanvas(Integer id, CanvasRequest canvas) {
         Optional<Canvas> optionalCurrentCanvas = canvasRepo.findById(id);
 

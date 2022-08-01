@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface CanvasRepo extends CrudRepository<Canvas, Integer> {
 
-    List<Canvas> findAllByColorPalette(ColorPalette colorPalette);
+    boolean existsByColorPalette(ColorPalette colorPalette);
 
 }

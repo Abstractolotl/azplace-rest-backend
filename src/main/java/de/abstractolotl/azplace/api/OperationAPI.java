@@ -43,7 +43,7 @@ public interface OperationAPI {
                     content = @Content(schema = @Schema(implementation = Canvas.class)))
     })
     @CrossOrigin(origins = {"*"})
-    Canvas getCanvas(@PathVariable Integer id);
+    Canvas getCanvas(@PathVariable Integer id, @RequestParam("sessionKey") String sessionKey);
 
     @PostMapping(value = "/canvas",
             consumes = APPLICATION_JSON_VALUE,
@@ -59,7 +59,7 @@ public interface OperationAPI {
     })
     @CrossOrigin(origins = {"*"})
     @ResponseStatus(HttpStatus.CREATED)
-    Canvas createCanvas(@RequestBody CanvasRequest canvas);
+    Canvas createCanvas(@RequestBody CanvasRequest canvas, @RequestParam("sessionKey") String sessionKey);
 
     @PatchMapping(value = "/canvas/{id}",
             consumes = APPLICATION_JSON_VALUE,
@@ -74,7 +74,7 @@ public interface OperationAPI {
                     content = @Content(schema = @Schema(implementation = Canvas.class)))
     })
     @CrossOrigin(origins = {"*"})
-    Canvas updateCanvas(@PathVariable Integer id, @RequestBody CanvasRequest canvas);
+    Canvas updateCanvas(@PathVariable Integer id, @RequestBody CanvasRequest canvas, @RequestParam("sessionKey") String sessionKey);
 
     @DeleteMapping(value = "/canvas/{id}",
             produces = APPLICATION_JSON_VALUE)
@@ -84,7 +84,7 @@ public interface OperationAPI {
                     content = @Content(schema = @Schema(implementation = ResponseEntity.class))),
     })
     @CrossOrigin(origins = {"*"})
-    ResponseEntity<?> deleteCanvas(@PathVariable Integer id);
+    ResponseEntity<?> deleteCanvas(@PathVariable Integer id, @RequestParam("sessionKey") String sessionKey);
 
     @GetMapping(value = "/palette/{id}", produces = APPLICATION_JSON_VALUE)
     @Operation(method = "GET", summary = "Get current palette data")
@@ -93,7 +93,7 @@ public interface OperationAPI {
                     content = @Content(schema = @Schema(implementation = ColorPalette.class)))
     })
     @CrossOrigin(origins = {"*"})
-    ColorPalette getPalette(@PathVariable Integer id);
+    ColorPalette getPalette(@PathVariable Integer id, @RequestParam("sessionKey") String sessionKey);
 
     @PostMapping(value = "/palette",
             consumes = APPLICATION_JSON_VALUE,
@@ -109,7 +109,7 @@ public interface OperationAPI {
     })
     @CrossOrigin(origins = {"*"})
     @ResponseStatus(HttpStatus.CREATED)
-    ColorPalette createPalette(@RequestBody PaletteRequest palette);
+    ColorPalette createPalette(@RequestBody PaletteRequest palette, @RequestParam("sessionKey") String sessionKey);
 
     @PatchMapping(value = "/palette/{id}",
             consumes = APPLICATION_JSON_VALUE,
@@ -124,7 +124,7 @@ public interface OperationAPI {
                     content = @Content(schema = @Schema(implementation = ColorPalette.class))),
     })
     @CrossOrigin(origins = {"*"})
-    ColorPalette updatePalette(@PathVariable Integer id, @RequestBody PaletteRequest palette);
+    ColorPalette updatePalette(@PathVariable Integer id, @RequestBody PaletteRequest palette, @RequestParam("sessionKey") String sessionKey);
 
     @DeleteMapping(value = "/palette/{id}",
             produces = APPLICATION_JSON_VALUE)
@@ -134,6 +134,6 @@ public interface OperationAPI {
                     content = @Content(schema = @Schema(implementation = ResponseEntity.class))),
     })
     @CrossOrigin(origins = {"*"})
-    ResponseEntity<?> deletePalette(@PathVariable Integer id);
+    ResponseEntity<?> deletePalette(@PathVariable Integer id, @RequestParam("sessionKey") String sessionKey);
 
 }
