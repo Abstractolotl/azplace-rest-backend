@@ -1,9 +1,13 @@
 package de.abstractolotl.azplace.controller;
 
 import de.abstractolotl.azplace.api.BoardAPI;
+import de.abstractolotl.azplace.exceptions.BannedException;
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.logging.PixelOwner;
+import de.abstractolotl.azplace.service.AuthenticationService;
+import de.abstractolotl.azplace.service.PunishmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.abstractolotl.azplace.AzPlaceExceptions.CanvasNotFoundExeption;
@@ -14,28 +18,32 @@ import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.repositories.CanvasRepo;
 import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
+import org.springframework.web.server.ResponseStatusException;
 import redis.clients.jedis.Jedis;
 
 @RestController
 public class BoardController implements BoardAPI {
 
-    @Autowired
-    private Jedis          jedis;
-    @Autowired
-    private CanvasRepo     canvasRepo;
-    @Autowired
-    private PixelOwnerRepo pixelOwnerRepo;
-    @Autowired
-    private AuthController authController;
+    @Autowired private Jedis jedis;
+    @Autowired private CanvasRepo canvasRepo;
+    @Autowired private PixelOwnerRepo pixelOwnerRepo;
+    @Autowired private AuthenticationService authenticationService;
+
+    @Autowired private PunishmentService punishmentService;
 
     @Override
     public void place(int canvasId, PlaceRequest request, String sessionKey) {
-        authController.isSessionValid(sessionKey);
+        authenticationService.isSessionValid(sessionKey);
         checkPixelCords(request.getX(), request.getY());
+
         final User user = getUserFromSession(sessionKey);
+
         if (user == null) {
             throw new NoUserInSession();
         }
+
+        if(punishmentService.isBanned(user))
+            throw new BannedException("You are banned from this board");
 
         var canvasResp = canvasRepo.findById(canvasId);
         if (canvasResp.isEmpty()) {
@@ -74,7 +82,7 @@ public class BoardController implements BoardAPI {
     }
 
     private User getUserFromSession(String sessionKey) {
-        return authController.getSession(sessionKey).getUser();
+        return authenticationService.getSession(sessionKey).getUser();
     }
 
     private void setPixelInBlob(Canvas canvas, int x, int y, byte color) {
