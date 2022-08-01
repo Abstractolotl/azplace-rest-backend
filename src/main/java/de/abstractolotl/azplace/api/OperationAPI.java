@@ -59,7 +59,7 @@ public interface OperationAPI {
     })
     @CrossOrigin(origins = {"*"})
     @ResponseStatus(HttpStatus.CREATED)
-    Canvas createCanvas(@RequestBody CanvasRequest canvas, @RequestParam("sessionKey") String sessionKey);
+    Canvas createCanvas(@RequestBody CanvasRequest canvasRequest, @RequestParam("sessionKey") String sessionKey);
 
     @PatchMapping(value = "/canvas/{id}",
             consumes = APPLICATION_JSON_VALUE,
@@ -109,7 +109,7 @@ public interface OperationAPI {
     })
     @CrossOrigin(origins = {"*"})
     @ResponseStatus(HttpStatus.CREATED)
-    ColorPalette createPalette(@RequestBody PaletteRequest palette, @RequestParam("sessionKey") String sessionKey);
+    ColorPalette createPalette(@RequestBody PaletteRequest paletteRequest, @RequestParam("sessionKey") String sessionKey);
 
     @PatchMapping(value = "/palette/{id}",
             consumes = APPLICATION_JSON_VALUE,
@@ -124,7 +124,7 @@ public interface OperationAPI {
                     content = @Content(schema = @Schema(implementation = ColorPalette.class))),
     })
     @CrossOrigin(origins = {"*"})
-    ColorPalette updatePalette(@PathVariable Integer id, @RequestBody PaletteRequest palette, @RequestParam("sessionKey") String sessionKey);
+    ColorPalette updatePalette(@PathVariable Integer id, @RequestBody PaletteRequest paletteRequest, @RequestParam("sessionKey") String sessionKey);
 
     @DeleteMapping(value = "/palette/{id}",
             produces = APPLICATION_JSON_VALUE)
