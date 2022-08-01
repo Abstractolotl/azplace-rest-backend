@@ -109,14 +109,16 @@ public class AuthController implements AuthAPI {
 
     private User getUserDataFromCASResponse(String response) {
         XmlMapper mapper = new XmlMapper();
+
         JsonNode xmlParsed;
         try {
             xmlParsed = mapper.readValue(response, ObjectNode.class).get("authenticationsuccess");
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Mapping XML failed");
         }
+
         if (xmlParsed == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "AuthenticationFailure: " + xmlParsed.get("code"));
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed");
         } else {
             final JsonNode attributes = getValue(xmlParsed, "attributes", true);
             return User.builder()
