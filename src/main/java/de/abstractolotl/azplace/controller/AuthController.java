@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import de.abstractolotl.azplace.api.AuthAPI;
@@ -45,7 +47,7 @@ public class AuthController implements AuthAPI {
 
     @Override
     public String verify(String ticket) {
-        final String       requestUrl = casUrl + "/serviceValidate?service=" + apiUrl + "&ticket=" + ticket;
+        final String       requestUrl = casUrl + "/serviceValidate?service=" + apiUrl + "&ticket=" + ticket +"&format=json";
         final RestTemplate template   = new RestTemplate();
         String             response;
         try {
@@ -108,21 +110,26 @@ public class AuthController implements AuthAPI {
     }
 
     private User getUserDataFromCASResponse(String response) {
-        XmlMapper mapper = new XmlMapper();
+        JsonMapper jsonMapper = new JsonMapper();
 
-        JsonNode xmlParsed;
+        JsonNode parsedResponse;
         try {
-            xmlParsed = mapper.readValue(response, ObjectNode.class).get("authenticationsuccess");
+            parsedResponse = jsonMapper.readValue(response, ObjectNode.class).get("serviceResponse");
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Mapping XML failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Mapping JSON failed");
         }
 
-        if (xmlParsed == null) {
+        if (parsedResponse == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed");
         } else {
-            final JsonNode attributes = getValue(xmlParsed, "attributes", true);
+            if(parsedResponse.has("authenticationFailure")){
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed: "
+                        + parsedResponse.get("authenticationFailure").get("code").textValue());
+            }
+
+            final JsonNode attributes = getValue(parsedResponse, "attributes", true);
             return User.builder()
-                    .firstName(getValueString(attributes, "firstname", false))
+                    .firstName(getValueString(attributes, "firstName", false))
                     .lastName(getValueString(attributes, "lastname", false))
                     .insideNetIdentifier(getValueString(attributes, "personid", true))
                     .build();
