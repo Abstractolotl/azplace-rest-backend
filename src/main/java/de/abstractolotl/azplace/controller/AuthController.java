@@ -95,7 +95,7 @@ public class AuthController implements AuthAPI {
 
 
     private User updateUserDataInDB(User userData) {
-        if(userRepo.existsByInsideNetIdentifier(userData.getInsideNetIdentifier())){
+        if(!userRepo.existsByInsideNetIdentifier(userData.getInsideNetIdentifier())){
             return userRepo.save(userData);
         }
 
