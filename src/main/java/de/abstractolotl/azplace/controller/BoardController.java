@@ -1,13 +1,12 @@
 package de.abstractolotl.azplace.controller;
 
 import de.abstractolotl.azplace.api.BoardAPI;
-import de.abstractolotl.azplace.exceptions.BannedException;
+import de.abstractolotl.azplace.exceptions.UserBannedException;
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.logging.PixelOwner;
 import de.abstractolotl.azplace.service.AuthenticationService;
 import de.abstractolotl.azplace.service.PunishmentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.abstractolotl.azplace.AzPlaceExceptions.CanvasNotFoundExeption;
@@ -18,7 +17,6 @@ import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.repositories.CanvasRepo;
 import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
-import org.springframework.web.server.ResponseStatusException;
 import redis.clients.jedis.Jedis;
 
 @RestController
@@ -43,7 +41,7 @@ public class BoardController implements BoardAPI {
         }
 
         if(punishmentService.isBanned(user))
-            throw new BannedException("You are banned from this board");
+            throw new UserBannedException();
 
         var canvasResp = canvasRepo.findById(canvasId);
         if (canvasResp.isEmpty()) {

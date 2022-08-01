@@ -6,13 +6,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 @ResponseStatus(HttpStatus.FORBIDDEN)
-public class BannedException extends ResponseStatusException {
+public class UserBannedException extends ResponseStatusException {
 
-    public BannedException(String message, Throwable cause) {
-        super(HttpStatus.FORBIDDEN, message, cause);
+    public UserBannedException(String message) {
+        super(HttpStatus.FORBIDDEN, message);
     }
 
-    public BannedException(String message) {
-        super(HttpStatus.FORBIDDEN, message);
+    public UserBannedException(){
+        super(HttpStatus.FORBIDDEN, "You are banned from this board");
     }
 }
