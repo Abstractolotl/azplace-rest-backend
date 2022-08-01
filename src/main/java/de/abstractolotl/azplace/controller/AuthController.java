@@ -123,8 +123,8 @@ public class AuthController implements AuthAPI {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed");
         } else {
             if(parsedResponse.has("authenticationFailure")){
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed: "
-                        + parsedResponse.get("authenticationFailure").get("code").textValue());
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                        parsedResponse.get("authenticationFailure").get("description").textValue());
             }
 
             final JsonNode attributes = getValue(parsedResponse, "attributes", true);
