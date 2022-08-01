@@ -127,7 +127,10 @@ public class AuthController implements AuthAPI {
                         parsedResponse.get("authenticationFailure").get("description").textValue());
             }
 
-            final JsonNode attributes = getValue(parsedResponse, "attributes", true);
+            if(!parsedResponse.has("authenticationSuccess"))
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Json information missing");
+
+            final JsonNode attributes = getValue(parsedResponse.get("authenticationSuccess"), "attributes", true);
             return User.builder()
                     .firstName(getValueString(attributes, "firstName", false))
                     .lastName(getValueString(attributes, "lastname", false))
