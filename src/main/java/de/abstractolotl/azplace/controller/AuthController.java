@@ -95,13 +95,11 @@ public class AuthController implements AuthAPI {
 
 
     private User updateUserDataInDB(User userData) {
-        final List<User> allByInsideNetIdentifier = userRepo.findAllByInsideNetIdentifier(userData.getInsideNetIdentifier());
-
-        if (allByInsideNetIdentifier.isEmpty()) {
-            userRepo.save(userData);
+        if(userRepo.existsByInsideNetIdentifier(userData.getInsideNetIdentifier())){
+            return userRepo.save(userData);
         }
 
-        final User user = allByInsideNetIdentifier.get(0);
+        User user = userRepo.findByInsideNetIdentifier(userData.getInsideNetIdentifier());
 
         user.setFirstName(userData.getFirstName());
         user.setLastName(userData.getLastName());
@@ -123,18 +121,19 @@ public class AuthController implements AuthAPI {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed");
         } else {
             if(parsedResponse.has("authenticationFailure")){
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-                        parsedResponse.get("authenticationFailure").get("description").textValue());
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed: " +
+                        parsedResponse.get("authenticationFailure").get("code").textValue());
             }
 
             if(!parsedResponse.has("authenticationSuccess"))
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Json information missing");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Json information missing");
 
             final JsonNode attributes = getValue(parsedResponse.get("authenticationSuccess"), "attributes", true);
             return User.builder()
                     .firstName(getValueString(attributes, "firstName", false))
                     .lastName(getValueString(attributes, "lastname", false))
-                    .insideNetIdentifier(getValueString(attributes, "personId", true))
+                    .insideNetIdentifier(getValueString(attributes, "username", true))
                     .build();
         }
     }
