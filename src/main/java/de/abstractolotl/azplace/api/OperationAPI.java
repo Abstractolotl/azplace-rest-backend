@@ -74,7 +74,7 @@ public interface OperationAPI {
                     content = @Content(schema = @Schema(implementation = Canvas.class)))
     })
     @CrossOrigin(origins = {"*"})
-    Canvas updateCanvas(@PathVariable Integer id, @RequestBody CanvasRequest canvas, @RequestParam("sessionKey") String sessionKey);
+    Canvas updateCanvas(@PathVariable Integer id, @RequestBody CanvasRequest canvasRequest, @RequestParam("sessionKey") String sessionKey);
 
     @DeleteMapping(value = "/canvas/{id}",
             produces = APPLICATION_JSON_VALUE)
