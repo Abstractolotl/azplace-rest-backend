@@ -1,4 +1,4 @@
-package de.abstractolotl.azplace.model;
+package de.abstractolotl.azplace.model.user;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;

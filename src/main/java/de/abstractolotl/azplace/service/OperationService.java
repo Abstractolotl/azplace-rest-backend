@@ -1,0 +1,85 @@
+package de.abstractolotl.azplace.service;
+
+import de.abstractolotl.azplace.model.canvas.Canvas;
+import de.abstractolotl.azplace.model.canvas.ColorPalette;
+import de.abstractolotl.azplace.model.requests.CanvasRequest;
+import de.abstractolotl.azplace.model.requests.PaletteRequest;
+import de.abstractolotl.azplace.repositories.CanvasRepo;
+import de.abstractolotl.azplace.repositories.PaletteRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
+
+@Service
+public class OperationService {
+
+    @Autowired
+    private CanvasRepo canvasRepo;
+
+    @Autowired
+    private PaletteRepo paletteRepo;
+
+    public Canvas updateCanvas(Integer id, CanvasRequest canvas) {
+        Optional<Canvas> optionalCurrentCanvas = canvasRepo.findById(id);
+
+        if(optionalCurrentCanvas.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+        Canvas currentCanvas = optionalCurrentCanvas.get();
+
+        if(canvas.getStartDate() > -1L &&
+                currentCanvas.getStartDate() != canvas.getStartDate())
+            currentCanvas.setStartDate(canvas.getStartDate());
+
+        if(canvas.getDuration() > -1L &&
+                currentCanvas.getDuration() != canvas.getDuration())
+            currentCanvas.setDuration(canvas.getDuration());
+
+        if(canvas.getRedisKey() != null &&
+                !currentCanvas.getRedisKey().equals(canvas.getRedisKey()))
+            currentCanvas.setRedisKey(canvas.getRedisKey());
+
+        if(canvas.getHeight() > -1 &&
+                currentCanvas.getHeight() != canvas.getHeight())
+            currentCanvas.setHeight(canvas.getHeight());
+
+        if(canvas.getWidth() > -1 &&
+                currentCanvas.getWidth() != canvas.getWidth())
+            currentCanvas.setWidth(canvas.getWidth());
+
+        if(canvas.getCooldown() > -1L &&
+                currentCanvas.getCooldown() != canvas.getCooldown())
+            currentCanvas.setCooldown(canvas.getCooldown());
+
+        if(canvas.getColorPalette() > -1 &&
+                currentCanvas.getColorPalette().getId() != canvas.getColorPalette()){
+            Optional<ColorPalette> palette = paletteRepo.findById(canvas.getColorPalette());
+
+            if(palette.isEmpty())
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Palette does not exists");
+
+            currentCanvas.setColorPalette(palette.get());
+        }
+
+        return canvasRepo.save(currentCanvas);
+    }
+
+    public ColorPalette updatePalette(Integer id, PaletteRequest palette){
+        Optional<ColorPalette> optionalCurrentPalette = paletteRepo.findById(id);
+
+        if(optionalCurrentPalette.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+        ColorPalette currentPalette = optionalCurrentPalette.get();
+
+        if(palette.getHexColors() != null
+                && palette.getHexColors() != currentPalette.getHexColors())
+            currentPalette.setHexColors(palette.getHexColors());
+
+        return paletteRepo.save(currentPalette);
+    }
+
+}

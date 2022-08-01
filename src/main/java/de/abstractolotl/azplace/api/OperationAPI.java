@@ -1,13 +1,16 @@
-package de.abstractolotl.azplace.endpoints;
+package de.abstractolotl.azplace.api;
 
-import de.abstractolotl.azplace.model.Canvas;
-import de.abstractolotl.azplace.model.ColorPalette;
+import de.abstractolotl.azplace.model.canvas.Canvas;
+import de.abstractolotl.azplace.model.canvas.ColorPalette;
+import de.abstractolotl.azplace.model.requests.CanvasRequest;
+import de.abstractolotl.azplace.model.requests.PaletteRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -46,30 +49,29 @@ public interface OperationAPI {
             produces = APPLICATION_JSON_VALUE)
     @Operation(method = "POST", summary = "Create new canvas",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(schema = @Schema(implementation = Canvas.class))
+                    content = @Content(schema = @Schema(implementation = CanvasRequest.class))
             )
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Canvas created successfully",
                     content = @Content(schema = @Schema(implementation = Canvas.class)))
     })
-    Canvas createCanvas(@RequestBody Canvas canvas);
+    @ResponseStatus(HttpStatus.CREATED)
+    Canvas createCanvas(@RequestBody CanvasRequest canvas);
 
-    @PutMapping(value = "/canvas/{id}",
+    @PatchMapping(value = "/canvas/{id}",
             consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
-    @Operation(method = "PUT", summary = "Update or create canvas",
+    @Operation(method = "PATCH", summary = "Update an existing canvas",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(schema = @Schema(implementation = Canvas.class))
+                    content = @Content(schema = @Schema(implementation = CanvasRequest.class))
             )
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Canvas updated successfully",
-                    content = @Content(schema = @Schema(implementation = Canvas.class))),
-            @ApiResponse(responseCode = "201", description = "Canvas created successfully",
                     content = @Content(schema = @Schema(implementation = Canvas.class)))
     })
-    Canvas updateCanvas(@PathVariable Integer id, @RequestBody Canvas canvas);
+    Canvas updateCanvas(@PathVariable Integer id, @RequestBody CanvasRequest canvas);
 
     @DeleteMapping(value = "/canvas/{id}",
             produces = APPLICATION_JSON_VALUE)
@@ -93,30 +95,29 @@ public interface OperationAPI {
             produces = APPLICATION_JSON_VALUE)
     @Operation(method = "POST", summary = "Create new palette",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(schema = @Schema(implementation = ColorPalette.class))
+                    content = @Content(schema = @Schema(implementation = PaletteRequest.class))
             )
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Palette created successfully",
                     content = @Content(schema = @Schema(implementation = ColorPalette.class)))
     })
-    ColorPalette createPalette(@RequestBody ColorPalette canvas);
+    @ResponseStatus(HttpStatus.CREATED)
+    ColorPalette createPalette(@RequestBody PaletteRequest palette);
 
-    @PutMapping(value = "/palette/{id}",
+    @PatchMapping(value = "/palette/{id}",
             consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
-    @Operation(method = "PUT", summary = "Update or create palette",
+    @Operation(method = "PATCH", summary = "Update an existing palette",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(schema = @Schema(implementation = ColorPalette.class))
+                    content = @Content(schema = @Schema(implementation = PaletteRequest.class))
             )
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Palette updated successfully",
                     content = @Content(schema = @Schema(implementation = ColorPalette.class))),
-            @ApiResponse(responseCode = "201", description = "Palette created successfully",
-                    content = @Content(schema = @Schema(implementation = ColorPalette.class)))
     })
-    ColorPalette updatePalette(@PathVariable Integer id, @RequestBody ColorPalette canvas);
+    ColorPalette updatePalette(@PathVariable Integer id, @RequestBody PaletteRequest palette);
 
     @DeleteMapping(value = "/palette/{id}",
             produces = APPLICATION_JSON_VALUE)

@@ -1,8 +1,8 @@
 package de.abstractolotl.azplace.controller;
 
-import de.abstractolotl.azplace.model.Canvas;
-import de.abstractolotl.azplace.model.PixelOwner;
-import de.abstractolotl.azplace.model.User;
+import de.abstractolotl.azplace.model.canvas.Canvas;
+import de.abstractolotl.azplace.model.logging.PixelOwner;
+import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.repositories.CanvasRepo;
 import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
