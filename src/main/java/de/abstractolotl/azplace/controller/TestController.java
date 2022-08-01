@@ -1,6 +1,6 @@
 package de.abstractolotl.azplace.controller;
 
-import de.abstractolotl.azplace.model.ColorPalette;
+import de.abstractolotl.azplace.model.board.ColorPalette;
 import de.abstractolotl.azplace.repositories.CanvasRepo;
 import de.abstractolotl.azplace.repositories.PaletteRepo;
 import de.abstractolotl.azplace.model.logging.LogData;

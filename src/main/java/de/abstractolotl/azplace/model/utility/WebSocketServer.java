@@ -1,4 +1,4 @@
-package de.abstractolotl.azplace.model;
+package de.abstractolotl.azplace.model.utility;
 
 import lombok.Data;
 

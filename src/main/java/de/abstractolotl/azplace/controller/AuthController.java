@@ -3,27 +3,26 @@ package de.abstractolotl.azplace.controller;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import de.abstractolotl.azplace.api.AuthAPI;
+import de.abstractolotl.azplace.model.user.Session;
+import de.abstractolotl.azplace.model.user.UserSession;
+import de.abstractolotl.azplace.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-
-import de.abstractolotl.azplace.model.Session;
-import de.abstractolotl.azplace.model.User;
-import de.abstractolotl.azplace.model.UserSession;
+import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.repositories.SessionRepo;
 import de.abstractolotl.azplace.repositories.UserRepo;
 
 @RestController
-@RequestMapping("/auth")
 public class AuthController implements AuthAPI {
 
     @Value("${app.cas.url}")
@@ -34,6 +33,8 @@ public class AuthController implements AuthAPI {
     private String redirectUrl;
     @Value("${app.defaultKeyValidTime}")
     private int    defaultKeyValidTime;
+
+    @Autowired private AuthenticationService authenticationService;
 
     @Autowired
     private UserSession userSession;
@@ -73,49 +74,42 @@ public class AuthController implements AuthAPI {
 
     @Override
     public Session getSession(String sessionKey) {
-        Session session = userSession.getSession();
-        if (session == null) {
-            final List<Session> sessionBySessionKey = sessionRepo.findSessionBySessionKey(sessionKey);
-            if (sessionBySessionKey.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session key expected");
-            }
-            session = sessionBySessionKey.get(0);
-        }
-        return session;
+        return authenticationService.getSession(sessionKey);
     }
 
     @Override
     public boolean isSessionValid(String sessionKey) {
-        Session session = getSession(sessionKey);
-        final LocalDateTime now = LocalDateTime.now();
-        if (session.getCreationDate().isAfter(now) || session.getExpireDate().isBefore(now)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session key expired");
-        }
-        return true;
+        return authenticationService.isSessionValid(sessionKey);
     }
 
     private void createSessionKey(String casResponse) {
         final User    userDataFromCASResponse = getUserDataFromCASResponse(casResponse);
         final User    user                    = updateUserDataInDB(userDataFromCASResponse);
         final Session session                 = Session.createKey(defaultKeyValidTime, user);
+
         sessionRepo.save(session);
         userSession.setSession(session);
     }
 
+
     private User updateUserDataInDB(User userData) {
         final List<User> allByInsideNetIdentifier = userRepo.findAllByInsideNetIdentifier(userData.getInsideNetIdentifier());
+
         if (allByInsideNetIdentifier.isEmpty()) {
             userRepo.save(userData);
         }
+
         final User user = allByInsideNetIdentifier.get(0);
+
         user.setFirstName(userData.getFirstName());
         user.setLastName(userData.getLastName());
+
         return user;
     }
 
     private User getUserDataFromCASResponse(String response) {
         XmlMapper mapper = new XmlMapper();
-        JsonNode  xmlParsed;
+        JsonNode xmlParsed;
         try {
             xmlParsed = mapper.readValue(response, ObjectNode.class).get("authenticationsuccess");
         } catch (Exception e) {
@@ -126,10 +120,10 @@ public class AuthController implements AuthAPI {
         } else {
             final JsonNode attributes = getValue(xmlParsed, "attributes", true);
             return User.builder()
-                       .firstName(getValueString(attributes, "firstname", false))
-                       .lastName(getValueString(attributes, "lastname", false))
-                       .insideNetIdentifier(getValueString(attributes, "personid", true))
-                       .build();
+                    .firstName(getValueString(attributes, "firstname", false))
+                    .lastName(getValueString(attributes, "lastname", false))
+                    .insideNetIdentifier(getValueString(attributes, "personid", true))
+                    .build();
         }
     }
 

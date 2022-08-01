@@ -1,5 +1,6 @@
-package de.abstractolotl.azplace.model;
+package de.abstractolotl.azplace.model.board;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,19 +9,18 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="user")
-public class User {
+@Table(name="palette")
+@Data
+public class ColorPalette {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
-    private String firstName;
-    private String lastName;
-    private String insideNetIdentifier;
-    private long timestampRegistered;
+
+    @JsonProperty("hex_colors")
+    private String[] hexColors;
 
 }
