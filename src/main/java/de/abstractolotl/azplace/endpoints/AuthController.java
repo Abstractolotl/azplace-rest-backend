@@ -17,9 +17,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-import de.abstractolotl.azplace.model.user.Session;
-import de.abstractolotl.azplace.model.user.User;
-import de.abstractolotl.azplace.model.user.UserSession;
+import de.abstractolotl.azplace.model.Session;
+import de.abstractolotl.azplace.model.User;
+import de.abstractolotl.azplace.model.UserSession;
 import de.abstractolotl.azplace.repositories.SessionRepo;
 import de.abstractolotl.azplace.repositories.UserRepo;
 
