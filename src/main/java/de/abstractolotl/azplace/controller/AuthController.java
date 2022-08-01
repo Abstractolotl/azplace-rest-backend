@@ -24,7 +24,6 @@ import de.abstractolotl.azplace.repositories.SessionRepo;
 import de.abstractolotl.azplace.repositories.UserRepo;
 
 @RestController
-@RequestMapping("/auth")
 public class AuthController implements AuthAPI {
 
     @Value("${app.cas.url}")
