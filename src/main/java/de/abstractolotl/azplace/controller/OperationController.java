@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -21,12 +22,13 @@ import java.util.Optional;
 @RestController
 public class OperationController implements OperationAPI {
 
+
     @Autowired private CanvasRepo canvasRepo;
     @Autowired private PaletteRepo paletteRepo;
     @Autowired private PixelOwnerRepo pixelRepo;
 
-    @Autowired
-    private OperationService operationService;
+    @Autowired private Jedis jedis;
+    @Autowired private OperationService operationService;
 
     @Override
     public Canvas getCanvas(Integer id) {
@@ -45,6 +47,8 @@ public class OperationController implements OperationAPI {
         if(palette.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Palette does not exists");
 
+        jedis.set(canvas.getRedisKey().getBytes(), operationService.createByteArray(canvas.getHeight(), canvas.getHeight()));
+
         return canvasRepo.save(canvas.convert(palette.get()));
     }
 
@@ -62,6 +66,7 @@ public class OperationController implements OperationAPI {
 
         pixelRepo.deleteAll(pixelRepo.findAllByCanvas(canvas.get()));
 
+        jedis.del(canvas.get().getRedisKey());
         canvasRepo.delete(canvas.get());
 
         return ResponseEntity.ok(new HashMap<>(){{

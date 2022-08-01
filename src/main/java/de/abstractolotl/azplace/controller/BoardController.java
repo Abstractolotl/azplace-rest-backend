@@ -96,7 +96,7 @@ public class BoardController {
         if(x < 0 || y < 0) throw new IllegalPixelCoordsException();
     }
 
-    /** Notes: Doesn't check for correctnes of coords */
+    /** Notes: Doesn't check for correctness of coords */
     private PixelOwner createPixelOwner(Canvas canvas, int x, int y) {
         PixelOwner pixel = new PixelOwner();
         pixel.setCanvas(canvas);
@@ -107,9 +107,11 @@ public class BoardController {
 
     private void setNewPixelOwner(Canvas canvas, int x, int y, User user) {
         var pixelResp = pixelOwnerRepo.findByXAndY(x, y);
+
         PixelOwner pixel = pixelResp.orElseGet(() -> createPixelOwner(canvas, x, y));
         pixel.setTimestamp(System.currentTimeMillis());
         pixel.setUser(user);
+
         pixelOwnerRepo.save(pixel);
     }
 
