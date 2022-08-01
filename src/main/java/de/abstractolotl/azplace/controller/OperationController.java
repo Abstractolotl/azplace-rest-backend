@@ -129,11 +129,12 @@ public class OperationController implements OperationAPI {
         if(palette.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 
-        if(canvasRepo.existsByColorPalette(palette.get()))
+        try {
+            paletteRepo.delete(palette.get());
+        }catch (Exception exception) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "The Color palette is still in use and cannot be deleted");
-
-        paletteRepo.delete(palette.get());
+                    "Color palette couldn't be deleted (still in use?)");
+        }
 
         return ResponseEntity.ok(new HashMap<>(){{
             put("message", "Color Palette " + id + " was deleted");
