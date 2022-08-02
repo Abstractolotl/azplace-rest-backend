@@ -27,11 +27,15 @@ public class User {
     private String lastName;
 
     @Builder.Default
-    private String[] roles = { "default" };
+    private String roles = String.join(",", "default");
 
     @NotNull
     private String insideNetIdentifier;
     @Builder.Default
     private long timestampRegistered = System.currentTimeMillis();
+
+    public String[] getRoleArray(){
+        return roles.split(",");
+    }
 
 }

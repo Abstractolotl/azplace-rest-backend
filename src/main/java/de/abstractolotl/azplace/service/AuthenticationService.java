@@ -43,7 +43,7 @@ public class AuthenticationService {
     }
 
     public boolean hasRole(User user, String role){
-        return Arrays.stream(user.getRoles()).toList().contains(role);
+        return Arrays.stream(user.getRoleArray()).toList().contains(role);
     }
 
 }
