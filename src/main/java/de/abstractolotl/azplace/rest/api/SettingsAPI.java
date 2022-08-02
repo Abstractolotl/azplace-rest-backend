@@ -1,6 +1,7 @@
 package de.abstractolotl.azplace.rest.api;
 
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
+import de.abstractolotl.azplace.model.user.UserBan;
 import de.abstractolotl.azplace.model.view.PaletteView;
 import de.abstractolotl.azplace.model.view.SettingsView;
 import de.abstractolotl.azplace.model.view.SizeView;
@@ -37,39 +38,35 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public interface SettingsAPI {
 
     @GetMapping(value = "/all/{canvasId}", produces = APPLICATION_JSON_VALUE)
-    @Operation(
-            summary = "Get all settings of a canvas",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(schema = @Schema(implementation = SettingsView.class))
-            )
-    )
+    @Operation(summary = "Get all settings of a canvas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All canvas settings returned",
+                    content = @Content(schema = @Schema(implementation = SettingsView.class)))
+    })
     SettingsView all(@PathVariable int canvasId);
 
     @GetMapping(value = "/colors/{canvasId}", produces = APPLICATION_JSON_VALUE)
-    @Operation(
-            summary = "Get the color palette of a canvas",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(schema = @Schema(implementation = PaletteView.class))
-            )
-    )
+    @Operation(summary = "Get the color palette of a canvas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Canvas color palette returned",
+                    content = @Content(schema = @Schema(implementation = PaletteView.class)))
+    })
     PaletteView colors(@PathVariable int canvasId);
 
     @GetMapping(value = "/timespan/{canvasId}", produces = APPLICATION_JSON_VALUE)
-    @Operation(
-            summary = "Get the timespan of a canvas",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(schema = @Schema(implementation = TimespanView.class))
-            )
-    )
+    @Operation(summary = "Get the timespan of a canvas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Canvas timespan returned",
+                    content = @Content(schema = @Schema(implementation = TimespanView.class)))
+    })
     TimespanView timespan(@PathVariable int canvasId);
 
     @GetMapping(value = "/size/{canvasId}", produces = APPLICATION_JSON_VALUE)
-    @Operation(
-            summary = "Get the size of a canvas",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(schema = @Schema(implementation = SizeView.class))
-            )
-    )
+    @Operation(summary = "Get the size of a canvas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Canvas size returned",
+                    content = @Content(schema = @Schema(implementation = SizeView.class)))
+    })
     SizeView size(@PathVariable int canvasId);
 
 }
