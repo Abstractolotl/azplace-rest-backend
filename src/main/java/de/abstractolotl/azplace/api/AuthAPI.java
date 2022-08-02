@@ -51,16 +51,10 @@ public interface AuthAPI {
     @CrossOrigin(origins = {"*"})
     String verify(@RequestParam("ticket") String ticket);
 
-    @Operation(
-            summary = "XML Fake Verify",
-            description = """
-                    This Endpoint is for testing.
-                    It's a basically the same as /verify but you have to put in the CAS response you want to process.
-                    """)
-    @GetMapping(path = "/xmlShit", produces = MediaType.TEXT_HTML_VALUE) //TODO: only test usage
+    @GetMapping(path = "/debug", produces = MediaType.TEXT_HTML_VALUE)
     @ResponseBody
     @CrossOrigin(origins = {"*"})
-    void xmlShit(@RequestParam("xml") String xml);
+    String casDebug(@RequestParam("ticket") String ticket);
 
     @Operation(
             summary = "Log out",
