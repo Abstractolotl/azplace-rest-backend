@@ -61,8 +61,8 @@ public class BoardController implements BoardAPI {
             throw new PixelOutOfBoundsException(request.getX(), request.getY(), canvas.getWidth(), canvas.getHeight());
         }
 
-        setNewPixelOwner(canvas, request.getX(), request.getY(), getUserFromSession(sessionKey));
-        setPixelInBlob(canvas, request.getX(), request.getY(), (byte)request.getColor());
+        setNewPixelOwner(canvas, request.getX(), request.getY(), user);
+        setPixelInBlob(canvas, request.getX(), request.getY(), (byte)request.getColorIndex());
         webSocketService.broadcastPixel(request);
     }
 
