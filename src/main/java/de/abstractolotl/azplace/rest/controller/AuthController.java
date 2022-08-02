@@ -1,23 +1,21 @@
-package de.abstractolotl.azplace.controller;
+package de.abstractolotl.azplace.rest.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import de.abstractolotl.azplace.api.AuthAPI;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.abstractolotl.azplace.rest.api.AuthAPI;
 import de.abstractolotl.azplace.model.user.Session;
 import de.abstractolotl.azplace.model.user.UserSession;
+import de.abstractolotl.azplace.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.repositories.SessionRepo;
@@ -36,6 +34,9 @@ public class AuthController implements AuthAPI {
     private int    defaultKeyValidTime;
 
     @Autowired
+    private AuthenticationService authenticationService;
+
+    @Autowired
     private UserSession userSession;
     @Autowired
     private SessionRepo sessionRepo;
@@ -44,21 +45,18 @@ public class AuthController implements AuthAPI {
 
     @Override
     public String verify(String ticket) {
-        final String       requestUrl = casUrl + "/serviceValidate?service=" + apiUrl + "&ticket=" + ticket;
+        final String       requestUrl = casUrl + "/serviceValidate?service=" + apiUrl + "&ticket=" + ticket +"&format=json";
         final RestTemplate template   = new RestTemplate();
+
         String             response;
         try {
             response = template.getForObject(requestUrl, String.class);
         } catch (HttpClientErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Validate Ticket by CAS went wrong: " + e.getResponseBodyAsString());
         }
+
         createSessionKey(response);
         return "<meta http-equiv=\"refresh\" content=\"0; url=" + redirectUrl + "\" />";
-    }
-
-    @Override
-    public void xmlShit(String xml) {
-        createSessionKey(xml);
     }
 
     @Override
@@ -72,26 +70,13 @@ public class AuthController implements AuthAPI {
     }
 
     @Override
-    public Session getSession(String sessionKey) {
-        Session session = userSession.getSession();
-        if (session == null) {
-            final List<Session> sessionBySessionKey = sessionRepo.findSessionBySessionKey(sessionKey);
-            if (sessionBySessionKey.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session key expected");
-            }
-            session = sessionBySessionKey.get(0);
-        }
-        return session;
+    public Session getSession() {
+        return authenticationService.getSession();
     }
 
     @Override
-    public boolean isSessionValid(String sessionKey) {
-        Session session = getSession(sessionKey);
-        final LocalDateTime now = LocalDateTime.now();
-        if (session.getCreationDate().isAfter(now) || session.getExpireDate().isBefore(now)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session key expired");
-        }
-        return true;
+    public boolean isSessionValid() {
+        return authenticationService.isSessionValid();
     }
 
     private void createSessionKey(String casResponse) {
@@ -103,14 +88,13 @@ public class AuthController implements AuthAPI {
         userSession.setSession(session);
     }
 
-    private User updateUserDataInDB(User userData) {
-        final List<User> allByInsideNetIdentifier = userRepo.findAllByInsideNetIdentifier(userData.getInsideNetIdentifier());
 
-        if (allByInsideNetIdentifier.isEmpty()) {
-            userRepo.save(userData);
+    private User updateUserDataInDB(User userData) {
+        if(!userRepo.existsByInsideNetIdentifier(userData.getInsideNetIdentifier())){
+            return userRepo.save(userData);
         }
 
-        final User user = allByInsideNetIdentifier.get(0);
+        User user = userRepo.findByInsideNetIdentifier(userData.getInsideNetIdentifier());
 
         user.setFirstName(userData.getFirstName());
         user.setLastName(userData.getLastName());
@@ -119,22 +103,33 @@ public class AuthController implements AuthAPI {
     }
 
     private User getUserDataFromCASResponse(String response) {
-        XmlMapper mapper = new XmlMapper();
-        JsonNode  xmlParsed;
+        JsonMapper jsonMapper = new JsonMapper();
+
+        JsonNode parsedResponse;
         try {
-            xmlParsed = mapper.readValue(response, ObjectNode.class).get("authenticationsuccess");
+            parsedResponse = jsonMapper.readValue(response, ObjectNode.class).get("serviceResponse");
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Mapping XML failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Mapping JSON failed");
         }
-        if (xmlParsed == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "AuthenticationFailure: " + xmlParsed.get("code"));
+
+        if (parsedResponse == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed");
         } else {
-            final JsonNode attributes = getValue(xmlParsed, "attributes", true);
+            if(parsedResponse.has("authenticationFailure")){
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed: " +
+                        parsedResponse.get("authenticationFailure").get("code").textValue());
+            }
+
+            if(!parsedResponse.has("authenticationSuccess"))
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Json information missing");
+
+            JsonNode attributes = getValue(parsedResponse.get("authenticationSuccess"), "attributes", true);
             return User.builder()
-                       .firstName(getValueString(attributes, "firstname", false))
-                       .lastName(getValueString(attributes, "lastname", false))
-                       .insideNetIdentifier(getValueString(attributes, "personid", true))
-                       .build();
+                    .firstName(getAttribute(attributes, "firstName", true))
+                    .lastName(getAttribute(attributes, "lastName", false))
+                    .insideNetIdentifier(getAttribute(attributes, "personId", true))
+                    .build();
         }
     }
 
@@ -148,11 +143,14 @@ public class AuthController implements AuthAPI {
         return null;
     }
 
-    private String getValueString(JsonNode node, String key, boolean required) {
-        final JsonNode value = getValue(node, key, required);
-        if (value == null) {
+    private String getAttribute(JsonNode node, String key, boolean required){
+        JsonNode value = getValue(node, key, required);
+
+        if(value == null){
             return "";
         }
-        return value.textValue();
+
+        return value.get(0).textValue();
     }
+
 }
