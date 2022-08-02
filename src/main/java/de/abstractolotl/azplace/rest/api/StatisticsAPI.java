@@ -1,5 +1,6 @@
 package de.abstractolotl.azplace.rest.api;
 
+import de.abstractolotl.azplace.model.user.UserBan;
 import de.abstractolotl.azplace.model.view.PaletteView;
 import de.abstractolotl.azplace.model.view.PixelStatisticView;
 import de.abstractolotl.azplace.model.view.TopStatisticView;
@@ -38,21 +39,19 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public interface StatisticsAPI {
 
     @GetMapping(value = "/pixels", produces = APPLICATION_JSON_VALUE)
-    @Operation(
-            summary = "Get placed pixels in the last 24h",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(schema = @Schema(implementation = PixelStatisticView.class))
-            )
-    )
+    @Operation(summary = "Get placed pixels in the last 24h")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Pixel statistics calculated and returned",
+                    content = @Content(schema = @Schema(implementation = PixelStatisticView.class)))
+    })
     PixelStatisticView pixels();
 
     @GetMapping(value = "/toplist/{max:10}", produces = APPLICATION_JSON_VALUE)
-    @Operation(
-            summary = "Get toplist by placed pixels",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(schema = @Schema(implementation = TopStatisticView.class))
-            )
-    )
+    @Operation(summary = "Get toplist by placed pixels")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Pixel placement toplist returned",
+                    content = @Content(schema = @Schema(implementation = PixelStatisticView.class)))
+    })
     TopStatisticView topList(@PathVariable(required = false) int max);
 
 
