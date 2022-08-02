@@ -1,7 +1,9 @@
 package de.abstractolotl.azplace.rest.api;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
+import de.abstractolotl.azplace.model.user.UserCooldown;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,6 +13,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
+
+import java.util.HashMap;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -63,4 +67,14 @@ public interface BoardAPI {
     )
     @CrossOrigin(origins = {"*"})
     Canvas boardInfo(@PathVariable int canvasId);
+
+    @PostMapping("/{canvasId}/cooldown")
+    @Operation(
+            summary = "Get your current cooldown information",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(schema = @Schema(implementation = HashMap.class))
+            )
+    )
+    @CrossOrigin(origins = {"*"})
+    HashMap<String, Long> cooldown(@PathVariable int canvasId);
 }

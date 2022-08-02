@@ -1,11 +1,13 @@
 package de.abstractolotl.azplace.rest.controller;
 
+import de.abstractolotl.azplace.exceptions.UserCooldownException;
 import de.abstractolotl.azplace.rest.api.BoardAPI;
 import de.abstractolotl.azplace.exceptions.UserBannedException;
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.logging.PixelOwner;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.service.AuthenticationService;
+import de.abstractolotl.azplace.service.CooldownService;
 import de.abstractolotl.azplace.service.PunishmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +21,8 @@ import de.abstractolotl.azplace.repositories.CanvasRepo;
 import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
 import redis.clients.jedis.Jedis;
 
+import java.util.HashMap;
+
 @RestController
 public class BoardController implements BoardAPI {
 
@@ -30,6 +34,9 @@ public class BoardController implements BoardAPI {
 
     @Autowired
     private PixelOwnerRepo pixelOwnerRepo;
+
+    @Autowired
+    private CooldownService cooldownService;
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -54,12 +61,18 @@ public class BoardController implements BoardAPI {
         }
 
         final Canvas canvas = canvasResp.get();
+
+        if(cooldownService.isOnCooldown(user, canvas))
+            throw new UserCooldownException();
+
         if (canvas.getWidth() <= request.getX() || canvas.getHeight() <= request.getY()) {
             throw new PixelOutOfBoundsException(request.getX(), request.getY(), canvas.getWidth(), canvas.getHeight());
         }
 
         setNewPixelOwner(canvas, request.getX(), request.getY(), user);
         setPixelInBlob(canvas, request.getX(), request.getY(), request.getColor());
+        
+        cooldownService.reset(user, canvas);
     }
 
     @Override
@@ -82,6 +95,20 @@ public class BoardController implements BoardAPI {
 
         final Canvas canvas = canvasRsp.get();
         return canvas;
+    }
+
+    @Override
+    public HashMap<String, Long> cooldown(int canvasId) {
+        var canvasRsp = canvasRepo.findById(canvasId);
+        if (canvasRsp.isEmpty()) {
+            throw new CanvasNotFoundExeption(canvasId);
+        }
+
+        Canvas canvas = canvasRsp.get();
+
+        return new HashMap<>(){{
+            put("last_pixel", cooldownService.getLastPixelTimestamp(authenticationService.getUserFromSession(), canvas));
+        }};
     }
 
     private void setPixelInBlob(Canvas canvas, int x, int y, byte color) {
