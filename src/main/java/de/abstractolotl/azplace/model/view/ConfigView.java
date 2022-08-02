@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class SettingsView {
+public class ConfigView {
 
     @JsonProperty("hex_colors")
     private String[] hexColors;
@@ -16,8 +16,8 @@ public class SettingsView {
 
     private TimespanView timespan;
 
-    public static SettingsView fromCanvas(Canvas canvas){
-        return SettingsView.builder()
+    public static ConfigView fromCanvas(Canvas canvas){
+        return ConfigView.builder()
                 .hexColors(canvas.getColorPalette().getHexColors())
                 .size(SizeView.fromCanvas(canvas))
                 .timespan(TimespanView.fromCanvas(canvas))
