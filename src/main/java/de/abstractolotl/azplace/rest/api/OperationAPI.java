@@ -43,7 +43,7 @@ public interface OperationAPI {
                     content = @Content(schema = @Schema(implementation = Canvas.class)))
     })
     @CrossOrigin(origins = {"*"})
-    Canvas getCanvas(@PathVariable Integer id, @RequestParam("sessionKey") String sessionKey);
+    Canvas getCanvas(@PathVariable Integer id);
 
     @PostMapping(value = "/canvas",
             consumes = APPLICATION_JSON_VALUE,
