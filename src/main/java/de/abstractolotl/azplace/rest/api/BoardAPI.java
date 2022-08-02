@@ -2,6 +2,8 @@ package de.abstractolotl.azplace.rest.api;
 
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
+import de.abstractolotl.azplace.model.user.UserBan;
+import de.abstractolotl.azplace.model.user.UserCooldown;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -74,11 +76,10 @@ public interface BoardAPI {
     Canvas boardInfo(@PathVariable int canvasId);
 
     @PostMapping("/{canvasId}/cooldown")
-    @Operation(
-            summary = "Get your current cooldown information",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(schema = @Schema(implementation = HashMap.class))
-            )
-    )
+    @Operation(summary = "Get your current cooldown information" )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Current user cooldown returned",
+                    content = @Content(schema = @Schema(implementation = HashMap.class)))
+    })
     HashMap<String, Long> cooldown(@PathVariable int canvasId);
 }
