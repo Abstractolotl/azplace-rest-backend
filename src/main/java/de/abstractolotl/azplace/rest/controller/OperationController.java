@@ -32,7 +32,7 @@ public class OperationController implements OperationAPI {
     @Autowired private AuthenticationService authenticationService;
 
     @Override
-    public Canvas getCanvas(Integer id, String sessionKey) {
+    public Canvas getCanvas(Integer id) {
         if(!authenticationService.hasRole("admin"))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
