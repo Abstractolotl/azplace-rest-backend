@@ -31,9 +31,6 @@ public class OperationService {
         if(canvas.getDuration() > -1L)
             currentCanvas.setDuration(canvas.getDuration());
 
-        if(canvas.getRedisKey() != null)
-            currentCanvas.setRedisKey(canvas.getRedisKey());
-
         if(canvas.getHeight() > -1) {
             currentCanvas.setHeight(canvas.getHeight());
             resized = true;
