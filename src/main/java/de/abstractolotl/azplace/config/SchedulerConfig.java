@@ -14,7 +14,7 @@ public class SchedulerConfig {
     private SessionCleaning sessionCleaning;
 
     @Scheduled(initialDelayString = "${cleaning.initialDelay:15000}",
-            fixedRateString = "${cleaning:fixedRate:15000}")
+            fixedRateString = "${cleaning.fixedRate:15000}")
     public void cleanSessions(){ sessionCleaning.deleteExpiredSessions(); }
 
 }
