@@ -5,10 +5,12 @@ import org.springframework.web.context.annotation.SessionScope;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
 @Component
 @SessionScope
-public class UserSession {
+public class UserSession implements Serializable {
 
     private Session session;
 
