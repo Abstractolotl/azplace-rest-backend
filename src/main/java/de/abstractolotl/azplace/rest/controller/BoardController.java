@@ -5,7 +5,7 @@ import de.abstractolotl.azplace.exceptions.UserCooldownException;
 import de.abstractolotl.azplace.rest.api.BoardAPI;
 import de.abstractolotl.azplace.exceptions.UserBannedException;
 import de.abstractolotl.azplace.model.board.Canvas;
-import de.abstractolotl.azplace.model.logging.PixelOwner;
+import de.abstractolotl.azplace.model.statistic.PixelOwner;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.service.AuthenticationService;
 import de.abstractolotl.azplace.service.CooldownService;

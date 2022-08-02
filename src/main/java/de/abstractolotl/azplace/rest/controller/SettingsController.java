@@ -4,7 +4,6 @@ import de.abstractolotl.azplace.exceptions.CanvasNotFoundException;
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.board.ColorPalette;
 import de.abstractolotl.azplace.model.view.PaletteView;
-import de.abstractolotl.azplace.model.view.SettingsView;
 import de.abstractolotl.azplace.model.view.SizeView;
 import de.abstractolotl.azplace.model.view.TimespanView;
 import de.abstractolotl.azplace.repositories.CanvasRepo;
@@ -19,16 +18,6 @@ public class SettingsController implements SettingsAPI {
 
     @Autowired
     private CanvasRepo canvasRepo;
-
-    @Override
-    public SettingsView all(int canvasId) {
-        Optional<Canvas> canvasOptional = canvasRepo.findById(canvasId);
-
-        if(canvasOptional.isEmpty())
-            throw new CanvasNotFoundException(canvasId);
-
-        return SettingsView.fromCanvas(canvasOptional.get());
-    }
 
     @Override
     public PaletteView colors(int canvasId) {

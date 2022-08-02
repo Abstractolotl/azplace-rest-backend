@@ -1,6 +1,6 @@
 package de.abstractolotl.azplace.service;
 
-import de.abstractolotl.azplace.model.logging.LogData;
+import de.abstractolotl.azplace.model.logging.PixelLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
@@ -13,7 +13,7 @@ public class ElasticService {
     @Autowired
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
 
-    public void createLogData (LogData log) {
+    public void createLogData (PixelLog log) {
         elasticsearchRestTemplate.index(new IndexQueryBuilder()
                 .withId(log.getId())
                 .withObject(log).build(), IndexCoordinates.of("backend-logs"));

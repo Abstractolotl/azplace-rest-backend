@@ -1,5 +1,6 @@
 package de.abstractolotl.azplace.model.logging;
 
+import de.abstractolotl.azplace.model.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,13 +12,12 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @Builder
-@Document(indexName = "backend-logs")
-public class LogData {
+@Document(indexName = "backend-pixel")
+public class PixelLog {
 
     @Id
     private String id;
@@ -26,9 +26,9 @@ public class LogData {
     private LocalDateTime timestamp;
 
     @Field(type = FieldType.Keyword) @NotNull
-    private String message;
+    private int[] position;
 
     @Field(type = FieldType.Keyword)
-    private String controller;
+    private User user;
 
 }
