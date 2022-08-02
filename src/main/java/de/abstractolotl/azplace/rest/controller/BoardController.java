@@ -88,11 +88,6 @@ public class BoardController implements BoardAPI {
     }
 
     @Override
-    public byte[] oldBoardData(int canvasId) {
-        return boardData(canvasId);
-    }
-
-    @Override
     public Canvas boardInfo(int canvasId) {
         var canvasRsp = canvasRepo.findById(canvasId);
         if (canvasRsp.isEmpty()) {

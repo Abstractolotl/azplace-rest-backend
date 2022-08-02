@@ -49,7 +49,7 @@ public interface BoardAPI {
     )
     void place(@PathVariable int canvasId, @RequestBody PlaceRequest request);
 
-    @GetMapping("/{canvasId}")
+    @GetMapping("/{canvasId}/data")
     @Operation(
             summary = "Board Data",
             description = "Returns the raw binary data of the board. \n" +
@@ -57,14 +57,6 @@ public interface BoardAPI {
                           "https://discord.com/channels/@me/758720519804682248/1001125420055400589"
     )
     byte[] boardData(@PathVariable int canvasId);
-
-    @GetMapping("/{canvasId}/data")
-    @Operation(
-            deprecated = true,
-            summary = "Board Data",
-            description = "This endpoint should not be used anymore use /{canvasId} instead"
-    )
-    byte[] oldBoardData(@PathVariable int canvasId);
 
     @GetMapping("/{canvasId}/info")
     @Operation(
