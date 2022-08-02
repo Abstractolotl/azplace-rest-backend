@@ -1,7 +1,7 @@
-package de.abstractolotl.azplace.api;
+package de.abstractolotl.azplace.rest.api;
 
 import de.abstractolotl.azplace.model.board.Canvas;
-import de.abstractolotl.azplace.model.requests.CanvasRequest;
+import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import io.swagger.v3.oas.annotations.Operation;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -45,7 +44,7 @@ public interface BoardAPI {
             )
     )
     @CrossOrigin(origins = {"*"})
-    void place(@PathVariable int canvasId, @RequestBody PlaceRequest request, @RequestParam("sessionKey") String sessionKey);
+    void place(@PathVariable int canvasId, @RequestBody PlaceRequest request);
 
     @GetMapping("/{canvasId}/data")
     @Operation(

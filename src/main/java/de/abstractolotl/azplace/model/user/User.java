@@ -27,7 +27,7 @@ public class User {
     private String lastName;
 
     @Builder.Default
-    private String role = "user";
+    private String[] roles = { "default" };
 
     @NotNull
     private String insideNetIdentifier;

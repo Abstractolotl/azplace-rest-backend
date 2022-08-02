@@ -1,4 +1,4 @@
-package de.abstractolotl.azplace.api;
+package de.abstractolotl.azplace.rest.api;
 
 import de.abstractolotl.azplace.model.user.Session;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 
 @Validated
@@ -35,7 +34,7 @@ import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 public interface AuthAPI {
 
     @Operation(
-            summary = "Verify",
+            summary = "Verify CAS Ticket",
             description = """
                     This endpoint get called from the CAS.
                     A Request to the CAS look like this: https://login.united-internet.org/ims-sso/login?service=https://api.azplace.azubi.server.lan/verify
@@ -50,11 +49,6 @@ public interface AuthAPI {
     @ResponseBody
     @CrossOrigin(origins = {"*"})
     String verify(@RequestParam("ticket") String ticket);
-
-    @GetMapping(path = "/debug", produces = MediaType.TEXT_HTML_VALUE)
-    @ResponseBody
-    @CrossOrigin(origins = {"*"})
-    String casDebug(@RequestParam("ticket") String ticket);
 
     @Operation(
             summary = "Log out",
@@ -78,7 +72,7 @@ public interface AuthAPI {
     @GetMapping(path = "/session")
     @ResponseBody
     @CrossOrigin(origins = {"*"})
-    Session getSession(@RequestParam("sessionKey") String sessionKey);
+    Session getSession();
 
     @Operation(
             summary = "Is session valid",
@@ -89,5 +83,5 @@ public interface AuthAPI {
     @GetMapping(path = "/isSessionValid")
     @ResponseBody
     @CrossOrigin(origins = {"*"})
-    boolean isSessionValid(@RequestParam("sessionKey") String sessionKey);
+    boolean isSessionValid();
 }

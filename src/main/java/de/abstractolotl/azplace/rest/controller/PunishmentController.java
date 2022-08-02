@@ -1,6 +1,6 @@
-package de.abstractolotl.azplace.controller;
+package de.abstractolotl.azplace.rest.controller;
 
-import de.abstractolotl.azplace.api.PunishmentAPI;
+import de.abstractolotl.azplace.rest.api.PunishmentAPI;
 import de.abstractolotl.azplace.model.requests.BanRequest;
 import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.model.user.UserBan;
@@ -27,8 +27,8 @@ public class PunishmentController implements PunishmentAPI {
     private UserRepo userRepo;
 
     @Override
-    public UserBan banUser(BanRequest banRequest, String sessionKey) {
-        if(!authenticationService.hasRole(authenticationService.getSession(sessionKey).getUser(), "admin"))
+    public UserBan banUser(BanRequest banRequest) {
+        if(!authenticationService.hasRole("admin"))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
         Optional<User> userOptional = userRepo.findById(banRequest.getUserId());
@@ -48,8 +48,8 @@ public class PunishmentController implements PunishmentAPI {
     }
 
     @Override
-    public UserBan pardon(Long banId, String sessionKey) {
-        if(!authenticationService.hasRole(authenticationService.getSession(sessionKey).getUser(), "admin"))
+    public UserBan pardon(Long banId) {
+        if(!authenticationService.hasRole("admin"))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
         Optional<UserBan> userBanOptional = banRepo.findById(banId);

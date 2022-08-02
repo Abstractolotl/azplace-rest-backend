@@ -15,4 +15,5 @@ public class UserBannedException extends ResponseStatusException {
     public UserBannedException(){
         super(HttpStatus.FORBIDDEN, "You are banned from this board");
     }
+
 }

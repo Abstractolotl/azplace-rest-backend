@@ -13,7 +13,7 @@ server:
 app:
   cas:
     url: https://login.united-internet.org/ims-sso
-    apiurl: https://api.azubi.server.lan/verify
+    apiurl: https://api.azplace.azubi.server.lan/auth/verify
     redirecturl: https://azplace.azubi.server.lan
   defaultKeyValidTime: 120
 

@@ -4,7 +4,6 @@ import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.board.ColorPalette;
 import de.abstractolotl.azplace.model.requests.CanvasRequest;
 import de.abstractolotl.azplace.model.requests.PaletteRequest;
-import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.repositories.CanvasRepo;
 import de.abstractolotl.azplace.repositories.PaletteRepo;
 import org.springframework.beans.factory.annotation.Autowired;

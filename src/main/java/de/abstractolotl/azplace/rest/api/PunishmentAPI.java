@@ -1,9 +1,6 @@
-package de.abstractolotl.azplace.api;
+package de.abstractolotl.azplace.rest.api;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.requests.BanRequest;
-import de.abstractolotl.azplace.model.requests.CanvasRequest;
 import de.abstractolotl.azplace.model.user.UserBan;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -50,7 +47,7 @@ public interface PunishmentAPI {
     })
     @CrossOrigin(origins = {"*"})
     @ResponseStatus(HttpStatus.CREATED)
-    UserBan banUser(@RequestBody BanRequest banRequest, @RequestParam("sessionKey") String sessionKey);
+    UserBan banUser(@RequestBody BanRequest banRequest);
 
     @PostMapping(value = "/pardon/{banId}",
             consumes = APPLICATION_JSON_VALUE,
@@ -61,6 +58,6 @@ public interface PunishmentAPI {
                     content = @Content(schema = @Schema(implementation = UserBan.class)))
     })
     @CrossOrigin(origins = {"*"})
-    UserBan pardon(@PathVariable Long banId, @RequestParam("sessionKey") String sessionKey);
+    UserBan pardon(@PathVariable Long banId);
 
 }
