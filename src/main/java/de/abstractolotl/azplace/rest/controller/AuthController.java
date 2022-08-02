@@ -1,11 +1,11 @@
-package de.abstractolotl.azplace.controller;
+package de.abstractolotl.azplace.rest.controller;
 
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.abstractolotl.azplace.api.AuthAPI;
+import de.abstractolotl.azplace.rest.api.AuthAPI;
 import de.abstractolotl.azplace.model.user.Session;
 import de.abstractolotl.azplace.model.user.UserSession;
 import de.abstractolotl.azplace.service.AuthenticationService;
@@ -47,27 +47,16 @@ public class AuthController implements AuthAPI {
     public String verify(String ticket) {
         final String       requestUrl = casUrl + "/serviceValidate?service=" + apiUrl + "&ticket=" + ticket +"&format=json";
         final RestTemplate template   = new RestTemplate();
+
         String             response;
         try {
             response = template.getForObject(requestUrl, String.class);
         } catch (HttpClientErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Validate Ticket by CAS went wrong: " + e.getResponseBodyAsString());
         }
+
         createSessionKey(response);
         return "<meta http-equiv=\"refresh\" content=\"0; url=" + redirectUrl + "\" />";
-    }
-
-    @Override
-    public String casDebug(String ticket){
-        final String       requestUrl = casUrl + "/serviceValidate?service=" + apiUrl + "&ticket=" + ticket +"&format=json";
-        final RestTemplate template   = new RestTemplate();
-        String             response;
-        try {
-            response = template.getForObject(requestUrl, String.class);
-        } catch (HttpClientErrorException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Validate Ticket by CAS went wrong: " + e.getResponseBodyAsString());
-        }
-        return response;
     }
 
     @Override
@@ -81,13 +70,13 @@ public class AuthController implements AuthAPI {
     }
 
     @Override
-    public Session getSession(String sessionKey) {
-        return authenticationService.getSession(sessionKey);
+    public Session getSession() {
+        return authenticationService.getSession();
     }
 
     @Override
-    public boolean isSessionValid(String sessionKey) {
-        return authenticationService.isSessionValid(sessionKey);
+    public boolean isSessionValid() {
+        return authenticationService.isSessionValid();
     }
 
     private void createSessionKey(String casResponse) {
@@ -135,11 +124,11 @@ public class AuthController implements AuthAPI {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                         "Json information missing");
 
-            final JsonNode attributes = getValue(parsedResponse.get("authenticationSuccess"), "attributes", true);
+            JsonNode attributes = getValue(parsedResponse.get("authenticationSuccess"), "attributes", true);
             return User.builder()
-                    .firstName(getValueString(attributes, "firstName", false))
-                    .lastName(getValueString(attributes, "lastname", false))
-                    .insideNetIdentifier(getValueString(attributes, "username", true))
+                    .firstName(getAttribute(attributes, "firstName", true))
+                    .lastName(getAttribute(attributes, "lastName", false))
+                    .insideNetIdentifier(getAttribute(attributes, "personId", true))
                     .build();
         }
     }
@@ -154,11 +143,14 @@ public class AuthController implements AuthAPI {
         return null;
     }
 
-    private String getValueString(JsonNode node, String key, boolean required) {
-        final JsonNode value = getValue(node, key, required);
-        if (value == null) {
+    private String getAttribute(JsonNode node, String key, boolean required){
+        JsonNode value = getValue(node, key, required);
+
+        if(value == null){
             return "";
         }
-        return value.textValue();
+
+        return value.get(0).textValue();
     }
+
 }

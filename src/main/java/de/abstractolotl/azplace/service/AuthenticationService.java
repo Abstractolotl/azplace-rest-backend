@@ -1,37 +1,32 @@
 package de.abstractolotl.azplace.service;
 
+import de.abstractolotl.azplace.exceptions.SessionMissingException;
 import de.abstractolotl.azplace.model.user.Session;
 import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.model.user.UserSession;
-import de.abstractolotl.azplace.repositories.SessionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Arrays;
 
 @Service
 public class AuthenticationService {
 
-    @Autowired private UserSession userSession;
-    @Autowired private SessionRepo sessionRepo;
+    @Autowired
+    private UserSession userSession;
 
-    public Session getSession(String sessionKey) {
-        Session session = userSession.getSession();
-        if (session == null) {
-            final List<Session> sessionBySessionKey = sessionRepo.findSessionBySessionKey(sessionKey);
-            if (sessionBySessionKey.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session key expected");
-            }
-            session = sessionBySessionKey.get(0);
-        }
-        return session;
+    public Session getSession() {
+        if(userSession.getSession() == null)
+            throw new SessionMissingException();
+
+        return userSession.getSession();
     }
 
-    public boolean isSessionValid(String sessionKey) {
-        Session session = getSession(sessionKey);
+    public boolean isSessionValid() {
+        Session session = getSession();
         final LocalDateTime now = LocalDateTime.now();
         if (session.getCreationDate().isAfter(now) || session.getExpireDate().isBefore(now)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session key expired");
@@ -39,8 +34,16 @@ public class AuthenticationService {
         return true;
     }
 
+    public User getUserFromSession() {
+        return getSession().getUser();
+    }
+
+    public boolean hasRole(String role){
+        return hasRole(getUserFromSession(), role);
+    }
+
     public boolean hasRole(User user, String role){
-        return user.getRole().equalsIgnoreCase(role);
+        return Arrays.stream(user.getRoles()).toList().contains(role);
     }
 
 }

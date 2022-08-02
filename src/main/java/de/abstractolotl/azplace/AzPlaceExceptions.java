@@ -7,13 +7,13 @@ public class AzPlaceExceptions {
 
     public static class CanvasNotFoundExeption extends ResponseStatusException {
         public CanvasNotFoundExeption(int canvasId) {
-            super(HttpStatus.BAD_REQUEST, "Could not find Canvas with ID: " + canvasId);
+            super(HttpStatus.NOT_FOUND, "Could not find Canvas with ID: " + canvasId);
         }
     }
 
     public static class NoUserInSession extends ResponseStatusException {
         public NoUserInSession() {
-            super(HttpStatus.BAD_REQUEST, "Could not get User from Session");
+            super(HttpStatus.NOT_FOUND, "Could not get User from Session");
         }
     }
 
