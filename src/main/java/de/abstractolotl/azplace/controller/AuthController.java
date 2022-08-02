@@ -1,13 +1,10 @@
 package de.abstractolotl.azplace.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import de.abstractolotl.azplace.api.AuthAPI;
 import de.abstractolotl.azplace.model.user.Session;
 import de.abstractolotl.azplace.model.user.UserSession;
@@ -36,7 +33,8 @@ public class AuthController implements AuthAPI {
     @Value("${app.defaultKeyValidTime}")
     private int    defaultKeyValidTime;
 
-    @Autowired private AuthenticationService authenticationService;
+    @Autowired
+    private AuthenticationService authenticationService;
 
     @Autowired
     private UserSession userSession;
@@ -60,8 +58,16 @@ public class AuthController implements AuthAPI {
     }
 
     @Override
-    public void xmlShit(String xml) {
-        createSessionKey(xml);
+    public String casDebug(String ticket){
+        final String       requestUrl = casUrl + "/serviceValidate?service=" + apiUrl + "&ticket=" + ticket +"&format=json";
+        final RestTemplate template   = new RestTemplate();
+        String             response;
+        try {
+            response = template.getForObject(requestUrl, String.class);
+        } catch (HttpClientErrorException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Validate Ticket by CAS went wrong: " + e.getResponseBodyAsString());
+        }
+        return response;
     }
 
     @Override
