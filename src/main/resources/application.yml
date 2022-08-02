@@ -22,30 +22,23 @@ app:
     port: 6379
     password:
 
-
 spring:
   elasticsearch:
     uris: http://elastic.azplace.azubi.server.lan
+
   jpa:
     hibernate:
       ddl-auto: update
+
   datasource:
     url: jdbc:mysql://noucake.ddns.net:3306/aztube
     username: root
     password: rootpw
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-  session:
-    store-type: jdbc
-    jdbc:
-      table-name: SPRING_SESSION
-      cleanup-cron: 0 */15 * * * *
-      initialize-schema: embedded
-      schema: classpath:/session_schema.sql
-
 management:
   endpoints:
-    enabled-by-default: false # disable all actuator endpoints by default
+    enabled-by-default: false
     jmx:
       exposure:
         include: '*'
@@ -54,7 +47,7 @@ management:
       exposure:
         include: health
 
-  endpoint: # enable only those endpoints we want
+  endpoint:
     health:
       enabled: true
       group: # special health endpoints for kubernetes probes

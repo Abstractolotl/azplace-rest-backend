@@ -1,6 +1,5 @@
 package de.abstractolotl.azplace.model.user;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -21,7 +20,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Session implements Serializable {
+public class Session {
 
     public static Session createKey(int sessionExpiresIn, User user) {
         final LocalDateTime now = LocalDateTime.now();

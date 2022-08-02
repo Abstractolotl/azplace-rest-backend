@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Data
 @Component
 @SessionScope
-public class UserSession implements Serializable {
+public class UserSession {
 
     private Session session;
 
