@@ -69,7 +69,7 @@ public interface BoardAPI {
     @Operation(
             deprecated = true,
             summary = "Board Info",
-            description = "This endpoint should not be used anymore use the SettingsAPI instead"
+            description = "This endpoint should not be used anymore use the /settings/all/{canvasId} instead"
     )
     Canvas boardInfo(@PathVariable int canvasId);
 

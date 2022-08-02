@@ -2,6 +2,7 @@ package de.abstractolotl.azplace.rest.api;
 
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.model.view.PaletteView;
+import de.abstractolotl.azplace.model.view.SettingsView;
 import de.abstractolotl.azplace.model.view.SizeView;
 import de.abstractolotl.azplace.model.view.TimespanView;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +35,15 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("/settings")
 @CrossOrigin(origins = {"*"})
 public interface SettingsAPI {
+
+    @GetMapping(value = "/all/{canvasId}", produces = APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Get all settings of a canvas",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(schema = @Schema(implementation = SettingsView.class))
+            )
+    )
+    SettingsView all(@PathVariable int canvasId);
 
     @GetMapping(value = "/colors/{canvasId}", produces = APPLICATION_JSON_VALUE)
     @Operation(
