@@ -41,15 +41,15 @@ public interface StatisticsAPI {
     @GetMapping(value = "/pixels", produces = APPLICATION_JSON_VALUE)
     @Operation(summary = "Get placed pixels in the last 24h")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Pixel statistics calculated and returned",
+            @ApiResponse(responseCode = "200", description = "Pixel statistics calculated and returned",
                     content = @Content(schema = @Schema(implementation = PixelStatisticView.class)))
     })
     PixelStatisticView pixels();
 
-    @GetMapping(value = "/toplist/{max:10}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/toplist/{max}", produces = APPLICATION_JSON_VALUE)
     @Operation(summary = "Get toplist by placed pixels")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Pixel placement toplist returned",
+            @ApiResponse(responseCode = "200", description = "Pixel placement toplist returned",
                     content = @Content(schema = @Schema(implementation = PixelStatisticView.class)))
     })
     TopStatisticView topList(@PathVariable(required = false) int max);
