@@ -3,6 +3,7 @@ package de.abstractolotl.azplace.controller;
 import de.abstractolotl.azplace.api.BoardAPI;
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.logging.PixelOwner;
+import de.abstractolotl.azplace.service.WebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +29,8 @@ public class BoardController implements BoardAPI {
     @Autowired
     private AuthController authController;
 
+    @Autowired private WebSocketService webSocketService;
+
     @Override
     public void place(int canvasId, PlaceRequest request, String sessionKey) {
         authController.isSessionValid(sessionKey);
@@ -48,7 +51,8 @@ public class BoardController implements BoardAPI {
         }
 
         setNewPixelOwner(canvas, request.getX(), request.getY(), getUserFromSession(sessionKey));
-        setPixelInBlob(canvas, request.getX(), request.getY(), request.getColor());
+        setPixelInBlob(canvas, request.getX(), request.getY(), (byte)request.getColor());
+        webSocketService.broadcastPixel(request);
     }
 
     @Override

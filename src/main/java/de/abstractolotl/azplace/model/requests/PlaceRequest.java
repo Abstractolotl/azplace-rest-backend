@@ -7,6 +7,6 @@ public class PlaceRequest {
 
     private int x;
     private int y;
-    private byte color;
+    private int color;
 
 }
