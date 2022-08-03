@@ -3,13 +3,12 @@ package de.abstractolotl.azplace.rest.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.abstractolotl.azplace.AzPlaceExceptions;
-import de.abstractolotl.azplace.AzPlaceExceptions.*;
+import de.abstractolotl.azplace.exceptions.AuthenticationException;
+import de.abstractolotl.azplace.exceptions.CASValidationException;
 import de.abstractolotl.azplace.model.user.UserSession;
 import de.abstractolotl.azplace.model.utility.CASUser;
 import de.abstractolotl.azplace.rest.api.AuthAPI;
 import de.abstractolotl.azplace.service.AuthenticationService;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -65,7 +64,7 @@ public class AuthController implements AuthAPI {
             String response = template.getForObject(requestUrl, String.class);
             return getUserDataFromCASResponse(response);
         } catch (HttpClientErrorException e) {
-            throw new AzPlaceExceptions.CASValidationException(e.getResponseBodyAsString());
+            throw new CASValidationException(e.getResponseBodyAsString());
         }
     }
 
@@ -84,11 +83,11 @@ public class AuthController implements AuthAPI {
         try {
             json = jsonMapper.readValue(response, ObjectNode.class).get("serviceResponse");
         } catch (Exception e) {
-            throw new AzPlaceExceptions.CASValidationException("Mapping JSON failed");
+            throw new CASValidationException("Mapping JSON failed");
         }
 
         if(!json.has("authenticationSuccess"))
-            throw new AzPlaceExceptions.CASValidationException("Json information missing");
+            throw new CASValidationException("Json information missing");
 
         return json;
     }
@@ -97,7 +96,7 @@ public class AuthController implements AuthAPI {
         JsonNode parsedResponse = parseCASResponse(response);
 
         if(parsedResponse.has("authenticationFailure")){
-            throw new AzPlaceExceptions.AuthenticationException(parsedResponse.get("authenticationFailure").get("code").textValue());
+            throw new AuthenticationException(parsedResponse.get("authenticationFailure").get("code").textValue());
         }
 
         JsonNode attributes = getValue(parsedResponse.get("authenticationSuccess"), "attributes", true);

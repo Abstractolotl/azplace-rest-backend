@@ -41,4 +41,14 @@ public class TestController {
         return "logged in with Test User";
     }
 
+    @GetMapping("/session")
+    public UserSession testSession() {
+        UserSession session = new UserSession();
+        session.setUser(this.session.getUser());
+
+        return session;
+    }
+
+
+
 }

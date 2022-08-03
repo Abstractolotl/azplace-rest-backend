@@ -1,10 +1,8 @@
 package de.abstractolotl.azplace.rest.controller;
 
-import de.abstractolotl.azplace.exceptions.CanvasNotFoundException;
-import de.abstractolotl.azplace.exceptions.UserCooldownException;
+import de.abstractolotl.azplace.exceptions.*;
 import de.abstractolotl.azplace.model.view.ConfigView;
 import de.abstractolotl.azplace.rest.api.BoardAPI;
-import de.abstractolotl.azplace.exceptions.UserBannedException;
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.logging.PixelOwner;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
@@ -14,7 +12,6 @@ import de.abstractolotl.azplace.service.PunishmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.abstractolotl.azplace.AzPlaceExceptions.*;
 import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.repositories.CanvasRepo;
 import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
@@ -52,8 +49,12 @@ public class BoardController implements BoardAPI {
             throw new PixelOutOfBoundsException(request.getX(), request.getY(), canvas.getWidth(), canvas.getHeight());
         }
 
+        if(request.getColorIndex() < 0 || request.getColorIndex() >= canvas.getColorPalette().getHexColors().length) {
+            throw new InvalidColorIndex(canvas.getColorPalette(), request.getColorIndex());
+        }
+
         setNewPixelOwner(canvas, request.getX(), request.getY(), user);
-        setPixelInBlob(canvas, request.getX(), request.getY(), request.getColor());
+        setPixelInBlob(canvas, request.getX(), request.getY(), (byte)request.getColorIndex());
 
         cooldownService.reset(user, canvas);
     }
@@ -61,7 +62,7 @@ public class BoardController implements BoardAPI {
     @Override
     public byte[] boardData(int canvasId) {
         var canvasRsp = canvasRepo.findById(canvasId);
-        if (canvasRsp.isEmpty()) throw new CanvasNotFoundExeption(canvasId);
+        if (canvasRsp.isEmpty()) throw new CanvasNotFoundException(canvasId);
 
         final Canvas canvas = canvasRsp.get();
         return jedis.get(canvas.getRedisKey().getBytes());
@@ -79,15 +80,15 @@ public class BoardController implements BoardAPI {
 
     @Override
     public HashMap<String, Long> cooldown(int canvasId) {
+        User user = authService.authUser();
+
         var canvasRsp = canvasRepo.findById(canvasId);
-        if (canvasRsp.isEmpty()) {
-            throw new CanvasNotFoundException(canvasId);
-        }
+        if (canvasRsp.isEmpty()) throw new CanvasNotFoundException(canvasId);
 
         Canvas canvas = canvasRsp.get();
 
         return new HashMap<>(){{
-            put("last_pixel", cooldownService.getLastPixelTimestamp(authenticationService.getUserFromSession(), canvas));
+            put("last_pixel", cooldownService.getLastPixelTimestamp(user, canvas));
         }};
     }
 
@@ -102,15 +103,8 @@ public class BoardController implements BoardAPI {
     }
 
     private void setPixelInBlob(Canvas canvas, int x, int y, byte color) {
-        //TODO canvas id
         int offset = getBlobOffsetForPixel(canvas.getWidth(), canvas.getHeight(), x, y) * 8;
         jedis.bitfield(canvas.getRedisKey(), "SET", "u8", String.valueOf(offset), String.valueOf(color));
-    }
-
-    private void checkPixelCords(int x, int y) {
-        if (x < 0 || y < 0) {
-            throw new IllegalPixelCoordsException();
-        }
     }
 
     /**
