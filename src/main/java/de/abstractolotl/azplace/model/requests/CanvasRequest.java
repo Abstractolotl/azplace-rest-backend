@@ -8,8 +8,6 @@ import lombok.Data;
 @Data
 public class CanvasRequest {
 
-    private String redisKey = null;
-
     @JsonProperty("color_palette")
     private int colorPalette = -1;
 
@@ -24,7 +22,6 @@ public class CanvasRequest {
     public Canvas convert(ColorPalette colorPalette){
         return Canvas.builder()
                 .startDate(startDate).duration(duration)
-                .redisKey(redisKey).colorPalette(colorPalette)
                 .height(height).width(width)
                 .cooldown(cooldown)
                 .build();

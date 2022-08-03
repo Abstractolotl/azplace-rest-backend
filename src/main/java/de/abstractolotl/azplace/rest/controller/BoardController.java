@@ -1,6 +1,8 @@
 package de.abstractolotl.azplace.rest.controller;
 
+import de.abstractolotl.azplace.exceptions.CanvasNotFoundException;
 import de.abstractolotl.azplace.exceptions.UserCooldownException;
+import de.abstractolotl.azplace.model.view.ConfigView;
 import de.abstractolotl.azplace.rest.api.BoardAPI;
 import de.abstractolotl.azplace.exceptions.UserBannedException;
 import de.abstractolotl.azplace.model.board.Canvas;
@@ -12,7 +14,6 @@ import de.abstractolotl.azplace.service.PunishmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.abstractolotl.azplace.AzPlaceExceptions.CanvasNotFoundExeption;
 import de.abstractolotl.azplace.AzPlaceExceptions.IllegalPixelCoordsException;
 import de.abstractolotl.azplace.AzPlaceExceptions.NoUserInSession;
 import de.abstractolotl.azplace.AzPlaceExceptions.PixelOutOfBoundsException;
@@ -57,7 +58,7 @@ public class BoardController implements BoardAPI {
 
         var canvasResp = canvasRepo.findById(canvasId);
         if (canvasResp.isEmpty()) {
-            throw new CanvasNotFoundExeption(canvasId);
+            throw new CanvasNotFoundException(canvasId);
         }
 
         final Canvas canvas = canvasResp.get();
@@ -79,7 +80,7 @@ public class BoardController implements BoardAPI {
     public byte[] boardData(int canvasId) {
         var canvasRsp = canvasRepo.findById(canvasId);
         if (canvasRsp.isEmpty()) {
-            throw new CanvasNotFoundExeption(canvasId);
+            throw new CanvasNotFoundException(canvasId);
         }
 
         final Canvas canvas = canvasRsp.get();
@@ -90,7 +91,7 @@ public class BoardController implements BoardAPI {
     public Canvas boardInfo(int canvasId) {
         var canvasRsp = canvasRepo.findById(canvasId);
         if (canvasRsp.isEmpty()) {
-            throw new CanvasNotFoundExeption(canvasId);
+            throw new CanvasNotFoundException(canvasId);
         }
 
         final Canvas canvas = canvasRsp.get();
@@ -101,7 +102,7 @@ public class BoardController implements BoardAPI {
     public HashMap<String, Long> cooldown(int canvasId) {
         var canvasRsp = canvasRepo.findById(canvasId);
         if (canvasRsp.isEmpty()) {
-            throw new CanvasNotFoundExeption(canvasId);
+            throw new CanvasNotFoundException(canvasId);
         }
 
         Canvas canvas = canvasRsp.get();
@@ -109,6 +110,16 @@ public class BoardController implements BoardAPI {
         return new HashMap<>(){{
             put("last_pixel", cooldownService.getLastPixelTimestamp(authenticationService.getUserFromSession(), canvas));
         }};
+    }
+
+    @Override
+    public ConfigView boardConfig(int canvasId) {
+        var canvasRsp = canvasRepo.findById(canvasId);
+        if (canvasRsp.isEmpty()) {
+            throw new CanvasNotFoundException(canvasId);
+        }
+
+        return ConfigView.fromCanvas(canvasRsp.get());
     }
 
     private void setPixelInBlob(Canvas canvas, int x, int y, byte color) {
