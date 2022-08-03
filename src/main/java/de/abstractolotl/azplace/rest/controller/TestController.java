@@ -19,15 +19,20 @@ public class TestController {
             .firstName("Bobb")
             .lastName("Bebb")
             .insideNetIdentifier("stinkekäse")
+            .roles("default")
+            .timestampRegistered(System.currentTimeMillis())
+            .build();
+
+    private final static User testUserAdmin = User.builder()
+            .firstName("Super Bebb")
+            .lastName("Super Bebb")
+            .insideNetIdentifier("wurstkuchen")
             .roles("admin")
             .timestampRegistered(System.currentTimeMillis())
             .build();
 
-
-
     @Autowired private UserSession session;
     @Autowired private UserRepo userRepo;
-
 
     @PostConstruct
     private void init() {
@@ -37,7 +42,12 @@ public class TestController {
     @GetMapping("/login")
     public String testLogin() {
         session.setUser(testUser);
+        return "logged in with Test User";
+    }
 
+    @GetMapping("/loginAdmin")
+    public String testLoginAdmin() {
+        session.setUser(testUserAdmin);
         return "logged in with Test User";
     }
 
@@ -45,10 +55,7 @@ public class TestController {
     public UserSession testSession() {
         UserSession session = new UserSession();
         session.setUser(this.session.getUser());
-
         return session;
     }
-
-
 
 }
