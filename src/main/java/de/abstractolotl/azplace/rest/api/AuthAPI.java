@@ -30,7 +30,7 @@ import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
                 responseCode = "200", description = "OK",
                 content = @Content(mediaType = TEXT_HTML_VALUE, schema = @Schema())),
 })
-@RequestMapping("/auth")
+@RequestMapping("auth")
 @CrossOrigin(origins = {"*"})
 public interface AuthAPI {
 
