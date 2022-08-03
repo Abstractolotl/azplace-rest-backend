@@ -14,9 +14,7 @@ import de.abstractolotl.azplace.service.PunishmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.abstractolotl.azplace.AzPlaceExceptions.IllegalPixelCoordsException;
-import de.abstractolotl.azplace.AzPlaceExceptions.SessionNotAuthorizedException;
-import de.abstractolotl.azplace.AzPlaceExceptions.PixelOutOfBoundsException;
+import de.abstractolotl.azplace.AzPlaceExceptions.*;
 import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.repositories.CanvasRepo;
 import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
@@ -34,6 +32,7 @@ public class BoardController implements BoardAPI {
 
     @Autowired private AuthenticationService authService;
     @Autowired private PunishmentService punishmentService;
+    @Autowired private CooldownService cooldownService;
 
     @Override
     public void place(int canvasId, PlaceRequest request) {
@@ -42,7 +41,7 @@ public class BoardController implements BoardAPI {
         if (punishmentService.isBanned(user)) throw new UserBannedException();
 
         var canvasResp = canvasRepo.findById(canvasId);
-        if (canvasResp.isEmpty()) throw new CanvasNotFoundExeption(canvasId);
+        if (canvasResp.isEmpty()) throw new CanvasNotFoundException(canvasId);
 
         final Canvas canvas = canvasResp.get();
 
