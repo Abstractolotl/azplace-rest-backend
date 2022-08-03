@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class PixelStatisticView {
+public class CountView {
 
     private long pixels;
 

@@ -1,8 +1,6 @@
 package de.abstractolotl.azplace.rest.api;
 
-import de.abstractolotl.azplace.model.user.UserBan;
-import de.abstractolotl.azplace.model.view.PaletteView;
-import de.abstractolotl.azplace.model.view.PixelStatisticView;
+import de.abstractolotl.azplace.model.view.CountView;
 import de.abstractolotl.azplace.model.view.TopStatisticView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,7 +32,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
                 responseCode = "500", description = "Internal server error",
                 content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema()))
 })
-@RequestMapping("/statistics")
+@RequestMapping("statistics")
 @CrossOrigin(origins = {"*"})
 public interface StatisticsAPI {
 
@@ -42,17 +40,25 @@ public interface StatisticsAPI {
     @Operation(summary = "Get placed pixels in the last 24h")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pixel statistics calculated and returned",
-                    content = @Content(schema = @Schema(implementation = PixelStatisticView.class)))
+                    content = @Content(schema = @Schema(implementation = CountView.class)))
     })
-    PixelStatisticView pixels();
+    CountView pixels();
 
     @GetMapping(value = "/toplist/{max}", produces = APPLICATION_JSON_VALUE)
     @Operation(summary = "Get toplist by placed pixels")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pixel placement toplist returned",
-                    content = @Content(schema = @Schema(implementation = PixelStatisticView.class)))
+                    content = @Content(schema = @Schema(implementation = CountView.class)))
     })
     TopStatisticView topList(@PathVariable(required = false) int max);
+
+    @GetMapping(value = "/online", produces = APPLICATION_JSON_VALUE)
+    @Operation(summary = "Get amount of currently online users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Amount of currently online users returned",
+                    content = @Content(schema = @Schema(implementation = CountView.class)))
+    })
+    CountView online();
 
 
 

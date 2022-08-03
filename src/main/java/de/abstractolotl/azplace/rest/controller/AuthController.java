@@ -9,6 +9,7 @@ import de.abstractolotl.azplace.model.user.UserSession;
 import de.abstractolotl.azplace.model.utility.CASUser;
 import de.abstractolotl.azplace.rest.api.AuthAPI;
 import de.abstractolotl.azplace.service.AuthenticationService;
+import de.abstractolotl.azplace.service.ElasticService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +34,7 @@ public class AuthController implements AuthAPI {
     @Value("${app.cas.apiurl}") private String apiUrl;
 
     @Autowired private AuthenticationService authService;
+    @Autowired private ElasticService elasticService;
 
     @Autowired private UserRepo userRepo;
 
@@ -44,6 +46,7 @@ public class AuthController implements AuthAPI {
         User user = createOrGetUser(casUser);
 
         session.setUser(user);
+        elasticService.logLogin();
 
         HttpHeaders headers = new HttpHeaders();
         String body = "<meta http-equiv=\"refresh\" content=\"0; url=" + redirectUrl + "\" />";
