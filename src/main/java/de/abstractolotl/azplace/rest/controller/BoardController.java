@@ -1,5 +1,6 @@
 package de.abstractolotl.azplace.rest.controller;
 
+import de.abstractolotl.azplace.model.user.UserSession;
 import de.abstractolotl.azplace.rest.api.BoardAPI;
 import de.abstractolotl.azplace.exceptions.UserBannedException;
 import de.abstractolotl.azplace.model.board.Canvas;
@@ -22,36 +23,25 @@ import redis.clients.jedis.Jedis;
 @RestController
 public class BoardController implements BoardAPI {
 
-    @Autowired
-    private Jedis jedis;
+    @Autowired private Jedis jedis;
 
-    @Autowired
-    private CanvasRepo canvasRepo;
+    @Autowired private CanvasRepo canvasRepo;
+    @Autowired private PixelOwnerRepo pixelOwnerRepo;
 
-    @Autowired
-    private PixelOwnerRepo pixelOwnerRepo;
+    @Autowired private AuthenticationService authService;
+    @Autowired private PunishmentService punishmentService;
 
-    @Autowired
-    private AuthenticationService authenticationService;
-
-    @Autowired
-    private PunishmentService punishmentService;
+    @Autowired private UserSession session;
 
     @Override
     public void place(int canvasId, PlaceRequest request) {
-        User user = authenticationService.getUserFromSession();
+        User user = null;//session.getUser();
 
-        if (user == null) {
-            throw new NoUserInSession();
-        }
-
-        if(punishmentService.isBanned(user))
-            throw new UserBannedException();
+        if (user == null) throw new NoUserInSession();
+        if (punishmentService.isBanned(user)) throw new UserBannedException();
 
         var canvasResp = canvasRepo.findById(canvasId);
-        if (canvasResp.isEmpty()) {
-            throw new CanvasNotFoundExeption(canvasId);
-        }
+        if (canvasResp.isEmpty()) throw new CanvasNotFoundExeption(canvasId);
 
         final Canvas canvas = canvasResp.get();
         if (canvas.getWidth() <= request.getX() || canvas.getHeight() <= request.getY()) {
@@ -65,9 +55,7 @@ public class BoardController implements BoardAPI {
     @Override
     public byte[] boardData(int canvasId) {
         var canvasRsp = canvasRepo.findById(canvasId);
-        if (canvasRsp.isEmpty()) {
-            throw new CanvasNotFoundExeption(canvasId);
-        }
+        if (canvasRsp.isEmpty()) throw new CanvasNotFoundExeption(canvasId);
 
         final Canvas canvas = canvasRsp.get();
         return jedis.get(canvas.getRedisKey().getBytes());
@@ -80,8 +68,7 @@ public class BoardController implements BoardAPI {
             throw new CanvasNotFoundExeption(canvasId);
         }
 
-        final Canvas canvas = canvasRsp.get();
-        return canvas;
+        return canvasRsp.get();
     }
 
     private void setPixelInBlob(Canvas canvas, int x, int y, byte color) {

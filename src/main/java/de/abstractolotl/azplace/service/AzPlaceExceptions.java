@@ -29,4 +29,22 @@ public class AzPlaceExceptions {
         }
     }
 
+    public static class CASValidationException extends ResponseStatusException {
+
+        public CASValidationException(String furtherInformation) {
+            super(HttpStatus.INTERNAL_SERVER_ERROR, "Validate Ticket by CAS went wrong: " + furtherInformation);
+        }
+    }
+
+    public static class AuthenticationException extends ResponseStatusException {
+
+        public AuthenticationException(String furtherInformation) {
+            super(HttpStatus.UNAUTHORIZED, "Authentication failed: " + furtherInformation);
+        }
+
+        public AuthenticationException() {
+            super(HttpStatus.UNAUTHORIZED, "Authentication failed.");
+        }
+    }
+
 }
