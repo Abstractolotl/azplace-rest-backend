@@ -2,6 +2,7 @@ package de.abstractolotl.azplace.rest.controller;
 
 import de.abstractolotl.azplace.exceptions.CanvasNotFoundException;
 import de.abstractolotl.azplace.exceptions.UserCooldownException;
+import de.abstractolotl.azplace.model.view.ConfigView;
 import de.abstractolotl.azplace.rest.api.BoardAPI;
 import de.abstractolotl.azplace.exceptions.UserBannedException;
 import de.abstractolotl.azplace.model.board.Canvas;
@@ -87,11 +88,6 @@ public class BoardController implements BoardAPI {
     }
 
     @Override
-    public byte[] oldBoardData(int canvasId) {
-        return boardData(canvasId);
-    }
-
-    @Override
     public Canvas boardInfo(int canvasId) {
         var canvasRsp = canvasRepo.findById(canvasId);
         if (canvasRsp.isEmpty()) {
@@ -114,6 +110,16 @@ public class BoardController implements BoardAPI {
         return new HashMap<>(){{
             put("last_pixel", cooldownService.getLastPixelTimestamp(authenticationService.getUserFromSession(), canvas));
         }};
+    }
+
+    @Override
+    public ConfigView boardConfig(int canvasId) {
+        var canvasRsp = canvasRepo.findById(canvasId);
+        if (canvasRsp.isEmpty()) {
+            throw new CanvasNotFoundException(canvasId);
+        }
+
+        return ConfigView.fromCanvas(canvasRsp.get());
     }
 
     private void setPixelInBlob(Canvas canvas, int x, int y, byte color) {

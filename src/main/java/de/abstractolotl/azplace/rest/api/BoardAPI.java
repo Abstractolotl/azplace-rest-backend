@@ -2,6 +2,7 @@ package de.abstractolotl.azplace.rest.api;
 
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
+import de.abstractolotl.azplace.model.view.ConfigView;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -48,7 +49,7 @@ public interface BoardAPI {
     )
     void place(@PathVariable int canvasId, @RequestBody PlaceRequest request);
 
-    @GetMapping("/{canvasId}")
+    @GetMapping("/{canvasId}/data")
     @Operation(
             summary = "Board Data",
             description = "Returns the raw binary data of the board. \n" +
@@ -57,28 +58,28 @@ public interface BoardAPI {
     )
     byte[] boardData(@PathVariable int canvasId);
 
-    @GetMapping("/{canvasId}/data")
-    @Operation(
-            deprecated = true,
-            summary = "Board Data",
-            description = "This endpoint should not be used anymore use /{canvasId} instead"
-    )
-    byte[] oldBoardData(@PathVariable int canvasId);
-
     @GetMapping("/{canvasId}/info")
     @Operation(
             deprecated = true,
             summary = "Board Info",
-            description = "This endpoint should not be used anymore use the SettingsAPI instead"
+            description = "This endpoint should not be used anymore use /{canvasId}/config instead"
     )
     Canvas boardInfo(@PathVariable int canvasId);
 
-    @PostMapping("/{canvasId}/cooldown")
-    @Operation(
-            summary = "Get your current cooldown information",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(schema = @Schema(implementation = HashMap.class))
-            )
-    )
+    @GetMapping("/{canvasId}/cooldown")
+    @Operation(summary = "Get your current cooldown information" )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Current user cooldown returned",
+                    content = @Content(schema = @Schema(implementation = HashMap.class)))
+    })
     HashMap<String, Long> cooldown(@PathVariable int canvasId);
+
+    @GetMapping("/{canvasId}/config")
+    @Operation(summary = "Get board configuration" )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Current user cooldown returned",
+                    content = @Content(schema = @Schema(implementation = ConfigView.class)))
+    })
+    ConfigView boardConfig(@PathVariable int canvasId);
+
 }
