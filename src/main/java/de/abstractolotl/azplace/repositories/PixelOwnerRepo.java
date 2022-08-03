@@ -17,7 +17,7 @@ public interface PixelOwnerRepo extends CrudRepository<PixelOwner, Integer> {
 
     long countAllByTimestampBetween(long start, long end);
 
-    @Query(value = "SELECT user.id, user.first_name, user.inside_net_identifier, user.last_name, user.roles, user.timestamp_registered FROM user,pixel_owner as po WHERE user.id = po.user_id group by po.user_id ORDER BY COUNT(*) LIMIT :amount", nativeQuery = true)
-    List<User> findTopList(int amount);
+    @Query(value = "SELECT user.id, user.first_name, user.inside_net_identifier, user.last_name, user.roles, user.timestamp_registered FROM user,pixel_owner as po WHERE user.id = po.user_id AND po.timestamp BETWEEN :start AND :end group by po.user_id ORDER BY COUNT(*) LIMIT :amount", nativeQuery = true)
+    List<User> findTopList(int amount, long start, long end);
 
 }

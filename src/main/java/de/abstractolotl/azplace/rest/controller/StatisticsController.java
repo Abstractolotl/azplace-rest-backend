@@ -21,13 +21,15 @@ public class StatisticsController implements StatisticsAPI {
     @Autowired
     private AuthenticationService authenticationService;
 
+    private static final long TIME_REACH = 86400000L;
+
     @Override
     public PixelStatisticView pixels() {
         if(!authenticationService.hasRole("statistics"))
             throw new MissingRoleException();
 
         long end = System.currentTimeMillis();
-        long start = end - 86400000;
+        long start = end - TIME_REACH;
 
         return new PixelStatisticView(pixelOwnerRepo.countAllByTimestampBetween(start, end));
     }
@@ -39,8 +41,10 @@ public class StatisticsController implements StatisticsAPI {
             throw new MissingRoleException();
          */
 
-        List<User> topList = pixelOwnerRepo.findTopList(max);
+        long end = System.currentTimeMillis();
+        long start = end - TIME_REACH;
 
+        List<User> topList = pixelOwnerRepo.findTopList(max, start, end);
         return new TopStatisticView(topList.size(), topList);
     }
 

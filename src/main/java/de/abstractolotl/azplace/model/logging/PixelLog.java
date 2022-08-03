@@ -1,6 +1,5 @@
 package de.abstractolotl.azplace.model.logging;
 
-import de.abstractolotl.azplace.model.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +9,6 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
@@ -25,10 +23,13 @@ public class PixelLog {
     @Field(type = FieldType.Date) @NotBlank
     private LocalDateTime timestamp;
 
-    @Field(type = FieldType.Keyword) @NotNull
-    private int[] position;
+    @Field(type = FieldType.Integer)
+    private Integer canvasId;
 
     @Field(type = FieldType.Keyword)
-    private User user;
+    private Integer[] position;
+
+    @Field(type = FieldType.Byte)
+    private byte color;
 
 }

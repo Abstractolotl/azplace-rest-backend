@@ -10,6 +10,7 @@ import de.abstractolotl.azplace.model.statistic.PixelOwner;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.service.AuthenticationService;
 import de.abstractolotl.azplace.service.CooldownService;
+import de.abstractolotl.azplace.service.ElasticService;
 import de.abstractolotl.azplace.service.PunishmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,20 +31,13 @@ public class BoardController implements BoardAPI {
     @Autowired
     private Jedis jedis;
 
-    @Autowired
-    private CanvasRepo canvasRepo;
+    @Autowired private CanvasRepo canvasRepo;
+    @Autowired private PixelOwnerRepo pixelOwnerRepo;
 
-    @Autowired
-    private PixelOwnerRepo pixelOwnerRepo;
-
-    @Autowired
-    private CooldownService cooldownService;
-
-    @Autowired
-    private AuthenticationService authenticationService;
-
-    @Autowired
-    private PunishmentService punishmentService;
+    @Autowired private CooldownService cooldownService;
+    @Autowired private AuthenticationService authenticationService;
+    @Autowired private PunishmentService punishmentService;
+    @Autowired private ElasticService elasticService;
 
     @Override
     public void place(int canvasId, PlaceRequest request) {
@@ -73,6 +67,7 @@ public class BoardController implements BoardAPI {
         setNewPixelOwner(canvas, request.getX(), request.getY(), user);
         setPixelInBlob(canvas, request.getX(), request.getY(), request.getColor());
 
+        elasticService.logPixel(canvas.getId(), request.getX(), request.getY(), request.getColor());
         cooldownService.reset(user, canvas);
     }
 
