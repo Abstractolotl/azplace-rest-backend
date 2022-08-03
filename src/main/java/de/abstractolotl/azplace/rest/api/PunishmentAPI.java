@@ -31,6 +31,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
                 content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema()))
 })
 @RequestMapping(value = "punishment")
+@CrossOrigin(origins = { "*" })
 public interface PunishmentAPI {
 
     @PostMapping(value = "/ban",
@@ -45,7 +46,6 @@ public interface PunishmentAPI {
             @ApiResponse(responseCode = "201", description = "User banned successfully",
                     content = @Content(schema = @Schema(implementation = UserBan.class)))
     })
-    @CrossOrigin(origins = {"*"})
     @ResponseStatus(HttpStatus.CREATED)
     UserBan banUser(@RequestBody BanRequest banRequest);
 
@@ -57,7 +57,6 @@ public interface PunishmentAPI {
             @ApiResponse(responseCode = "200", description = "User unbanned successfully",
                     content = @Content(schema = @Schema(implementation = UserBan.class)))
     })
-    @CrossOrigin(origins = {"*"})
     UserBan pardon(@PathVariable Long banId);
 
 }

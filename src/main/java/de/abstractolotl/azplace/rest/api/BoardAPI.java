@@ -34,7 +34,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
                 content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema()))
 })
 @RequestMapping("/board")
-@CrossOrigin(origins = {"*"})
 public interface BoardAPI {
 
     @PostMapping("{canvasId}/place")
