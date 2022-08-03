@@ -5,15 +5,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 public class AzPlaceExceptions {
 
-    public static class CanvasNotFoundExeption extends ResponseStatusException {
-        public CanvasNotFoundExeption(int canvasId) {
-            super(HttpStatus.NOT_FOUND, "Could not find Canvas with ID: " + canvasId);
-        }
-    }
-
-    public static class SessionNotAuthorizedException extends ResponseStatusException {
-        public SessionNotAuthorizedException() {
-            super(HttpStatus.UNAUTHORIZED, "Session is not Authorized");
+    public static class NoUserInSession extends ResponseStatusException {
+        public NoUserInSession() {
+            super(HttpStatus.NOT_FOUND, "Could not get User from Session");
         }
     }
 

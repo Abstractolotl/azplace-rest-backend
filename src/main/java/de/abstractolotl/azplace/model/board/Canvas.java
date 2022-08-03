@@ -21,8 +21,6 @@ public class Canvas {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
-    @JsonProperty("redis_key")
-    private String redisKey;
 
     @ManyToOne
     @JoinColumn(name = "palette_id", nullable = false)
@@ -42,5 +40,9 @@ public class Canvas {
     private int width;
     @Min(1L)
     private int height;
+
+    public String getRedisKey(){
+        return "canvas-" + id;
+    }
 
 }
