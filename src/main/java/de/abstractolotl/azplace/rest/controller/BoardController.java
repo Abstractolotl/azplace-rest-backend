@@ -31,9 +31,6 @@ public class BoardController implements BoardAPI {
     @Autowired private AuthenticationService authService;
     @Autowired private PunishmentService punishmentService;
     @Autowired private CooldownService cooldownService;
-    @Autowired private CooldownService cooldownService;
-    @Autowired private AuthenticationService authenticationService;
-    @Autowired private PunishmentService punishmentService;
     @Autowired private ElasticService elasticService;
 
     @Override
@@ -61,7 +58,7 @@ public class BoardController implements BoardAPI {
         setNewPixelOwner(canvas, request.getX(), request.getY(), user);
         setPixelInBlob(canvas, request.getX(), request.getY(), (byte)request.getColorIndex());
 
-        elasticService.logPixel(canvas.getId(), request.getX(), request.getY(), request.getColor());
+        elasticService.logPixel(canvas.getId(), request.getX(), request.getY(), request.getColorIndex());
         cooldownService.reset(user, canvas);
     }
 

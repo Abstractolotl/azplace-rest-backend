@@ -16,7 +16,7 @@ public class ElasticService {
 
     @Autowired private ElasticsearchRestTemplate elasticsearchRestTemplate;
 
-    public void logPixel(Integer canvasId, int x, int y, byte color){
+    public void logPixel(Integer canvasId, int x, int y, int color){
         PixelLog pixelLog = PixelLog.builder()
                 .timestamp(LocalDateTime.now())
                 .canvasId(canvasId)

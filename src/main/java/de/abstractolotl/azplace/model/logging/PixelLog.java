@@ -30,6 +30,6 @@ public class PixelLog {
     private Integer[] position;
 
     @Field(type = FieldType.Byte)
-    private byte color;
+    private int color;
 
 }
