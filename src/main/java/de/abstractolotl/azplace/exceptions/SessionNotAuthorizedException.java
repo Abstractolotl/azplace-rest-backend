@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 @ResponseStatus(HttpStatus.UNAUTHORIZED)
-public class SessionMissingException extends ResponseStatusException {
+public class SessionNotAuthorizedException extends ResponseStatusException {
 
-    public SessionMissingException() {
-        super(HttpStatus.UNAUTHORIZED, "Session data is missing");
+    public SessionNotAuthorizedException() {
+        super(HttpStatus.UNAUTHORIZED, "Session is not Authorized");
     }
 
 }
