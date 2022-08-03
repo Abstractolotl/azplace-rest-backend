@@ -31,6 +31,7 @@ import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
                 content = @Content(mediaType = TEXT_HTML_VALUE, schema = @Schema())),
 })
 @RequestMapping("/auth")
+@CrossOrigin(origins = {"*"})
 public interface AuthAPI {
 
     @Operation(
@@ -47,7 +48,6 @@ public interface AuthAPI {
                     """)
     @GetMapping(path = "/verify", produces = MediaType.TEXT_HTML_VALUE)
     @ResponseBody
-    @CrossOrigin(origins = {"*"})
     String verify(@RequestParam("ticket") String ticket);
 
     @Operation(
@@ -60,7 +60,6 @@ public interface AuthAPI {
     })
     @GetMapping(path = "/logout", produces = MediaType.TEXT_HTML_VALUE)
     @ResponseBody
-    @CrossOrigin(origins = {"*"})
     void logout(@RequestParam("sessionKey") String sessionKey);
 
     @Operation(
@@ -71,7 +70,6 @@ public interface AuthAPI {
     )
     @GetMapping(path = "/session")
     @ResponseBody
-    @CrossOrigin(origins = {"*"})
     Session getSession();
 
     @Operation(
@@ -82,6 +80,5 @@ public interface AuthAPI {
     )
     @GetMapping(path = "/isSessionValid")
     @ResponseBody
-    @CrossOrigin(origins = {"*"})
     boolean isSessionValid();
 }
