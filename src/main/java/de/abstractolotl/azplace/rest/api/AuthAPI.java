@@ -64,6 +64,7 @@ public interface AuthAPI {
     @CrossOrigin(origins = {"*"})
     void logout(@RequestParam("sessionKey") String sessionKey);
 
+    /*
     @Operation(
             summary = "Get session",
             description = """
@@ -85,4 +86,6 @@ public interface AuthAPI {
     @ResponseBody
     @CrossOrigin(origins = {"*"})
     boolean isSessionValid();
+    */
+
 }

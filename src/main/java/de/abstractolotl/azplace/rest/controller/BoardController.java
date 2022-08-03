@@ -1,6 +1,5 @@
 package de.abstractolotl.azplace.rest.controller;
 
-import de.abstractolotl.azplace.model.user.UserSession;
 import de.abstractolotl.azplace.rest.api.BoardAPI;
 import de.abstractolotl.azplace.exceptions.UserBannedException;
 import de.abstractolotl.azplace.model.board.Canvas;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.abstractolotl.azplace.AzPlaceExceptions.CanvasNotFoundExeption;
 import de.abstractolotl.azplace.AzPlaceExceptions.IllegalPixelCoordsException;
-import de.abstractolotl.azplace.AzPlaceExceptions.NoUserInSession;
+import de.abstractolotl.azplace.AzPlaceExceptions.SessionNotAuthorizedException;
 import de.abstractolotl.azplace.AzPlaceExceptions.PixelOutOfBoundsException;
 import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.repositories.CanvasRepo;
@@ -31,13 +30,10 @@ public class BoardController implements BoardAPI {
     @Autowired private AuthenticationService authService;
     @Autowired private PunishmentService punishmentService;
 
-    @Autowired private UserSession session;
-
     @Override
     public void place(int canvasId, PlaceRequest request) {
-        User user = null;//session.getUser();
+        User user = authService.authUser();
 
-        if (user == null) throw new NoUserInSession();
         if (punishmentService.isBanned(user)) throw new UserBannedException();
 
         var canvasResp = canvasRepo.findById(canvasId);

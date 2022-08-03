@@ -11,9 +11,9 @@ public class AzPlaceExceptions {
         }
     }
 
-    public static class NoUserInSession extends ResponseStatusException {
-        public NoUserInSession() {
-            super(HttpStatus.NOT_FOUND, "Could not get User from Session");
+    public static class SessionNotAuthorizedException extends ResponseStatusException {
+        public SessionNotAuthorizedException() {
+            super(HttpStatus.UNAUTHORIZED, "Session is not Authorized");
         }
     }
 

@@ -23,6 +23,11 @@ app:
     password:
 
 spring:
+  session:
+    store-type: redis
+    redis:
+      flush-mode: on_save
+      namespace: spring:session
   redis:
     port: 6379
     host: noucake.ddns.net

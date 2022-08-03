@@ -3,6 +3,7 @@ package de.abstractolotl.azplace.rest.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.abstractolotl.azplace.AzPlaceExceptions;
 import de.abstractolotl.azplace.AzPlaceExceptions.*;
 import de.abstractolotl.azplace.model.user.UserSession;
 import de.abstractolotl.azplace.model.utility.CASUser;
@@ -15,31 +16,35 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.repositories.UserRepo;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class AuthController implements AuthAPI {
 
-    @Value("${app.cas.redirecturl}")
-    private String redirectUrl;
-    @Value("${app.defaultKeyValidTime}")
-    private int    defaultKeyValidTime;
+    private final static JsonMapper jsonMapper = new JsonMapper();
 
-    @Autowired
-    private AuthenticationService authService;
+    @Value("${app.cas.redirecturl}") private String redirectUrl;
+    @Value("${app.defaultKeyValidTime}") private int defaultKeyValidTime;
+    @Value("${app.cas.url}") private String casUrl;
+    @Value("${app.cas.apiurl}") private String apiUrl;
+
+    @Autowired private AuthenticationService authService;
 
     @Autowired private UserRepo userRepo;
 
     @Autowired private UserSession session;
 
-    @SneakyThrows
     @Override
     public ResponseEntity<String> verify(String ticket) {
-        CASUser casUser = authService.validateTicket(ticket);
-        initNewSession(casUser);
+        CASUser casUser = validateTicket(ticket);
+        User user = createOrGetUser(casUser);
+
+        session.setUser(user);
 
         HttpHeaders headers = new HttpHeaders();
         String body = "<meta http-equiv=\"refresh\" content=\"0; url=" + redirectUrl + "\" />";
@@ -48,22 +53,20 @@ public class AuthController implements AuthAPI {
 
     @Override
     public void logout(String sessionKey) {
-        //TODO
+        session.setUser(null);
+        //TODO: invalidate session
     }
 
-    @Override
-    public UserSession getSession() {
-        return session;
-    }
+    public CASUser validateTicket(String ticket) {
+        final RestTemplate template = new RestTemplate();
 
-    @Override
-    public boolean isSessionValid() {
-        return authService.isSessionValid();
-    }
-
-    private void initNewSession(CASUser casUser) {
-        User user = createOrGetUser(casUser);
-        //session.setUser(user);
+        final String requestUrl = casUrl + "/serviceValidate?service=" + apiUrl + "&ticket=" + ticket +"&format=json";
+        try {
+            String response = template.getForObject(requestUrl, String.class);
+            return getUserDataFromCASResponse(response);
+        } catch (HttpClientErrorException e) {
+            throw new AzPlaceExceptions.CASValidationException(e.getResponseBodyAsString());
+        }
     }
 
     private User createOrGetUser(CASUser cas) {
@@ -74,6 +77,55 @@ public class AuthController implements AuthAPI {
         User user = cas.createUser();
         userRepo.save(user);
         return user;
+    }
+
+    private JsonNode parseCASResponse(String response) {
+        JsonNode json;
+        try {
+            json = jsonMapper.readValue(response, ObjectNode.class).get("serviceResponse");
+        } catch (Exception e) {
+            throw new AzPlaceExceptions.CASValidationException("Mapping JSON failed");
+        }
+
+        if(!json.has("authenticationSuccess"))
+            throw new AzPlaceExceptions.CASValidationException("Json information missing");
+
+        return json;
+    }
+
+    private CASUser getUserDataFromCASResponse(String response) {
+        JsonNode parsedResponse = parseCASResponse(response);
+
+        if(parsedResponse.has("authenticationFailure")){
+            throw new AzPlaceExceptions.AuthenticationException(parsedResponse.get("authenticationFailure").get("code").textValue());
+        }
+
+        JsonNode attributes = getValue(parsedResponse.get("authenticationSuccess"), "attributes", true);
+        return CASUser.builder()
+                .firstName(getAttribute(attributes, "firstName", true))
+                .lastName(getAttribute(attributes, "lastName", false))
+                .insideNetIdentifier(getAttribute(attributes, "personId", true))
+                .build();
+    }
+
+    private JsonNode getValue(JsonNode node, String key, boolean required) {
+        if (node.has(key)) {
+            return node.get(key);
+        }
+        if (required) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Required key \"" + key + "\" is missing");
+        }
+        return null;
+    }
+
+    private String getAttribute(JsonNode node, String key, boolean required){
+        JsonNode value = getValue(node, key, required);
+
+        if(value == null){
+            return "";
+        }
+
+        return value.get(0).textValue();
     }
 
 }
