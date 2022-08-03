@@ -27,6 +27,6 @@ public class UserBan {
     private Long end;
 
     private String reason;
-    private boolean pardoned = false;
+    private boolean pardoned;
 
 }

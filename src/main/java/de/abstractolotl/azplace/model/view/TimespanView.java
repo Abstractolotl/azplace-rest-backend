@@ -12,7 +12,7 @@ public class TimespanView {
     public long duration;
 
     public long remainingTime;
-    public boolean ended = false;
+    public boolean ended;
 
     public static TimespanView fromCanvas(Canvas canvas){
         long remainingTime = (canvas.getStartDate() + canvas.getDuration()) - System.currentTimeMillis();

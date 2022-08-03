@@ -18,7 +18,7 @@ import java.util.Optional;
 public class PunishmentController implements PunishmentAPI {
 
     @Autowired
-    private AuthenticationService authenticationService;
+    private AuthenticationService authService;
 
     @Autowired
     private BanRepo banRepo;
@@ -28,8 +28,7 @@ public class PunishmentController implements PunishmentAPI {
 
     @Override
     public UserBan banUser(BanRequest banRequest) {
-        if(!authenticationService.hasRole("admin"))
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        authService.authUserWithRole("admin");
 
         Optional<User> userOptional = userRepo.findById(banRequest.getUserId());
         if(userOptional.isEmpty())
@@ -49,8 +48,7 @@ public class PunishmentController implements PunishmentAPI {
 
     @Override
     public UserBan pardon(Long banId) {
-        if(!authenticationService.hasRole("admin"))
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        authService.authUserWithRole("admin");
 
         Optional<UserBan> userBanOptional = banRepo.findById(banId);
         if(userBanOptional.isEmpty())

@@ -1,17 +1,20 @@
 package de.abstractolotl.azplace.model.user;
 
+import lombok.Data;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 
-import lombok.Data;
-
+import java.io.Serial;
 import java.io.Serializable;
 
-@Data
 @Component
 @SessionScope
-public class UserSession {
+@Data
+public class UserSession implements Serializable {
 
-    private Session session;
+    @Serial
+    private static final long serialVersionUID = 7156526077883281623L;
+
+    private User user;
 
 }

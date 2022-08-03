@@ -1,10 +1,11 @@
 package de.abstractolotl.azplace.rest.api;
 
-import de.abstractolotl.azplace.model.user.Session;
+import de.abstractolotl.azplace.model.user.UserSession;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,7 +49,8 @@ public interface AuthAPI {
                     """)
     @GetMapping(path = "/verify", produces = MediaType.TEXT_HTML_VALUE)
     @ResponseBody
-    String verify(@RequestParam("ticket") String ticket);
+    @CrossOrigin(origins = {"*"})
+    ResponseEntity<String> verify(@RequestParam("ticket") String ticket);
 
     @Operation(
             summary = "Log out",
@@ -62,6 +64,7 @@ public interface AuthAPI {
     @ResponseBody
     void logout(@RequestParam("sessionKey") String sessionKey);
 
+    /*
     @Operation(
             summary = "Get session",
             description = """
@@ -70,7 +73,8 @@ public interface AuthAPI {
     )
     @GetMapping(path = "/session")
     @ResponseBody
-    Session getSession();
+    @CrossOrigin(origins = {"*"})
+    UserSession getSession();
 
     @Operation(
             summary = "Is session valid",
@@ -81,4 +85,6 @@ public interface AuthAPI {
     @GetMapping(path = "/isSessionValid")
     @ResponseBody
     boolean isSessionValid();
+    */
+
 }

@@ -1,7 +1,6 @@
 package de.abstractolotl.azplace.service;
 
-import de.abstractolotl.azplace.exceptions.SessionMissingException;
-import de.abstractolotl.azplace.model.user.Session;
+import de.abstractolotl.azplace.exceptions.SessionNotAuthorizedException;
 import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.model.user.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,37 +8,32 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @Service
 public class AuthenticationService {
 
-    @Autowired
-    private UserSession userSession;
 
-    public Session getSession() {
-        if(userSession.getSession() == null)
-            throw new SessionMissingException();
+    @Autowired private UserSession userSession;
 
-        return userSession.getSession();
+    public User authUser() {
+        if (userSession.getUser() == null)
+            throw new SessionNotAuthorizedException();
+
+        return userSession.getUser();
     }
 
-    public boolean isSessionValid() {
-        Session session = getSession();
-        final LocalDateTime now = LocalDateTime.now();
-        if (session.getCreationDate().isAfter(now) || session.getExpireDate().isBefore(now)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session key expired");
-        }
-        return true;
-    }
 
-    public User getUserFromSession() {
-        return getSession().getUser();
-    }
+    public User authUserWithRole(String role) {
+        User user = userSession.getUser();
 
-    public boolean hasRole(String role){
-        return hasRole(getUserFromSession(), role);
+        if (user == null)
+            throw new SessionNotAuthorizedException();
+
+        if (!hasRole(user, role))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); //TODO
+
+        return userSession.getUser();
     }
 
     public boolean hasRole(User user, String role){
