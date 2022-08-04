@@ -1,4 +1,4 @@
-package de.abstractolotl.azplace.exceptions;
+package de.abstractolotl.azplace.exceptions.board;
 
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.board.ColorPalette;

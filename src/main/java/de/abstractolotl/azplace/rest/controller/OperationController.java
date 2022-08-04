@@ -1,6 +1,6 @@
 package de.abstractolotl.azplace.rest.controller;
 
-import de.abstractolotl.azplace.exceptions.CanvasNotFoundException;
+import de.abstractolotl.azplace.exceptions.board.CanvasNotFoundException;
 import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.rest.api.OperationAPI;
 import de.abstractolotl.azplace.model.board.Canvas;

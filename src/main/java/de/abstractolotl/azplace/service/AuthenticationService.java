@@ -1,6 +1,6 @@
 package de.abstractolotl.azplace.service;
 
-import de.abstractolotl.azplace.exceptions.SessionNotAuthorizedException;
+import de.abstractolotl.azplace.exceptions.auth.SessionNotAuthorizedException;
 import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.model.user.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
