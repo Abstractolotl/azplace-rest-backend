@@ -56,7 +56,10 @@ public class BoardController implements BoardAPI {
         }
 
         setNewPixelOwner(canvas, request.getX(), request.getY(), user);
-        setPixelInBlob(canvas, request.getX(), request.getY(), request.getColor());
+        setPixelInBlob(canvas, request.getX(), request.getY(), (byte) request.getColorIndex());
+
+        cooldownService.reset(user, canvas);
+        webSocketService.broadcastPixel(request);
     }
 
     @Override

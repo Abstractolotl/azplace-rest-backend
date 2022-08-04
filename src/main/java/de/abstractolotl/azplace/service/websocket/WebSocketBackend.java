@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.abstractolotl.azplace.model.utility.WebSocketServerInfo;
+import de.abstractolotl.azplace.model.utility.WebsocketMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URISyntaxException;
 
+@Slf4j
 public class WebSocketBackend {
     private final static ObjectMapper JSON = new ObjectMapper();
 

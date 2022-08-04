@@ -4,21 +4,24 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.model.utility.WebSocketServerInfo;
+import de.abstractolotl.azplace.model.utility.WebsocketMessage;
 import de.abstractolotl.azplace.repositories.WebSocketRepo;
 import de.abstractolotl.azplace.service.websocket.BackendListener;
 import de.abstractolotl.azplace.service.websocket.ConnectionLostException;
 import de.abstractolotl.azplace.service.websocket.WebSocketBackend;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class WebSocketService implements BackendListener {
+
     private final static ObjectMapper JSON = new ObjectMapper();
 
     @Autowired private WebSocketRepo webSocketRepo;
@@ -37,7 +40,6 @@ public class WebSocketService implements BackendListener {
 
     @Scheduled(fixedRate = 60_000, initialDelay = 60_000)
     private void checkForNewWSBackends() {
-        System.out.println("Checking for new WS Backends");
         var serverInfos = webSocketRepo.findAll();
         for(var info : serverInfos) {
             if(!wsBackends.containsKey(info.getIpAddress()))
@@ -56,8 +58,12 @@ public class WebSocketService implements BackendListener {
     }
 
     public void broadcastPixel(PlaceRequest request) {
+        WebsocketMessage websocketMessage = WebsocketMessage.builder()
+                .method("broadcast")
+                .data(request)
+                .build();
         try {
-            String message = "{ \"method\": \"broadcast\", \"data\": \""+JSON.writeValueAsString(request)+"\"}";
+            String message = JSON.writeValueAsString(websocketMessage);
             for(var backend : wsBackends.values()) {
                 backend.sendMessage(message);
             }
