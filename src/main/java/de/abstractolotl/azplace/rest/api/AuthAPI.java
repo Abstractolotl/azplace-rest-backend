@@ -3,6 +3,7 @@ package de.abstractolotl.azplace.rest.api;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -32,6 +33,10 @@ import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 })
 @RequestMapping("auth")
 public interface AuthAPI {
+
+    @Operation(summary = "Start login and redirect to CAS")
+    @GetMapping(path = "/login", produces = MediaType.TEXT_HTML_VALUE)
+    String login(@RequestHeader(HttpHeaders.HOST) String hostName);
 
     @Operation(
             summary = "Verify CAS Ticket",
