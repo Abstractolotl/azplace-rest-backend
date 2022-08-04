@@ -33,8 +33,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
                 responseCode = "500", description = "Internal server error",
                 content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema()))
 })
-@RequestMapping("/board")
-@CrossOrigin(origins = {"*"})
+@RequestMapping("board")
 public interface BoardAPI {
 
     @PostMapping("{canvasId}/place")

@@ -9,6 +9,8 @@ import lombok.Data;
 @Data
 public class ConfigView {
 
+    private long cooldown;
+
     @JsonProperty("hex_colors")
     private String[] hexColors;
 
@@ -18,6 +20,7 @@ public class ConfigView {
 
     public static ConfigView fromCanvas(Canvas canvas){
         return ConfigView.builder()
+                .cooldown(canvas.getCooldown())
                 .hexColors(canvas.getColorPalette().getHexColors())
                 .size(SizeView.fromCanvas(canvas))
                 .timespan(TimespanView.fromCanvas(canvas))

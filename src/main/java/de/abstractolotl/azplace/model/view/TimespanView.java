@@ -19,8 +19,8 @@ public class TimespanView {
         return TimespanView.builder()
                 .startDate(canvas.getStartDate())
                 .duration(canvas.getDuration())
-                .remainingTime(remainingTime)
-                .ended(remainingTime > 0)
+                .remainingTime(Math.max(remainingTime, 0L))
+                .ended(Math.max(remainingTime, 0L) == 0)
                 .build();
     }
 

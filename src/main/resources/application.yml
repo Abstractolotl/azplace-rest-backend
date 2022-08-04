@@ -17,11 +17,6 @@ app:
     redirecturl: https://azplace.azubi.server.lan
   defaultKeyValidTime: 120
 
-  redis:
-    url: noucake.ddns.net
-    port: 6379
-    password:
-
 spring:
   session:
     store-type: redis
@@ -31,6 +26,8 @@ spring:
   redis:
     port: 6379
     host: noucake.ddns.net
+    password:
+
   elasticsearch:
     uris: http://elastic.azplace.azubi.server.lan
 
