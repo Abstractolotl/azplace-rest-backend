@@ -1,4 +1,4 @@
-package de.abstractolotl.azplace.exceptions;
+package de.abstractolotl.azplace.exceptions.auth;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

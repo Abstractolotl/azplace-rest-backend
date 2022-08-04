@@ -1,10 +1,15 @@
 package de.abstractolotl.azplace.rest.controller;
 
-import de.abstractolotl.azplace.exceptions.*;
+import de.abstractolotl.azplace.exceptions.board.CanvasNotFoundException;
+import de.abstractolotl.azplace.exceptions.board.InvalidColorIndex;
+import de.abstractolotl.azplace.exceptions.board.PixelOutOfBoundsException;
+import de.abstractolotl.azplace.exceptions.board.UserCooldownException;
+import de.abstractolotl.azplace.exceptions.punishment.UserBannedException;
 import de.abstractolotl.azplace.model.view.ConfigView;
 import de.abstractolotl.azplace.rest.api.BoardAPI;
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.logging.PixelOwner;
+import de.abstractolotl.azplace.service.WebSocketService;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.service.AuthenticationService;
 import de.abstractolotl.azplace.service.CooldownService;
@@ -32,6 +37,8 @@ public class BoardController implements BoardAPI {
     @Autowired private PunishmentService punishmentService;
     @Autowired private CooldownService cooldownService;
 
+    @Autowired private WebSocketService webSocketService;
+
     @Override
     public void place(int canvasId, PlaceRequest request) {
         User user = authService.authUser();
@@ -55,9 +62,10 @@ public class BoardController implements BoardAPI {
         }
 
         setNewPixelOwner(canvas, request.getX(), request.getY(), user);
-        setPixelInBlob(canvas, request.getX(), request.getY(), (byte)request.getColorIndex());
+        setPixelInBlob(canvas, request.getX(), request.getY(), (byte) request.getColorIndex());
 
         cooldownService.reset(user, canvas);
+        webSocketService.broadcastPixel(request);
     }
 
     @Override

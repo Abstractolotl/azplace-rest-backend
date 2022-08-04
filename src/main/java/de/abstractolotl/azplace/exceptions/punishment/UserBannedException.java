@@ -1,4 +1,4 @@
-package de.abstractolotl.azplace.exceptions;
+package de.abstractolotl.azplace.exceptions.punishment;
 
 
 import org.springframework.http.HttpStatus;
