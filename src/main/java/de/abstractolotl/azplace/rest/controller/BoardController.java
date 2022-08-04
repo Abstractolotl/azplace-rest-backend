@@ -5,17 +5,17 @@ import de.abstractolotl.azplace.exceptions.board.InvalidColorIndex;
 import de.abstractolotl.azplace.exceptions.board.PixelOutOfBoundsException;
 import de.abstractolotl.azplace.exceptions.board.UserCooldownException;
 import de.abstractolotl.azplace.exceptions.punishment.UserBannedException;
+import de.abstractolotl.azplace.model.statistic.PixelOwner;
 import de.abstractolotl.azplace.model.view.ConfigView;
 import de.abstractolotl.azplace.rest.api.BoardAPI;
 import de.abstractolotl.azplace.model.board.Canvas;
-import de.abstractolotl.azplace.model.logging.PixelOwner;
 import de.abstractolotl.azplace.service.WebSocketService;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.service.AuthenticationService;
 import de.abstractolotl.azplace.service.CooldownService;
+import de.abstractolotl.azplace.service.ElasticService;
 import de.abstractolotl.azplace.service.PunishmentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.abstractolotl.azplace.model.user.User;
@@ -36,6 +36,7 @@ public class BoardController implements BoardAPI {
     @Autowired private AuthenticationService authService;
     @Autowired private PunishmentService punishmentService;
     @Autowired private CooldownService cooldownService;
+    @Autowired private ElasticService elasticService;
 
     @Autowired private WebSocketService webSocketService;
 
@@ -64,6 +65,7 @@ public class BoardController implements BoardAPI {
         setNewPixelOwner(canvas, request.getX(), request.getY(), user);
         setPixelInBlob(canvas, request.getX(), request.getY(), (byte) request.getColorIndex());
 
+        elasticService.logPixel(canvas.getId(), request.getX(), request.getY(), request.getColorIndex());
         cooldownService.reset(user, canvas);
         webSocketService.broadcastPixel(request);
     }

@@ -20,7 +20,7 @@ public class AccessFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         final HttpServletRequest request = (HttpServletRequest) servletRequest;
         final HttpServletResponse response = (HttpServletResponse) servletResponse;
-        final String origin = request.getHeader(HttpHeaders.HOST);
+        final String origin = request.getHeader("Origin") != null ? request.getHeader("Origin") : request.getHeader(HttpHeaders.HOST);
 
         if(!request.getRequestURI().contains("/swagger-ui")) {
             response.addHeader("Access-Control-Allow-Origin", "https://" + origin);

@@ -1,4 +1,4 @@
-package de.abstractolotl.azplace.model.logging;
+package de.abstractolotl.azplace.model.statistic;
 
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.user.User;

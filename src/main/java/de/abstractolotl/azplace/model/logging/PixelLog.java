@@ -9,15 +9,13 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @Builder
-@Document(indexName = "backend-logs")
-public class LogData {
+@Document(indexName = "backend-pixel")
+public class PixelLog {
 
     @Id
     private String id;
@@ -25,10 +23,13 @@ public class LogData {
     @Field(type = FieldType.Date) @NotBlank
     private LocalDateTime timestamp;
 
-    @Field(type = FieldType.Keyword) @NotNull
-    private String message;
+    @Field(type = FieldType.Integer)
+    private Integer canvasId;
 
     @Field(type = FieldType.Keyword)
-    private String controller;
+    private Integer[] position;
+
+    @Field(type = FieldType.Byte)
+    private int color;
 
 }
