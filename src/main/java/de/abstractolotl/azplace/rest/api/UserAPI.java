@@ -8,12 +8,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 
 @Validated
 @Tag(name = "UserAPI", description = "User profile endpoints")
@@ -32,7 +30,6 @@ import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
                 content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema())),
 })
 @RequestMapping("user")
-@CrossOrigin("*")
 public interface UserAPI {
 
     @Operation(

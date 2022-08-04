@@ -36,7 +36,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
         )
 })
 @RequestMapping(value = "punishment")
-@CrossOrigin(origins = { "*" })
 public interface PunishmentAPI {
 
     @PostMapping(

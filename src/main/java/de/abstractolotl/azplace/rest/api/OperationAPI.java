@@ -34,7 +34,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
                 content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema()))
 })
 @RequestMapping(value = "operation")
-@CrossOrigin(origins = { "*" })
 public interface OperationAPI {
 
     @GetMapping(value = "/canvas/{id}", produces = APPLICATION_JSON_VALUE)
