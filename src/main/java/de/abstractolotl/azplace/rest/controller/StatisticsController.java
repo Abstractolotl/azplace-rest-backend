@@ -6,10 +6,13 @@ import de.abstractolotl.azplace.model.view.TopStatisticView;
 import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
 import de.abstractolotl.azplace.rest.api.StatisticsAPI;
 import de.abstractolotl.azplace.service.AuthenticationService;
+import de.abstractolotl.azplace.service.ElasticService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 
@@ -17,11 +20,12 @@ import java.util.Set;
 public class StatisticsController implements StatisticsAPI {
 
     @Autowired private PixelOwnerRepo pixelOwnerRepo;
+    @Autowired private ElasticService elasticService;
 
     @Autowired private AuthenticationService authenticationService;
     @Autowired private Jedis jedis;
 
-    private static final long TIME_FRAME = 86400000L;
+    private static final long TIME_FRAME = 86_400_000L;
 
     @Override
     public CountView pixels() {
@@ -30,18 +34,7 @@ public class StatisticsController implements StatisticsAPI {
         long end = System.currentTimeMillis();
         long start = end - TIME_FRAME;
 
-        return new CountView(pixelOwnerRepo.countAllByTimestampBetween(start, end));
-    }
-
-    @Override
-    public TopStatisticView topList(int max) {
-        authenticationService.authUserWithRole("statistics");
-
-        long end = System.currentTimeMillis();
-        long start = end - TIME_FRAME;
-
-        List<User> topList = pixelOwnerRepo.findTopList(max, start, end);
-        return new TopStatisticView(topList.size(), topList);
+        return new CountView(elasticService.getLogs(start, end));
     }
 
     @Override

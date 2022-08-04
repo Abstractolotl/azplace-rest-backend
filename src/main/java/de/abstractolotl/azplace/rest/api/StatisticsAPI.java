@@ -44,14 +44,6 @@ public interface StatisticsAPI {
     })
     CountView pixels();
 
-    @GetMapping(value = "/toplist/{max}", produces = APPLICATION_JSON_VALUE)
-    @Operation(summary = "Get toplist by placed pixels")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Pixel placement toplist returned",
-                    content = @Content(schema = @Schema(implementation = CountView.class)))
-    })
-    TopStatisticView topList(@PathVariable(required = false) int max);
-
     @GetMapping(value = "/online", produces = APPLICATION_JSON_VALUE)
     @Operation(summary = "Get amount of currently online users")
     @ApiResponses(value = {

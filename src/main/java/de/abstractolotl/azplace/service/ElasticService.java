@@ -2,19 +2,35 @@ package de.abstractolotl.azplace.service;
 
 import de.abstractolotl.azplace.model.logging.LoginLog;
 import de.abstractolotl.azplace.model.logging.PixelLog;
-import de.abstractolotl.azplace.model.user.User;
+import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.IndexQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
+@Slf4j
 public class ElasticService {
 
-    @Autowired private ElasticsearchRestTemplate elasticsearchRestTemplate;
+    @Autowired
+    private ElasticsearchRestTemplate elasticsearchRestTemplate;
+
+    public long getLogs(long start, long end){
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withFilter(QueryBuilders.rangeQuery("timestamp")
+                        .from(start, true)
+                        .to(end, true))
+                .build();
+
+        return elasticsearchRestTemplate.count(searchQuery,
+                IndexCoordinates.of("backend-pixel"));
+    }
 
     public void logPixel(Integer canvasId, int x, int y, int color){
         PixelLog pixelLog = PixelLog.builder()

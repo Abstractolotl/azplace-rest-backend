@@ -36,7 +36,10 @@ public class TestController {
 
     @PostConstruct
     private void init() {
-        userRepo.save(testUser);
+        if(!userRepo.existsByInsideNetIdentifier(testUser.getInsideNetIdentifier()))
+            userRepo.save(testUser);
+        if(!userRepo.existsByInsideNetIdentifier(testUserAdmin.getInsideNetIdentifier()))
+            userRepo.save(testUserAdmin);
     }
 
     @GetMapping("/login")
@@ -48,7 +51,7 @@ public class TestController {
     @GetMapping("/loginAdmin")
     public String testLoginAdmin() {
         session.setUser(testUserAdmin);
-        return "logged in with Test User";
+        return "logged in with Test Admin User";
     }
 
     @GetMapping("/session")
