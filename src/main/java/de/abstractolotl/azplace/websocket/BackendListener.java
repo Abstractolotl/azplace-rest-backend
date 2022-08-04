@@ -1,4 +1,4 @@
-package de.abstractolotl.azplace.service.websocket;
+package de.abstractolotl.azplace.websocket;
 
 import de.abstractolotl.azplace.model.utility.WebSocketServerInfo;
 

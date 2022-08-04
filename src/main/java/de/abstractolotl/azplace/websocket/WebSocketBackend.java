@@ -1,10 +1,12 @@
-package de.abstractolotl.azplace.service.websocket;
+package de.abstractolotl.azplace.websocket;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.abstractolotl.azplace.exceptions.websocket.ConnectionLostException;
 import de.abstractolotl.azplace.model.utility.WebSocketServerInfo;
-import de.abstractolotl.azplace.model.utility.WebsocketMessage;
+import de.abstractolotl.azplace.model.websocket.WebsocketAuth;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -32,8 +34,12 @@ public class WebSocketBackend {
         }
     }
 
+    @SneakyThrows
     private void auth() {
-        client.send("{ \"method\": \"login\", \"key\": \""+serverInfo.getSecret()+"\" }");
+        WebsocketAuth auth = WebsocketAuth.builder()
+                .key(serverInfo.getSecret())
+                .build();
+        client.send(JSON.writeValueAsString(auth));
     }
 
     public void sendMessage(String msg) throws ConnectionLostException {
@@ -68,7 +74,7 @@ public class WebSocketBackend {
 
             @Override
             public void onClose(int i, String s, boolean b) {
-                System.out.println("Connection to Backend Lost: " + s);
+                log.warn("Connection to websocket lost: " + s);
                 listener.onConnectionLost(serverInfo);
             }
 
@@ -77,6 +83,7 @@ public class WebSocketBackend {
                 listener.onConnectionLost(serverInfo);
             }
         };
+
         client.connectBlocking();
         return client;
     }

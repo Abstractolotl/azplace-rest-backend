@@ -1,4 +1,4 @@
-package de.abstractolotl.azplace.model.utility;
+package de.abstractolotl.azplace.model.websocket;
 
 import lombok.Builder;
 import lombok.Data;

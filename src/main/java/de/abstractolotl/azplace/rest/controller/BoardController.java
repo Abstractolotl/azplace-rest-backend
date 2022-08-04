@@ -1,6 +1,10 @@
 package de.abstractolotl.azplace.rest.controller;
 
-import de.abstractolotl.azplace.exceptions.*;
+import de.abstractolotl.azplace.exceptions.board.CanvasNotFoundException;
+import de.abstractolotl.azplace.exceptions.board.InvalidColorIndex;
+import de.abstractolotl.azplace.exceptions.board.PixelOutOfBoundsException;
+import de.abstractolotl.azplace.exceptions.board.UserCooldownException;
+import de.abstractolotl.azplace.exceptions.punishment.UserBannedException;
 import de.abstractolotl.azplace.model.view.ConfigView;
 import de.abstractolotl.azplace.rest.api.BoardAPI;
 import de.abstractolotl.azplace.model.board.Canvas;
