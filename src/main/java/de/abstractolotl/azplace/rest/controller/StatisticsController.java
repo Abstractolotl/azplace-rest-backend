@@ -1,9 +1,6 @@
 package de.abstractolotl.azplace.rest.controller;
 
-import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.model.view.CountView;
-import de.abstractolotl.azplace.model.view.TopStatisticView;
-import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
 import de.abstractolotl.azplace.rest.api.StatisticsAPI;
 import de.abstractolotl.azplace.service.AuthenticationService;
 import de.abstractolotl.azplace.service.ElasticService;
@@ -11,15 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Set;
 
 @RestController
 public class StatisticsController implements StatisticsAPI {
 
-    @Autowired private PixelOwnerRepo pixelOwnerRepo;
     @Autowired private ElasticService elasticService;
 
     @Autowired private AuthenticationService authenticationService;
