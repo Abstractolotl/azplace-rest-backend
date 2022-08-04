@@ -41,6 +41,12 @@ public class AuthController implements AuthAPI {
     @Autowired private UserSession session;
 
     @Override
+    public String login(String hostName) {
+        String url = casUrl + "/login?service=https://" + hostName + "/auth/verify";
+        return "<meta http-equiv=\"refresh\" content=\"0; url=" + url + "\" />";
+    }
+
+    @Override
     public ResponseEntity<String> verify(String ticket) {
         CASUser casUser = validateTicket(ticket);
         User user = createOrGetUser(casUser);
