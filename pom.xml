@@ -11,7 +11,7 @@
 
     <groupId>de.abstractolotl</groupId>
     <artifactId>azplace</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.2.3</version>
     <name>azplace</name>
     <description>azplace</description>
 
@@ -52,6 +52,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
         </dependency>
 
         <!-- Swagger -->

@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serial;
+import java.io.Serializable;
 
 @Entity
 @Data
@@ -15,7 +17,10 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="user")
-public class User {
+public class User implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = -7770861223841514824L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

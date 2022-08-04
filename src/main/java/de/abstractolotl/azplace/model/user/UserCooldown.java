@@ -1,5 +1,6 @@
 package de.abstractolotl.azplace.model.user;
 
+import de.abstractolotl.azplace.model.board.Canvas;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +13,8 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="ban")
-public class UserBan {
+@Table(name="user_cooldown")
+public class UserCooldown {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,10 +24,12 @@ public class UserBan {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private Long created;
-    private Long end;
+    @ManyToOne
+    @JoinColumn(name = "canvas_id", nullable = false)
+    private Canvas canvas;
 
-    private String reason;
-    private boolean pardoned;
+    @Builder.Default
+    @Column(name = "last_pixel_timestamp")
+    private long lastPixelTimestamp = 0L;
 
 }

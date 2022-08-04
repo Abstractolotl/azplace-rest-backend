@@ -22,13 +22,22 @@ app:
     port: 6379
     password:
 
-
 spring:
+  session:
+    store-type: redis
+    redis:
+      flush-mode: on_save
+      namespace: spring:session
+  redis:
+    port: 6379
+    host: noucake.ddns.net
   elasticsearch:
     uris: http://elastic.azplace.azubi.server.lan
+
   jpa:
     hibernate:
       ddl-auto: update
+
   datasource:
     url: jdbc:mysql://noucake.ddns.net:3306/aztube
     username: root
@@ -37,7 +46,7 @@ spring:
 
 management:
   endpoints:
-    enabled-by-default: false # disable all actuator endpoints by default
+    enabled-by-default: false
     jmx:
       exposure:
         include: '*'
@@ -46,7 +55,7 @@ management:
       exposure:
         include: health
 
-  endpoint: # enable only those endpoints we want
+  endpoint:
     health:
       enabled: true
       group: # special health endpoints for kubernetes probes
