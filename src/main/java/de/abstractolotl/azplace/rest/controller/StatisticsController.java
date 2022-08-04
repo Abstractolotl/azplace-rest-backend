@@ -48,7 +48,7 @@ public class StatisticsController implements StatisticsAPI {
     public CountView online() {
         authenticationService.authUserWithRole("statistics");
 
-        Set<String> keys = jedis.keys("spring:session:sessions:expires");
+        Set<String> keys = jedis.keys("spring:session:sessions:expires:*");
         return new CountView(keys.size());
     }
 }

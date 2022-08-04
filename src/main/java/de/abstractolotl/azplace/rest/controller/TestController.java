@@ -27,7 +27,7 @@ public class TestController {
             .firstName("Super Bebb")
             .lastName("Super Bebb")
             .insideNetIdentifier("wurstkuchen")
-            .roles("admin")
+            .roles("admin,statistics")
             .timestampRegistered(System.currentTimeMillis())
             .build();
 
