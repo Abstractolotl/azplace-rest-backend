@@ -56,6 +56,6 @@ public interface UserAPI {
             @ApiResponse(responseCode = "200", description = "Settings updated successfully")
     })
     @PutMapping(value = "/settings", consumes = APPLICATION_JSON_VALUE)
-    void settings(@RequestBody UserSettings userSettings);
+    void setSettings(@RequestBody UserSettings userSettings);
 
 }

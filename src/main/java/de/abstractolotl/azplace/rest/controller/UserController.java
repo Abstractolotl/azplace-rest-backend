@@ -27,7 +27,7 @@ public class UserController implements UserAPI {
     }
 
     @Override
-    public void settings(UserSettings userSettings) {
+    public void setSettings(UserSettings userSettings) {
         User user = authService.authUser();
 
         if(userSettings.isAnonymize() && !authService.hasRole(user, "anonymous")){
