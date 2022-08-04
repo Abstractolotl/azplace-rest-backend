@@ -1,6 +1,5 @@
 package de.abstractolotl.azplace.rest.api;
 
-import de.abstractolotl.azplace.model.user.UserSession;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,7 +30,7 @@ import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
                 responseCode = "200", description = "OK",
                 content = @Content(mediaType = TEXT_HTML_VALUE, schema = @Schema())),
 })
-@RequestMapping("/auth")
+@RequestMapping("auth")
 public interface AuthAPI {
 
     @Operation(
@@ -48,7 +47,6 @@ public interface AuthAPI {
                     """)
     @GetMapping(path = "/verify", produces = MediaType.TEXT_HTML_VALUE)
     @ResponseBody
-    @CrossOrigin(origins = {"*"})
     ResponseEntity<String> verify(@RequestParam("ticket") String ticket);
 
     @Operation(
@@ -61,31 +59,6 @@ public interface AuthAPI {
     })
     @GetMapping(path = "/logout", produces = MediaType.TEXT_HTML_VALUE)
     @ResponseBody
-    @CrossOrigin(origins = {"*"})
     void logout(@RequestParam("sessionKey") String sessionKey);
-
-    /*
-    @Operation(
-            summary = "Get session",
-            description = """
-                    This endpoint returns information about your session.
-                    """
-    )
-    @GetMapping(path = "/session")
-    @ResponseBody
-    @CrossOrigin(origins = {"*"})
-    UserSession getSession();
-
-    @Operation(
-            summary = "Is session valid",
-            description = """
-                    This endpoint show the User if his session is Valid.
-                    """
-    )
-    @GetMapping(path = "/isSessionValid")
-    @ResponseBody
-    @CrossOrigin(origins = {"*"})
-    boolean isSessionValid();
-    */
 
 }

@@ -15,6 +15,7 @@ import de.abstractolotl.azplace.service.AuthenticationService;
 import de.abstractolotl.azplace.service.CooldownService;
 import de.abstractolotl.azplace.service.PunishmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.abstractolotl.azplace.model.user.User;

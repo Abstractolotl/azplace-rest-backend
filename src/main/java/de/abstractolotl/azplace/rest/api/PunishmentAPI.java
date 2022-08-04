@@ -58,7 +58,6 @@ public interface PunishmentAPI {
                     )
             )
     })
-    @CrossOrigin(origins = {"*"})
     @ResponseStatus(HttpStatus.CREATED)
     UserBan banUser(@RequestBody BanRequest banRequest);
 
@@ -76,7 +75,6 @@ public interface PunishmentAPI {
                     )
             )
     })
-    @CrossOrigin(origins = {"*"})
     UserBan pardon(@PathVariable Long banId);
 
 }
