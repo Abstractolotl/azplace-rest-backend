@@ -38,7 +38,7 @@ public class BoardController implements BoardAPI {
     @Autowired private CooldownService cooldownService;
 
     @Autowired private WebSocketService webSocketService;
-    
+
     @Override
     public void place(int canvasId, PlaceRequest request) {
         User user = authService.authUser();
