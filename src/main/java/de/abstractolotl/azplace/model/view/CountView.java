@@ -7,6 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class CountView {
 
-    private long pixels;
+    private long count;
 
 }

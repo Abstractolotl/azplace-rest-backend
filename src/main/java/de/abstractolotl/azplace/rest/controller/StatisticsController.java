@@ -9,9 +9,9 @@ import de.abstractolotl.azplace.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.ScanParams;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 public class StatisticsController implements StatisticsAPI {
@@ -46,6 +46,9 @@ public class StatisticsController implements StatisticsAPI {
 
     @Override
     public CountView online() {
-        return null;
+        authenticationService.authUserWithRole("statistics");
+
+        Set<String> keys = jedis.keys("spring:session:sessions:expires");
+        return new CountView(keys.size());
     }
 }
