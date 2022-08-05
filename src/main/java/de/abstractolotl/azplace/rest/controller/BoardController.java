@@ -80,8 +80,13 @@ public class BoardController implements BoardAPI {
         Canvas canvas = canvasResp.get();
         Optional<PixelOwner> optionalPixelOwner = pixelOwnerRepo.findByXAndYAndCanvas(x, y, canvas);
 
-        if(optionalPixelOwner.isEmpty())
-            throw new PixelOwnerNotFoundException(x, y, canvasId);
+        if(optionalPixelOwner.isEmpty()){
+            return PixelInfoView.builder()
+                    .personId("0")
+                    .username("unknown")
+                    .timestamp(0)
+                    .build();
+        }
 
         PixelOwner pixelOwner = optionalPixelOwner.get();
         String username = "anonymous";
