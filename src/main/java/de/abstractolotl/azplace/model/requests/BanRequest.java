@@ -8,11 +8,9 @@ import javax.validation.constraints.NotNull;
 @Data
 public class BanRequest {
 
-    @NotNull
     @JsonProperty(value = "user_id", required = true)
     public Integer userId;
 
-    @NotNull
     @JsonProperty(required = true)
     public String reason;
 
