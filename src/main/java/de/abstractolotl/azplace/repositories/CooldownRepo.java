@@ -9,8 +9,6 @@ import java.util.Optional;
 
 public interface CooldownRepo extends CrudRepository<UserCooldown, Long> {
 
-    boolean existsByUserAndCanvasAndLastPixelTimestampIsBefore(User user, Canvas canvas, long lastPixelTimestamp);
-
     Optional<UserCooldown> findByUserAndCanvas(User user, Canvas canvas);
 
 }

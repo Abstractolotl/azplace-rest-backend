@@ -4,7 +4,9 @@ import de.abstractolotl.azplace.exceptions.auth.SessionNotAuthorizedException;
 import de.abstractolotl.azplace.exceptions.board.*;
 import de.abstractolotl.azplace.exceptions.punishment.UserBannedException;
 import de.abstractolotl.azplace.model.statistic.PixelOwner;
+import de.abstractolotl.azplace.model.user.UserCooldown;
 import de.abstractolotl.azplace.model.view.ConfigView;
+import de.abstractolotl.azplace.model.view.CooldownView;
 import de.abstractolotl.azplace.model.view.PixelInfoView;
 import de.abstractolotl.azplace.rest.api.BoardAPI;
 import de.abstractolotl.azplace.model.board.Canvas;
@@ -109,7 +111,7 @@ public class BoardController implements BoardAPI {
     }
 
     @Override
-    public HashMap<String, Long> cooldown(int canvasId) {
+    public CooldownView cooldown(int canvasId) {
         User user = authService.authUser();
 
         var canvasRsp = canvasRepo.findById(canvasId);
@@ -117,9 +119,13 @@ public class BoardController implements BoardAPI {
 
         Canvas canvas = canvasRsp.get();
 
-        return new HashMap<>(){{
-            put("last_pixel", cooldownService.getLastPixelTimestamp(user, canvas));
-        }};
+        long lastPixel = cooldownService.getLastPixelTimestamp(user, canvas);
+        long cooldown = (lastPixel + canvas.getCooldown()) - System.currentTimeMillis();
+
+        return CooldownView.builder()
+                .lastPixel(lastPixel)
+                .cooldown(Math.max(0L, cooldown))
+                .build();
     }
 
     @Override

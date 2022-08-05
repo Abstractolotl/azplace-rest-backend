@@ -16,7 +16,12 @@ public class CooldownService {
     private CooldownRepo cooldownRepo;
 
     public boolean isOnCooldown(User user, Canvas canvas){
-        return !cooldownRepo.existsByUserAndCanvasAndLastPixelTimestampIsBefore(user, canvas, System.currentTimeMillis() - canvas.getCooldown());
+        Optional<UserCooldown> cooldownResponse = cooldownRepo.findByUserAndCanvas(user, canvas);
+
+        if(cooldownResponse.isEmpty())
+            return false;
+
+        return System.currentTimeMillis() < (cooldownResponse.get().getLastPixelTimestamp() + canvas.getCooldown());
     }
 
     public long getLastPixelTimestamp(User user, Canvas canvas){

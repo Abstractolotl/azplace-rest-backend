@@ -2,6 +2,7 @@ package de.abstractolotl.azplace.rest.api;
 
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.model.view.ConfigView;
+import de.abstractolotl.azplace.model.view.CooldownView;
 import de.abstractolotl.azplace.model.view.PixelInfoView;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -65,9 +66,9 @@ public interface BoardAPI {
     @Operation(summary = "Get your current cooldown information" )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Current user cooldown returned",
-                    content = @Content(schema = @Schema(implementation = HashMap.class)))
+                    content = @Content(schema = @Schema(implementation = CooldownView.class)))
     })
-    HashMap<String, Long> cooldown(@PathVariable int canvasId);
+    CooldownView cooldown(@PathVariable int canvasId);
 
     @GetMapping("/{canvasId}/config")
     @Operation(summary = "Get board configuration" )
