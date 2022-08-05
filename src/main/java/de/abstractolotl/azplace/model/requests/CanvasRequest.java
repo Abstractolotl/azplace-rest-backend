@@ -11,6 +11,7 @@ public class CanvasRequest {
     @JsonProperty("color_palette")
     private int colorPalette = -1;
 
+    @JsonProperty("start_date")
     private long startDate = -1L;
     private long duration = -1L;
 

@@ -1,5 +1,6 @@
 package de.abstractolotl.azplace.model.view;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.abstractolotl.azplace.model.board.Canvas;
 import lombok.Builder;
 import lombok.Data;
@@ -8,9 +9,11 @@ import lombok.Data;
 @Data
 public class TimespanView {
 
+    @JsonProperty("start_date")
     public long startDate;
     public long duration;
 
+    @JsonProperty("remaining_time")
     public long remainingTime;
     public boolean ended;
 
