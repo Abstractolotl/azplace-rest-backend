@@ -24,6 +24,9 @@ public class PixelLog {
     private LocalDateTime timestamp;
 
     @Field(type = FieldType.Integer)
+    private Integer userId;
+
+    @Field(type = FieldType.Integer)
     private Integer canvasId;
 
     @Field(type = FieldType.Keyword)

@@ -32,10 +32,11 @@ public class ElasticService {
                 IndexCoordinates.of("backend-pixel"));
     }
 
-    public void logPixel(Integer canvasId, int x, int y, int color){
+    public void logPixel(Integer canvasId, Integer userId, int x, int y, int color){
         PixelLog pixelLog = PixelLog.builder()
                 .timestamp(LocalDateTime.now())
                 .canvasId(canvasId)
+                .userId(userId)
                 .position(new Integer[]{x, y})
                 .color(color)
                 .build();
