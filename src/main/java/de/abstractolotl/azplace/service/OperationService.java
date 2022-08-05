@@ -73,8 +73,11 @@ public class OperationService {
         byte[] canvasData = jedis.get(canvas.getRedisKey().getBytes());
         byte[] newCanvasData = createByteArray(height, width);
 
-        for(int i = 0; i < canvasData.length && i < newCanvasData.length; i++){
-            newCanvasData[i] = canvasData[i];
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
+                if(canvasData.length > (y * x))
+                    newCanvasData[y * x] = canvasData[y*x];
+            }
         }
 
         jedis.set(canvas.getRedisKey().getBytes(), newCanvasData);
