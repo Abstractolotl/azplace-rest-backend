@@ -9,12 +9,8 @@ import de.abstractolotl.azplace.model.view.CooldownView;
 import de.abstractolotl.azplace.model.view.PixelInfoView;
 import de.abstractolotl.azplace.rest.api.BoardAPI;
 import de.abstractolotl.azplace.model.board.Canvas;
-import de.abstractolotl.azplace.service.WebSocketService;
+import de.abstractolotl.azplace.service.*;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
-import de.abstractolotl.azplace.service.AuthenticationService;
-import de.abstractolotl.azplace.service.CooldownService;
-import de.abstractolotl.azplace.service.ElasticService;
-import de.abstractolotl.azplace.service.PunishmentService;
 import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.codec.digest.Sha2Crypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +35,6 @@ public class BoardController implements BoardAPI {
     @Autowired private PunishmentService punishmentService;
     @Autowired private CooldownService cooldownService;
     @Autowired private ElasticService elasticService;
-
     @Autowired private WebSocketService webSocketService;
 
     @Override
@@ -95,7 +90,14 @@ public class BoardController implements BoardAPI {
             username = pixelOwner.getUser().getFullName();
         }
 
+        String personId = "0";
+        if(!authService.hasRole(pixelOwner.getUser(), "anonymous") ||
+                (user != null && authService.hasRole(user, "admin"))) {
+            personId = pixelOwner.getUser().getInsideNetIdentifier();
+        }
+
         return PixelInfoView.builder()
+                .personId(personId)
                 .username(username)
                 .timestamp(pixelOwner.getTimestamp())
                 .build();
