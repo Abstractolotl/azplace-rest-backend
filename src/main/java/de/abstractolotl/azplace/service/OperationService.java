@@ -76,7 +76,7 @@ public class OperationService {
         for(int y = 0; y < height; y++){
             for(int x = 0; x < width; x++){
                 if(canvasData.length > (y * x))
-                    newCanvasData[y * x] = canvasData[y*x];
+                    newCanvasData[y * x] = canvasData[y * x];
             }
         }
 
