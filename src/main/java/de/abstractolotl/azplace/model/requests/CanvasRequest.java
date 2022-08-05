@@ -22,6 +22,7 @@ public class CanvasRequest {
 
     public Canvas convert(ColorPalette colorPalette){
         return Canvas.builder()
+                .colorPalette(colorPalette)
                 .startDate(startDate).duration(duration)
                 .height(height).width(width)
                 .cooldown(cooldown)
