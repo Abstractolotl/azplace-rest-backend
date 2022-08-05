@@ -18,6 +18,10 @@ app:
   defaultKeyValidTime: 120
 
 spring:
+  application:
+    name: "@project.build.finalName@"
+    version: "@project.version@"
+
   session:
     store-type: redis
     redis:

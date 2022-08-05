@@ -31,7 +31,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
                 content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema()))
 })
 @RequestMapping("statistics")
-@CrossOrigin(origins = {"*"})
 public interface StatisticsAPI {
 
     @GetMapping(value = "/pixels", produces = APPLICATION_JSON_VALUE)
