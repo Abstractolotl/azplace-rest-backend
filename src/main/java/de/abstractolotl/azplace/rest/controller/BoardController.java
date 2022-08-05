@@ -36,7 +36,7 @@ public class BoardController implements BoardAPI {
     @Autowired private CooldownService cooldownService;
     @Autowired private ElasticService elasticService;
     @Autowired private WebSocketService webSocketService;
-    
+
     @Override
     public void place(int canvasId, PlaceRequest request) {
         User user = authService.authUser();
@@ -90,7 +90,14 @@ public class BoardController implements BoardAPI {
             username = pixelOwner.getUser().getFullName();
         }
 
+        String personId = "0";
+        if(!authService.hasRole(pixelOwner.getUser(), "anonymous") ||
+                (user != null && authService.hasRole(user, "admin"))) {
+            personId = pixelOwner.getUser().getInsideNetIdentifier();
+        }
+
         return PixelInfoView.builder()
+                .personId(personId)
                 .username(username)
                 .timestamp(pixelOwner.getTimestamp())
                 .build();
