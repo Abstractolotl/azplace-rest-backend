@@ -15,6 +15,8 @@ import de.abstractolotl.azplace.service.AuthenticationService;
 import de.abstractolotl.azplace.service.CooldownService;
 import de.abstractolotl.azplace.service.ElasticService;
 import de.abstractolotl.azplace.service.PunishmentService;
+import org.apache.commons.codec.digest.Md5Crypt;
+import org.apache.commons.codec.digest.Sha2Crypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -65,7 +67,7 @@ public class BoardController implements BoardAPI {
         setNewPixelOwner(canvas, request.getX(), request.getY(), user);
         setPixelInBlob(canvas, request.getX(), request.getY(), (byte) request.getColorIndex());
 
-        elasticService.logPixel(canvas.getId(), request.getX(), request.getY(), request.getColorIndex());
+        elasticService.logPixel(canvas.getId(), user.getId(), request.getX(), request.getY(), request.getColorIndex());
         cooldownService.reset(user, canvas);
         webSocketService.broadcastPixel(request);
     }
