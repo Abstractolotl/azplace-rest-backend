@@ -54,7 +54,8 @@ public class OperationController implements OperationAPI {
         if(palette.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Palette does not exists");
 
-        Canvas canvas = canvasRepo.save(canvasRequest.convert(palette.get()));
+        Canvas canvas = canvasRequest.convert(palette.get());
+        canvas = canvasRepo.save(canvas);
 
         jedis.set(canvas.getRedisKey().getBytes(),
                 operationService.createByteArray(canvasRequest.getHeight(), canvasRequest.getHeight()));

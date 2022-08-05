@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface PixelOwnerRepo extends CrudRepository<PixelOwner, Integer> {
 
-    Optional<PixelOwner> findByXAndY(int x, int y);
+    Optional<PixelOwner> findByXAndYAndCanvas(int x, int y, Canvas canvas);
 
     Iterable<PixelOwner> findAllByCanvas(Canvas canvas);
 

@@ -1,8 +1,9 @@
 package de.abstractolotl.azplace.rest.api;
 
-import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.model.view.ConfigView;
+import de.abstractolotl.azplace.model.view.CooldownView;
+import de.abstractolotl.azplace.model.view.PixelInfoView;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -48,6 +49,10 @@ public interface BoardAPI {
     )
     void place(@PathVariable int canvasId, @RequestBody PlaceRequest request);
 
+    @GetMapping("{canvasId}/pixel/{x}/{y}")
+    @Operation(summary = "Get Information about a pixel")
+    PixelInfoView pixel(@PathVariable int canvasId, @PathVariable int x, @PathVariable int y);
+
     @GetMapping("/{canvasId}/data")
     @Operation(
             summary = "Board Data",
@@ -57,21 +62,13 @@ public interface BoardAPI {
     )
     byte[] boardData(@PathVariable int canvasId);
 
-    @GetMapping("/{canvasId}/info")
-    @Operation(
-            deprecated = true,
-            summary = "Board Info",
-            description = "This endpoint should not be used anymore use /{canvasId}/config instead"
-    )
-    Canvas boardInfo(@PathVariable int canvasId);
-
     @GetMapping("/{canvasId}/cooldown")
     @Operation(summary = "Get your current cooldown information" )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Current user cooldown returned",
-                    content = @Content(schema = @Schema(implementation = HashMap.class)))
+                    content = @Content(schema = @Schema(implementation = CooldownView.class)))
     })
-    HashMap<String, Long> cooldown(@PathVariable int canvasId);
+    CooldownView cooldown(@PathVariable int canvasId);
 
     @GetMapping("/{canvasId}/config")
     @Operation(summary = "Get board configuration" )

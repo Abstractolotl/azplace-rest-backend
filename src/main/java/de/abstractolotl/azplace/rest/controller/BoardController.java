@@ -1,12 +1,13 @@
 package de.abstractolotl.azplace.rest.controller;
 
-import de.abstractolotl.azplace.exceptions.board.CanvasNotFoundException;
-import de.abstractolotl.azplace.exceptions.board.InvalidColorIndex;
-import de.abstractolotl.azplace.exceptions.board.PixelOutOfBoundsException;
-import de.abstractolotl.azplace.exceptions.board.UserCooldownException;
+import de.abstractolotl.azplace.exceptions.auth.SessionNotAuthorizedException;
+import de.abstractolotl.azplace.exceptions.board.*;
 import de.abstractolotl.azplace.exceptions.punishment.UserBannedException;
 import de.abstractolotl.azplace.model.statistic.PixelOwner;
+import de.abstractolotl.azplace.model.user.UserCooldown;
 import de.abstractolotl.azplace.model.view.ConfigView;
+import de.abstractolotl.azplace.model.view.CooldownView;
+import de.abstractolotl.azplace.model.view.PixelInfoView;
 import de.abstractolotl.azplace.rest.api.BoardAPI;
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.service.WebSocketService;
@@ -24,6 +25,7 @@ import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
 import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 @RestController
 public class BoardController implements BoardAPI {
@@ -71,6 +73,35 @@ public class BoardController implements BoardAPI {
     }
 
     @Override
+    public PixelInfoView pixel(int canvasId, int x, int y) {
+        User user = null;
+        try {
+            user = authService.authUser();
+        }catch (SessionNotAuthorizedException ignored){ }
+
+        var canvasResp = canvasRepo.findById(canvasId);
+        if (canvasResp.isEmpty()) throw new CanvasNotFoundException(canvasId);
+
+        Canvas canvas = canvasResp.get();
+        Optional<PixelOwner> optionalPixelOwner = pixelOwnerRepo.findByXAndYAndCanvas(x, y, canvas);
+
+        if(optionalPixelOwner.isEmpty())
+            throw new PixelOwnerNotFoundException(x, y, canvasId);
+
+        PixelOwner pixelOwner = optionalPixelOwner.get();
+        String username = "anonymous";
+        if(!authService.hasRole(pixelOwner.getUser(), "anonymous") ||
+                (user != null && authService.hasRole(user, "admin"))) {
+            username = pixelOwner.getUser().getFullName();
+        }
+
+        return PixelInfoView.builder()
+                .username(username)
+                .timestamp(pixelOwner.getTimestamp())
+                .build();
+    }
+
+    @Override
     public byte[] boardData(int canvasId) {
         var canvasRsp = canvasRepo.findById(canvasId);
         if (canvasRsp.isEmpty()) throw new CanvasNotFoundException(canvasId);
@@ -80,17 +111,7 @@ public class BoardController implements BoardAPI {
     }
 
     @Override
-    public Canvas boardInfo(int canvasId) {
-        var canvasRsp = canvasRepo.findById(canvasId);
-        if (canvasRsp.isEmpty()) {
-            throw new CanvasNotFoundException(canvasId);
-        }
-
-        return canvasRsp.get();
-    }
-
-    @Override
-    public HashMap<String, Long> cooldown(int canvasId) {
+    public CooldownView cooldown(int canvasId) {
         User user = authService.authUser();
 
         var canvasRsp = canvasRepo.findById(canvasId);
@@ -98,9 +119,13 @@ public class BoardController implements BoardAPI {
 
         Canvas canvas = canvasRsp.get();
 
-        return new HashMap<>(){{
-            put("last_pixel", cooldownService.getLastPixelTimestamp(user, canvas));
-        }};
+        long lastPixel = cooldownService.getLastPixelTimestamp(user, canvas);
+        long cooldown = (lastPixel + canvas.getCooldown()) - System.currentTimeMillis();
+
+        return CooldownView.builder()
+                .lastPixel(lastPixel)
+                .cooldown(Math.max(0L, cooldown))
+                .build();
     }
 
     @Override
@@ -130,7 +155,7 @@ public class BoardController implements BoardAPI {
     }
 
     private void setNewPixelOwner(Canvas canvas, int x, int y, User user) {
-        var        pixelResp = pixelOwnerRepo.findByXAndY(x, y);
+        var        pixelResp = pixelOwnerRepo.findByXAndYAndCanvas(x, y, canvas);
         PixelOwner pixel     = pixelResp.orElseGet(() -> createPixelOwner(canvas, x, y));
         pixel.setTimestamp(System.currentTimeMillis());
         pixel.setUser(user);

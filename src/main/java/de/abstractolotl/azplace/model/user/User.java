@@ -32,7 +32,7 @@ public class User implements Serializable {
     private String lastName;
 
     @Builder.Default
-    private String roles = String.join(",", "default");
+    private String roles = String.join(",", "anonymous");
 
     @Column(unique=true) @NotNull
     private String insideNetIdentifier;
@@ -41,6 +41,10 @@ public class User implements Serializable {
 
     public String[] getRoleArray(){
         return roles.split(",");
+    }
+
+    public String getFullName(){
+        return firstName + " " + lastName;
     }
 
 }

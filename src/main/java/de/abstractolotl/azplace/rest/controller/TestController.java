@@ -15,7 +15,7 @@ import javax.annotation.PostConstruct;
 @RequestMapping("/test")
 public class TestController {
 
-    private final static User testUser = User.builder()
+    private static User testUser = User.builder()
             .firstName("Bobb")
             .lastName("Bebb")
             .insideNetIdentifier("stinkekäse")
@@ -23,7 +23,7 @@ public class TestController {
             .timestampRegistered(System.currentTimeMillis())
             .build();
 
-    private final static User testUserAdmin = User.builder()
+    private static User testUserAdmin = User.builder()
             .firstName("Super Bebb")
             .lastName("Super Bebb")
             .insideNetIdentifier("wurstkuchen")
@@ -36,10 +36,11 @@ public class TestController {
 
     @PostConstruct
     private void init() {
-        if(!userRepo.existsByInsideNetIdentifier(testUser.getInsideNetIdentifier()))
-            userRepo.save(testUser);
-        if(!userRepo.existsByInsideNetIdentifier(testUserAdmin.getInsideNetIdentifier()))
-            userRepo.save(testUserAdmin);
+        userRepo.findByInsideNetIdentifier(testUser.getInsideNetIdentifier()).ifPresentOrElse(user -> testUser = user,
+                () -> testUser = userRepo.save(testUser));
+
+        userRepo.findByInsideNetIdentifier(testUserAdmin.getInsideNetIdentifier()).ifPresentOrElse(user -> testUserAdmin = user,
+                () -> testUserAdmin = userRepo.save(testUserAdmin));
     }
 
     @GetMapping("/login")
