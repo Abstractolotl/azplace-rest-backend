@@ -4,7 +4,6 @@ import de.abstractolotl.azplace.exceptions.auth.SessionNotAuthorizedException;
 import de.abstractolotl.azplace.exceptions.board.*;
 import de.abstractolotl.azplace.exceptions.punishment.UserBannedException;
 import de.abstractolotl.azplace.model.statistic.PixelOwner;
-import de.abstractolotl.azplace.model.user.UserCooldown;
 import de.abstractolotl.azplace.model.view.ConfigView;
 import de.abstractolotl.azplace.model.view.CooldownView;
 import de.abstractolotl.azplace.model.view.PixelInfoView;
@@ -24,7 +23,6 @@ import de.abstractolotl.azplace.repositories.CanvasRepo;
 import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
 import redis.clients.jedis.Jedis;
 
-import java.util.HashMap;
 import java.util.Optional;
 
 @RestController
