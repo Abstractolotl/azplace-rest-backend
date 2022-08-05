@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 
-import java.util.HashMap;
-
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Validated
@@ -37,32 +35,24 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("board")
 public interface BoardAPI {
 
-    @PostMapping("{canvasId}/place")
+    @PostMapping(value = "{canvasId}/place", consumes = APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Place a Pixel",
-            description = "Placed a pixel on the specified Board." +
-                          "This endpoint is ready for multi board support." +
-                          "for now just use the canvasId as 0",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(schema = @Schema(implementation = PlaceRequest.class))
             )
     )
     void place(@PathVariable int canvasId, @RequestBody PlaceRequest request);
 
-    @GetMapping("{canvasId}/pixel/{x}/{y}")
+    @GetMapping(value = "{canvasId}/pixel/{x}/{y}", produces = APPLICATION_JSON_VALUE)
     @Operation(summary = "Get Information about a pixel")
     PixelInfoView pixel(@PathVariable int canvasId, @PathVariable int x, @PathVariable int y);
 
     @GetMapping("/{canvasId}/data")
-    @Operation(
-            summary = "Board Data",
-            description = "Returns the raw binary data of the board. \n" +
-                          "See the outdated presentation for further information: \n" +
-                          "https://discord.com/channels/@me/758720519804682248/1001125420055400589"
-    )
+    @Operation(summary = "Get the current board data")
     byte[] boardData(@PathVariable int canvasId);
 
-    @GetMapping("/{canvasId}/cooldown")
+    @GetMapping(value = "/{canvasId}/cooldown", produces = APPLICATION_JSON_VALUE)
     @Operation(summary = "Get your current cooldown information" )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Current user cooldown returned",
@@ -70,7 +60,7 @@ public interface BoardAPI {
     })
     CooldownView cooldown(@PathVariable int canvasId);
 
-    @GetMapping("/{canvasId}/config")
+    @GetMapping(value = "/{canvasId}/config", produces = APPLICATION_JSON_VALUE)
     @Operation(summary = "Get board configuration" )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Current user cooldown returned",

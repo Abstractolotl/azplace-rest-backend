@@ -11,6 +11,7 @@ public class CanvasRequest {
     @JsonProperty("color_palette")
     private int colorPalette = -1;
 
+    @JsonProperty("start_date")
     private long startDate = -1L;
     private long duration = -1L;
 
@@ -21,6 +22,7 @@ public class CanvasRequest {
 
     public Canvas convert(ColorPalette colorPalette){
         return Canvas.builder()
+                .colorPalette(colorPalette)
                 .startDate(startDate).duration(duration)
                 .height(height).width(width)
                 .cooldown(cooldown)

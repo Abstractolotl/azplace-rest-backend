@@ -35,17 +35,14 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("user")
 public interface UserAPI {
 
-    @Operation(
-            method = "GET",
-            summary = "Get Profile of current user"
-    )
+    @GetMapping(value = "/", produces = APPLICATION_JSON_VALUE)
+    @Operation(summary = "Get Profile of current user")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "Profile returned",
                     content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProfileView.class))
             )
     })
-    @GetMapping("/")
     ProfileView profile();
 
     @Operation(summary = "Update user settings",
