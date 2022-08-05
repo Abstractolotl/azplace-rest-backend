@@ -12,6 +12,9 @@ public class ProfileView {
 
     private String name;
 
+    @JsonProperty("person_id")
+    private String personId;
+
     @JsonProperty("timestamp_registered")
     private long timestampRegistered;
 
@@ -20,6 +23,7 @@ public class ProfileView {
 
     public static ProfileView fromUser(User user) {
         return ProfileView.builder()
+                .personId(user.getInsideNetIdentifier())
                 .userSettings(new UserSettings(user.getRoles().contains("anonymous")))
                 .name(user.getFirstName() + " " + user.getLastName())
                 .timestampRegistered(user.getTimestampRegistered())
