@@ -62,7 +62,6 @@ public interface PunishmentAPI {
 
     @PostMapping(
             value = "/pardon/{banId}",
-            consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE
     )
     @Operation(method = "POST", summary = "Pardon a user")
