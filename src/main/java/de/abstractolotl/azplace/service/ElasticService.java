@@ -38,8 +38,11 @@ public class ElasticService {
                 .canvasId(canvasId)
                 .userId(userId)
                 .position(new Integer[]{x, y})
+                .x(x)
+                .y(y)
                 .color(color)
                 .build();
+
         elasticsearchRestTemplate.index(new IndexQueryBuilder()
                 .withId(pixelLog.getId())
                 .withObject(pixelLog).build(),
