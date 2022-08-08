@@ -6,15 +6,17 @@ import de.abstractolotl.azplace.model.user.UserCooldown;
 import de.abstractolotl.azplace.repositories.CooldownRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-@Service
+@Service @Transactional
 public class CooldownService {
 
     @Autowired
     private CooldownRepo cooldownRepo;
 
+    @Transactional
     public boolean isOnCooldown(User user, Canvas canvas){
         Optional<UserCooldown> cooldownResponse = cooldownRepo.findByUserAndCanvas(user, canvas);
 
@@ -33,6 +35,7 @@ public class CooldownService {
         return userCooldownOptional.get().getLastPixelTimestamp();
     }
 
+    @Transactional
     public void reset(User user, Canvas canvas){
         Optional<UserCooldown> userCooldownOptional = cooldownRepo.findByUserAndCanvas(user, canvas);
 

@@ -11,8 +11,6 @@ import de.abstractolotl.azplace.rest.api.BoardAPI;
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.service.*;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
-import org.apache.commons.codec.digest.Md5Crypt;
-import org.apache.commons.codec.digest.Sha2Crypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,8 +32,7 @@ public class BoardController implements BoardAPI {
     @Autowired private AuthenticationService authService;
     @Autowired private PunishmentService punishmentService;
     @Autowired private CooldownService cooldownService;
-    @Autowired private ElasticService elasticService;
-    @Autowired private WebSocketService webSocketService;
+    @Autowired private BoardService boardService;
 
     @Override
     public void place(int canvasId, PlaceRequest request) {
@@ -48,23 +45,7 @@ public class BoardController implements BoardAPI {
 
         final Canvas canvas = canvasResp.get();
 
-        if(cooldownService.isOnCooldown(user, canvas))
-            throw new UserCooldownException();
-
-        if (canvas.getWidth() <= request.getX() || canvas.getHeight() <= request.getY()) {
-            throw new PixelOutOfBoundsException(request.getX(), request.getY(), canvas.getWidth(), canvas.getHeight());
-        }
-
-        if(request.getColorIndex() < 0 || request.getColorIndex() >= canvas.getColorPalette().getHexColors().length) {
-            throw new InvalidColorIndex(canvas.getColorPalette(), request.getColorIndex());
-        }
-
-        setNewPixelOwner(canvas, request.getX(), request.getY(), user);
-        setPixelInBlob(canvas, request.getX(), request.getY(), (byte) request.getColorIndex());
-
-        elasticService.logPixel(canvas.getId(), user.getId(), request.getX(), request.getY(), request.getColorIndex());
-        cooldownService.reset(user, canvas);
-        webSocketService.broadcastPixel(request);
+        boardService.placePixel(user, canvas, request);
     }
 
     @Override
@@ -143,35 +124,6 @@ public class BoardController implements BoardAPI {
         }
 
         return ConfigView.fromCanvas(canvasRsp.get());
-    }
-
-    private void setPixelInBlob(Canvas canvas, int x, int y, byte color) {
-        int offset = getBlobOffsetForPixel(canvas.getWidth(), canvas.getHeight(), x, y) * 8;
-        jedis.bitfield(canvas.getRedisKey(), "SET", "u8", String.valueOf(offset), String.valueOf(color));
-    }
-
-    /**
-     * Notes: Doesn't check for correctness of coords
-     */
-    private PixelOwner createPixelOwner(Canvas canvas, int x, int y) {
-        PixelOwner pixel = new PixelOwner();
-        pixel.setCanvas(canvas);
-        pixel.setX(x);
-        pixel.setY(y);
-        return pixel;
-    }
-
-    private void setNewPixelOwner(Canvas canvas, int x, int y, User user) {
-        var        pixelResp = pixelOwnerRepo.findByXAndYAndCanvas(x, y, canvas);
-        PixelOwner pixel     = pixelResp.orElseGet(() -> createPixelOwner(canvas, x, y));
-        pixel.setTimestamp(System.currentTimeMillis());
-        pixel.setUser(user);
-
-        pixelOwnerRepo.save(pixel);
-    }
-
-    private int getBlobOffsetForPixel(int width, int height, int x, int y) {
-        return y * width + x;
     }
 
 }
