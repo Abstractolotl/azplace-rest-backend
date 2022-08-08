@@ -33,6 +33,12 @@ public class PixelLog {
     @Field(type = FieldType.Keyword)
     private Integer[] position;
 
+    @Field(type = FieldType.Integer)
+    private Integer x;
+
+    @Field(type = FieldType.Integer)
+    private Integer y;
+
     @Field(type = FieldType.Byte)
     private int color;
 
