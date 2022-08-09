@@ -73,8 +73,8 @@ public class OperationService {
         return optionalCurrentCanvas.get();
     }
 
-        byte[] canvasData = redis.opsForValue().get(canvas.getRedisKey().getBytes());
     private void resize(Canvas canvas, int height, int width, int currentHeight, int currentWidth){
+        byte[] canvasData = redis.opsForValue().get(canvas.getRedisKey().getBytes());
         byte[] newCanvasData = createByteArray(height, width);
 
         for(int y = 0; y < height && y < currentHeight; y++){

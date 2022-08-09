@@ -32,6 +32,7 @@ public class BoardService {
     @Autowired private CooldownService cooldownService;
     @Autowired private ElasticService elasticService;
     @Autowired private WebSocketService webSocketService;
+    @Autowired private BotService botService;
 
     @Transactional
     public void placePixel(User user, Canvas canvas, PlaceRequest request){
@@ -43,19 +44,10 @@ public class BoardService {
 
     @Transactional
     public void placePixel(UserBotToken botToken, Canvas canvas, PlaceRequest request){
-        try {
-            checkBotRateLimit(botToken);
-        } catch (IOException ignored) { }
-
-        long lastRequest = 0L;
-        if(jedis.get(("bots:" + botToken.getToken()).getBytes()) != null)
-            lastRequest = Long.parseLong(new String(jedis.get(("bots:" + botToken.getToken()).getBytes())));
-
-        if(System.currentTimeMillis() < lastRequest + (canvas.getCooldown() * 1.5))
-            throw new UserCooldownException();
+        botService.checkAcceptance(canvas, botToken);
 
         updatePixel(canvas, request, botToken.getUser(), true);
-        jedis.set(("bots:" + botToken.getToken()).getBytes(), String.valueOf(System.currentTimeMillis()).getBytes());
+        redis.opsForValue().set(("bots:" + botToken.getToken()).getBytes(), String.valueOf(System.currentTimeMillis()).getBytes());
     }
 
     private void updatePixel(Canvas canvas, PlaceRequest request, User user){
@@ -72,43 +64,6 @@ public class BoardService {
         elasticService.logPixel(canvas.getId(), user.getId(),
                 request.getX(), request.getY(), request.getColorIndex(),
                 bot);
-    }
-
-
-    private void checkBotRateLimit(UserBotToken botToken) throws IOException {
-        JsonMapper jsonMapper = new JsonMapper();
-
-        if(jedis.get(("bots:rates:" + botToken.getToken()).getBytes()) == null){
-            HashMap<String, Object> data = new HashMap<>(){{
-                put("last_reset", System.currentTimeMillis() + 60_000);
-                put("rate", 1);
-            }};
-
-            jedis.set(("bots:rates:" + botToken.getToken()).getBytes(), jsonMapper.writeValueAsString(data).getBytes());
-            return;
-        }
-
-        byte[] rateBytes = jedis.get(("bots:rates:" + botToken.getToken()).getBytes());
-        JsonNode jsonNode = jsonMapper.readTree(rateBytes);
-
-        if(System.currentTimeMillis() >= jsonNode.get("last_reset").asLong()){
-            HashMap<String, Object> data = new HashMap<>(){{
-                put("last_reset", System.currentTimeMillis() + 60_000);
-                put("rate", 1);
-            }};
-
-            jedis.set(("bots:rates:" + botToken.getToken()).getBytes(), jsonMapper.writeValueAsString(data).getBytes());
-            return;
-        }
-
-        if(jsonNode.get("rate").asInt() >= botToken.getRateLimit())
-            throw new RateLimitException();
-
-        HashMap<String, Object> data = new HashMap<>(){{
-            put("last_reset", jsonNode.get("last_reset").asLong());
-            put("rate", jsonNode.get("rate").asInt() + 1);
-        }};
-        jedis.set(("bots:rates:" + botToken.getToken()).getBytes(), jsonMapper.writeValueAsString(data).getBytes());
     }
 
     private void checkPlaceRequest(Canvas canvas, PlaceRequest request){
