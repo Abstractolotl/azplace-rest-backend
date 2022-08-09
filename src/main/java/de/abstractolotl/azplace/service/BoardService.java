@@ -57,7 +57,7 @@ public class BoardService {
         if(jedis.get(("bots:" + botToken.getToken()).getBytes()) != null)
             lastRequest = Long.parseLong(new String(jedis.get(("bots:" + botToken.getToken()).getBytes())));
 
-        if(System.currentTimeMillis() < lastRequest + canvas.getCooldown())
+        if(System.currentTimeMillis() < lastRequest + (canvas.getCooldown() * 1.5))
             throw new UserCooldownException();
 
         checkPlaceRequest(canvas, request);
