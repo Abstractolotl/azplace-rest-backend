@@ -95,7 +95,7 @@ public class BoardController implements BoardAPI {
 
         final Canvas canvas = canvasRsp.get();
 
-        return redis.opsForValue().get(canvas.getRedisKey());
+        return redis.opsForValue().get(canvas.getRedisKey().getBytes());
     }
 
     @Override
