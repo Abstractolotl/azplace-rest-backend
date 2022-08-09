@@ -19,8 +19,8 @@ public class BotService {
     @Autowired private RedisTemplate<byte[], byte[]> redis;
 
     public void checkAcceptance(Canvas canvas, UserBotToken userBotToken){
-        checkCooldown(canvas, userBotToken);
         checkRateLimit(userBotToken);
+        checkCooldown(canvas, userBotToken);
     }
 
     private void checkCooldown(Canvas canvas, UserBotToken botToken){
@@ -49,9 +49,7 @@ public class BotService {
         if(rate >= botToken.getRateLimit())
             throw new RateLimitException();
 
-        rate++;
-
-        redis.opsForValue().set(("bots:rates:" + botToken.getToken()).getBytes(), String.valueOf(rate).getBytes(), Duration.of(1, ChronoUnit.MINUTES));
+        redis.opsForValue().increment(("bots:rates:" + botToken.getToken()).getBytes());
     }
 
 }
