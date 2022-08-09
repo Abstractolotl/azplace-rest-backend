@@ -14,9 +14,10 @@ import de.abstractolotl.azplace.model.user.UserBotToken;
 import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.BitFieldSubCommands;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ import java.util.HashMap;
 public class BoardService {
 
     @Autowired private PixelOwnerRepo pixelOwnerRepo;
-    @Autowired private Jedis jedis;
+    @Autowired private RedisTemplate<byte[], byte[]> redis;
 
     @Autowired private CooldownService cooldownService;
     @Autowired private ElasticService elasticService;
@@ -122,8 +123,8 @@ public class BoardService {
 
     private void setPixelInBlob(Canvas canvas, int x, int y, byte color) {
         int offset = getBlobOffsetForPixel(canvas.getWidth(), canvas.getHeight(), x, y) * 8;
-
-        jedis.bitfield(canvas.getRedisKey(), "SET", "u8", String.valueOf(offset), String.valueOf(color));
+        var command = BitFieldSubCommands.BitFieldSet.create(BitFieldSubCommands.BitFieldType.UINT_8, BitFieldSubCommands.Offset.offset(offset), color);
+        redis.opsForValue().bitField(canvas.getRedisKey().getBytes(), BitFieldSubCommands.create(command));
     }
 
     private PixelOwner createPixelOwner(Canvas canvas, int x, int y) {
