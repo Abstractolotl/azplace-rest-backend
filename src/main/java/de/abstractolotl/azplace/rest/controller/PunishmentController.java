@@ -20,11 +20,8 @@ public class PunishmentController implements PunishmentAPI {
     @Autowired
     private AuthenticationService authService;
 
-    @Autowired
-    private BanRepo banRepo;
-
-    @Autowired
-    private UserRepo userRepo;
+    @Autowired private BanRepo banRepo;
+    @Autowired private UserRepo userRepo;
 
     @Override
     public UserBan banUser(BanRequest banRequest) {

@@ -57,7 +57,8 @@ public class OperationService {
         }
 
         if(resized){
-            resize(currentCanvas, new int[]{currentHeight, currentCanvas.getHeight()}, new int[]{currentWith, currentCanvas.getWidth()});
+            resize(currentCanvas, currentCanvas.getHeight(), currentCanvas.getWidth(),
+                    currentHeight, currentWith);
         }
 
         return canvasRepo.save(currentCanvas);
@@ -72,13 +73,13 @@ public class OperationService {
         return optionalCurrentCanvas.get();
     }
 
-    private void resize(Canvas canvas, int[] height, int[] width){
+    private void resize(Canvas canvas, int height, int width, int currentHeight, int currentWidth){
         byte[] canvasData = jedis.get(canvas.getRedisKey().getBytes());
-        byte[] newCanvasData = createByteArray(height[1], width[1]);
+        byte[] newCanvasData = createByteArray(height, width);
 
-        for(int y = 0; y < height[0] && y < height[1]; y++){
-            for(int x = 0; x < width[0] && x < width[1]; x++){
-                newCanvasData[x + (y * width[1])] = canvasData[x + (y * width[0])];
+        for(int y = 0; y < height && y < currentHeight; y++){
+            for(int x = 0; x < width && x < currentWidth; x++){
+                newCanvasData[x + (y * width)] = canvasData[x + (y * currentWidth)];
             }
         }
 

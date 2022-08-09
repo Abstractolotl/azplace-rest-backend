@@ -84,7 +84,7 @@ public class OperationController implements OperationAPI {
 
         pixelRepo.deleteAll(pixelRepo.findAllByCanvas(canvas.get()));
 
-        jedis.del(canvas.get().getRedisKey());
+        jedis.del(canvas.get().getRedisKey().getBytes());
         canvasRepo.delete(canvas.get());
 
         return ResponseEntity.ok(new HashMap<>(){{

@@ -33,19 +33,23 @@ public class ElasticService {
     }
 
     public void logPixel(Integer canvasId, Integer userId, int x, int y, int color){
+        logPixel(canvasId, userId, x, y, color, false);
+    }
+
+    public void logPixel(Integer canvasId, Integer userId, int x, int y, int color, boolean bot){
         PixelLog pixelLog = PixelLog.builder()
                 .timestamp(LocalDateTime.now())
                 .canvasId(canvasId)
                 .userId(userId)
-                .position(new Integer[]{x, y})
                 .x(x)
                 .y(y)
+                .bot(bot)
                 .color(color)
                 .build();
 
         elasticsearchRestTemplate.index(new IndexQueryBuilder()
-                .withId(pixelLog.getId())
-                .withObject(pixelLog).build(),
+                        .withId(pixelLog.getId())
+                        .withObject(pixelLog).build(),
                 IndexCoordinates.of("backend-pixel"));
     }
 
