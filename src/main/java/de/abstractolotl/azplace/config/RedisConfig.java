@@ -3,7 +3,12 @@ package de.abstractolotl.azplace.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import redis.clients.jedis.Jedis;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.SerializationException;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisConfig {
@@ -16,14 +21,27 @@ public class RedisConfig {
     private String redisPassword;
 
     @Bean
-    public Jedis jedis() {
-        if (redisPassword.isBlank()) {
-            return new Jedis(redisUrl, redisPort);
-        }
+    public JedisConnectionFactory jedisConnectionFactory() {
+        var config = new RedisStandaloneConfiguration(redisUrl, redisPort);
+        config.setPassword(redisPassword);
+        return new JedisConnectionFactory(config);
+    }
 
-        final Jedis jedis = new Jedis(redisUrl, redisPort);
-        jedis.auth(redisPassword);
-        return jedis;
+    @Bean
+    public RedisTemplate<byte[], byte[]> redis() {
+        RedisTemplate<byte[], byte[]> template = new RedisTemplate<>();
+        template.setConnectionFactory(jedisConnectionFactory());
+        template.setDefaultSerializer(new RedisSerializer<byte[]>() {
+            @Override
+            public byte[] serialize(byte[] bytes) throws SerializationException {
+                return bytes;
+            }
+            @Override
+            public byte[] deserialize(byte[] bytes) throws SerializationException {
+                return bytes;
+            }
+        });
+        return template;
     }
 
 }

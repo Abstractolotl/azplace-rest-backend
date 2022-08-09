@@ -7,19 +7,19 @@ import de.abstractolotl.azplace.model.requests.PaletteRequest;
 import de.abstractolotl.azplace.repositories.CanvasRepo;
 import de.abstractolotl.azplace.repositories.PaletteRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import redis.clients.jedis.Jedis;
 
 import java.util.Optional;
 
 @Service
 public class OperationService {
 
-    @Autowired private Jedis jedis;
     @Autowired private CanvasRepo canvasRepo;
     @Autowired private PaletteRepo paletteRepo;
+    @Autowired private RedisTemplate<byte[], byte[]> redis;
 
     public Canvas updateCanvas(Integer id, CanvasRequest canvas) {
         boolean resized = false;
@@ -73,7 +73,8 @@ public class OperationService {
     }
 
     private void resize(Canvas canvas, int[] height, int[] width){
-        byte[] canvasData = jedis.get(canvas.getRedisKey().getBytes());
+//        byte[] canvasData = jedis.get(canvas.getRedisKey().getBytes());
+        byte[] canvasData = new byte[]{};
         byte[] newCanvasData = createByteArray(height[1], width[1]);
 
         for(int y = 0; y < height[0] && y < height[1]; y++){
@@ -82,7 +83,7 @@ public class OperationService {
             }
         }
 
-        jedis.set(canvas.getRedisKey().getBytes(), newCanvasData);
+        redis.opsForValue().set(canvas.getRedisKey().getBytes(), newCanvasData);
     }
 
     public ColorPalette updatePalette(Integer id, PaletteRequest palette){

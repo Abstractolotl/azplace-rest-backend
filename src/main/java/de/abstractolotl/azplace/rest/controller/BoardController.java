@@ -12,20 +12,19 @@ import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.service.*;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.repositories.CanvasRepo;
 import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
-import redis.clients.jedis.Jedis;
 
 import java.util.Optional;
 
 @RestController
 public class BoardController implements BoardAPI {
 
-    @Autowired private Jedis jedis;
-
+    @Autowired private RedisTemplate<byte[], byte[]> redis;
     @Autowired private CanvasRepo canvasRepo;
     @Autowired private PixelOwnerRepo pixelOwnerRepo;
 
@@ -95,7 +94,8 @@ public class BoardController implements BoardAPI {
         if (canvasRsp.isEmpty()) throw new CanvasNotFoundException(canvasId);
 
         final Canvas canvas = canvasRsp.get();
-        return jedis.get(canvas.getRedisKey().getBytes());
+
+        return redis.opsForValue().get(canvas.getRedisKey());
     }
 
     @Override
