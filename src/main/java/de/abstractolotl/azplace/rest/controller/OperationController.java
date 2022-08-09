@@ -13,11 +13,11 @@ import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
 import de.abstractolotl.azplace.service.AuthenticationService;
 import de.abstractolotl.azplace.service.OperationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -29,7 +29,7 @@ public class OperationController implements OperationAPI {
     @Autowired private PaletteRepo paletteRepo;
     @Autowired private PixelOwnerRepo pixelRepo;
 
-    @Autowired private Jedis jedis;
+    @Autowired private RedisTemplate<byte[], byte[]> redis;
     @Autowired private OperationService operationService;
     @Autowired private AuthenticationService authService;
 
@@ -57,8 +57,7 @@ public class OperationController implements OperationAPI {
         Canvas canvas = canvasRequest.convert(palette.get());
         canvas = canvasRepo.save(canvas);
 
-        jedis.set(canvas.getRedisKey().getBytes(),
-                operationService.createByteArray(canvasRequest.getHeight(), canvasRequest.getHeight()));
+        redis.opsForValue().set(canvas.getRedisKey().getBytes(), operationService.createByteArray(canvasRequest.getHeight(), canvasRequest.getHeight()));
 
         return canvas;
     }
@@ -79,12 +78,11 @@ public class OperationController implements OperationAPI {
 
         Optional<Canvas> canvas = canvasRepo.findById(id);
 
-        if(canvas.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        if(canvas.isEmpty()) throw new CanvasNotFoundException(id);
 
         pixelRepo.deleteAll(pixelRepo.findAllByCanvas(canvas.get()));
 
-        jedis.del(canvas.get().getRedisKey());
+        redis.delete(canvas.get().getRedisKey().getBytes());
         canvasRepo.delete(canvas.get());
 
         return ResponseEntity.ok(new HashMap<>(){{
