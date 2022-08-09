@@ -44,21 +44,4 @@ public class RedisConfig {
         return template;
     }
 
-    @Bean
-    public JedisConnectionFactory jedisConnectionFactory() {
-        return new JedisConnectionFactory(redisStandaloneConfiguration());
-    }
-
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
-        RedisTemplate<String, Object> myRedisTemplate = new RedisTemplate<>();
-        myRedisTemplate.setConnectionFactory(jedisConnectionFactory());
-        return myRedisTemplate;
-    }
-
-    @Bean
-    public Jedis jedis() {
-        return ((JedisConnection) jedisConnectionFactory().getConnection()).getJedis();
-    }
-
 }
