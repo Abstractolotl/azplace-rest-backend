@@ -37,14 +37,7 @@ public class BoardService {
         if(cooldownService.isOnCooldown(user, canvas))
             throw new UserCooldownException();
 
-        checkPlaceRequest(canvas, request);
-
-        setNewPixelOwner(canvas, request.getX(), request.getY(), user);
-        setPixelInBlob(canvas, request.getX(), request.getY(), (byte) request.getColorIndex());
-
-        elasticService.logPixel(canvas.getId(), user.getId(), request.getX(), request.getY(), request.getColorIndex());
-        cooldownService.reset(user, canvas);
-        webSocketService.broadcastPixel(request);
+        updatePixel(canvas, request, user);
     }
 
     @Transactional
@@ -60,17 +53,26 @@ public class BoardService {
         if(System.currentTimeMillis() < lastRequest + (canvas.getCooldown() * 1.5))
             throw new UserCooldownException();
 
+        updatePixel(canvas, request, botToken.getUser(), true);
+        jedis.set(("bots:" + botToken.getToken()).getBytes(), String.valueOf(System.currentTimeMillis()).getBytes());
+    }
+
+    private void updatePixel(Canvas canvas, PlaceRequest request, User user){
+        updatePixel(canvas, request, user, false);
+    }
+
+    private void updatePixel(Canvas canvas, PlaceRequest request, User user, boolean bot){
         checkPlaceRequest(canvas, request);
 
-        setNewPixelOwner(canvas, request.getX(), request.getY(), botToken.getUser());
+        setNewPixelOwner(canvas, request.getX(), request.getY(), user);
         setPixelInBlob(canvas, request.getX(), request.getY(), (byte) request.getColorIndex());
 
-        elasticService.logPixel(canvas.getId(), botToken.getUser().getId(),
-                request.getX(), request.getY(), request.getColorIndex(),
-                true);
-        jedis.set(("bots:" + botToken.getToken()).getBytes(), String.valueOf(System.currentTimeMillis()).getBytes());
         webSocketService.broadcastPixel(request);
+        elasticService.logPixel(canvas.getId(), user.getId(),
+                request.getX(), request.getY(), request.getColorIndex(),
+                bot);
     }
+
 
     private void checkBotRateLimit(UserBotToken botToken) throws IOException {
         JsonMapper jsonMapper = new JsonMapper();
@@ -86,7 +88,6 @@ public class BoardService {
         }
 
         byte[] rateBytes = jedis.get(("bots:rates:" + botToken.getToken()).getBytes());
-
         JsonNode jsonNode = jsonMapper.readTree(rateBytes);
 
         if(System.currentTimeMillis() >= jsonNode.get("last_reset").asLong()){
