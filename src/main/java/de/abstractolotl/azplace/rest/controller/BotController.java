@@ -59,12 +59,11 @@ public class BotController implements BotAPI {
     }
 
     @Override
-    public BotView[] getBotTokens() {
+    public List<BotView> getBotTokens() {
         User user = authenticationService.authUser();
 
         List<UserBotToken> botTokenList = botRepo.findAllByUser(user);
-        return botTokenList.stream().map(BotView::fromUserBotToken)
-                .toList().toArray(new BotView[]{});
+        return botTokenList.stream().map(BotView::fromUserBotToken).toList();
     }
 
     @Override
