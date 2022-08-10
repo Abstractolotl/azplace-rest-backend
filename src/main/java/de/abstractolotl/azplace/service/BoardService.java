@@ -61,7 +61,7 @@ public class BoardService {
         setNewPixelOwner(canvas, request.getX(), request.getY(), user);
         setPixelInBlob(canvas, request.getX(), request.getY(), (byte) request.getColorIndex());
 
-        webSocketService.broadcastPixel(request);
+        webSocketService.broadcastPixel(canvas, request);
         elasticService.logPixel(canvas.getId(), user.getId(),
                 request.getX(), request.getY(), request.getColorIndex(),
                 bot);
