@@ -1,6 +1,5 @@
 package de.abstractolotl.azplace.service;
 
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import de.abstractolotl.azplace.exceptions.board.UserCooldownException;
 import de.abstractolotl.azplace.exceptions.bot.RateLimitException;
 import de.abstractolotl.azplace.model.board.Canvas;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 
 @Service
 public class BotService {
