@@ -13,16 +13,22 @@ public class TimespanView {
     public long startDate;
     public long duration;
 
-    @JsonProperty("remaining_time")
-    public long remainingTime;
+    public boolean started;
     public boolean ended;
 
+    @JsonProperty("remaining_time")
+    public long remainingTime;
+
     public static TimespanView fromCanvas(Canvas canvas){
-        long remainingTime = (canvas.getStartDate() + canvas.getDuration()) - System.currentTimeMillis();
+        long remainingTime = canvas.getStartDate() - System.currentTimeMillis();
+        if(System.currentTimeMillis() >= canvas.getStartDate())
+            remainingTime = (canvas.getStartDate() + canvas.getDuration()) - System.currentTimeMillis();
+
         return TimespanView.builder()
                 .startDate(canvas.getStartDate())
                 .duration(canvas.getDuration())
                 .remainingTime(Math.max(remainingTime, 0L))
+                .started(System.currentTimeMillis() >= canvas.getStartDate())
                 .ended(Math.max(remainingTime, 0L) == 0)
                 .build();
     }
