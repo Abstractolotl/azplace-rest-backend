@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,14 +32,14 @@ public class UserController implements UserAPI {
         User user = authService.authUser();
 
         if(userSettings.isAnonymize() && !authService.hasRole(user, "anonymous")){
-            List<String> roles = Arrays.asList(user.getRoleArray());
+            List<String> roles = new ArrayList<>(Arrays.stream(user.getRoleArray()).toList());
 
             roles.add("anonymous");
             user.setRoles(String.join(",", roles));
 
             userRepo.save(user);
         }else if(!userSettings.isAnonymize() && authService.hasRole(user, "anonymous")){
-            List<String> roles = Arrays.asList(user.getRoleArray());
+            List<String> roles = new ArrayList<>(Arrays.stream(user.getRoleArray()).toList());
 
             roles.remove("anonymous");
             user.setRoles(String.join(",", roles));
