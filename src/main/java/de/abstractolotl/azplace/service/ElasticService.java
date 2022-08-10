@@ -18,14 +18,13 @@ import java.time.LocalDateTime;
 @Slf4j
 public class ElasticService {
 
-    @Autowired
-    private ElasticsearchRestTemplate elasticsearchRestTemplate;
+    @Autowired private ElasticsearchRestTemplate elasticsearchRestTemplate;
 
     public long getLogs(long start, long end){
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withFilter(QueryBuilders.rangeQuery("timestamp")
-                        .from(start, true)
-                        .to(end, true))
+                .from(start, true)
+                .to(end, true))
                 .build();
 
         return elasticsearchRestTemplate.count(searchQuery,
@@ -39,17 +38,13 @@ public class ElasticService {
     public void logPixel(Integer canvasId, Integer userId, int x, int y, int color, boolean bot){
         PixelLog pixelLog = PixelLog.builder()
                 .timestamp(LocalDateTime.now())
-                .canvasId(canvasId)
-                .userId(userId)
-                .x(x)
-                .y(y)
-                .bot(bot)
-                .color(color)
+                .canvasId(canvasId).userId(userId)
+                .x(x).y(y).bot(bot).color(color)
                 .build();
 
         elasticsearchRestTemplate.index(new IndexQueryBuilder()
-                        .withId(pixelLog.getId())
-                        .withObject(pixelLog).build(),
+                .withId(pixelLog.getId())
+                .withObject(pixelLog).build(),
                 IndexCoordinates.of("backend-pixel"));
     }
 
@@ -58,15 +53,16 @@ public class ElasticService {
                 .timestamp(LocalDateTime.now())
                 .build();
         elasticsearchRestTemplate.index(new IndexQueryBuilder()
-                        .withId(loginLog.getId())
-                        .withObject(loginLog).build(),
+                .withId(loginLog.getId())
+                .withObject(loginLog).build(),
                 IndexCoordinates.of("backend-login"));
     }
 
     public void createLogData (PixelLog log) {
         elasticsearchRestTemplate.index(new IndexQueryBuilder()
                 .withId(log.getId())
-                .withObject(log).build(), IndexCoordinates.of("backend-logs"));
+                .withObject(log).build(),
+                IndexCoordinates.of("backend-logs"));
     }
 
 }

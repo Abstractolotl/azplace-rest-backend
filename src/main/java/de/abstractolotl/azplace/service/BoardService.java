@@ -68,7 +68,7 @@ public class BoardService {
     }
 
     private void checkPlaceRequest(Canvas canvas, PlaceRequest request){
-        if(System.currentTimeMillis() < canvas.getStartDate() || System.currentTimeMillis() > canvas.getStartDate() + canvas.getDuration())
+        if(System.currentTimeMillis() < canvas.getStartDate() || System.currentTimeMillis() > (canvas.getStartDate() + canvas.getDuration()))
             throw new OutsideTimespanException();
 
         if (canvas.getWidth() <= request.getX() || canvas.getHeight() <= request.getY())
