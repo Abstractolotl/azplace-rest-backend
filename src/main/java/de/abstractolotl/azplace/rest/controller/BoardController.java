@@ -119,6 +119,7 @@ public class BoardController implements BoardAPI {
     @Override
     public ConfigView boardConfig(int canvasId) {
         var canvasRsp = canvasRepo.findById(canvasId);
+        
         if (canvasRsp.isEmpty()) {
             throw new CanvasNotFoundException(canvasId);
         }
