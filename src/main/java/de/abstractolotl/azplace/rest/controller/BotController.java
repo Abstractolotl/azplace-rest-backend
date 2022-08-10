@@ -2,6 +2,7 @@ package de.abstractolotl.azplace.rest.controller;
 
 import de.abstractolotl.azplace.exceptions.board.CanvasNotFoundException;
 import de.abstractolotl.azplace.exceptions.bot.BotLimitReachedException;
+import de.abstractolotl.azplace.exceptions.bot.BotSystemBannedException;
 import de.abstractolotl.azplace.exceptions.bot.InvalidTokenException;
 import de.abstractolotl.azplace.exceptions.punishment.UserBannedException;
 import de.abstractolotl.azplace.model.board.Canvas;
@@ -43,6 +44,10 @@ public class BotController implements BotAPI {
     @Override
     public BotView createBotToken() {
         User user = authenticationService.authUser();
+
+        if(authenticationService.hasRole(user, "nobots"))
+            throw new BotSystemBannedException();
+
         List<UserBotToken> botTokenList = botRepo.findAllByUser(user);
 
         if(botTokenList.size() >= MAX_BOT_PER_USER)
@@ -61,6 +66,9 @@ public class BotController implements BotAPI {
     @Override
     public List<BotView> getBotTokens() {
         User user = authenticationService.authUser();
+
+        if(authenticationService.hasRole(user, "nobots"))
+            throw new BotSystemBannedException();
 
         List<UserBotToken> botTokenList = botRepo.findAllByUser(user);
         return botTokenList.stream().map(BotView::fromUserBotToken).toList();
@@ -81,6 +89,9 @@ public class BotController implements BotAPI {
 
         if(punishmentService.isBanned(botToken.getUser()))
             throw new UserBannedException();
+
+        if(authenticationService.hasRole(botToken.getUser(), "nobots"))
+            throw new BotSystemBannedException();
 
         boardService.placePixel(botToken, canvas, placeRequest);
     }
