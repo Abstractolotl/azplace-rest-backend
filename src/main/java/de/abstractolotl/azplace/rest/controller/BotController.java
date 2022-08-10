@@ -91,6 +91,7 @@ public class BotController implements BotAPI {
 
         byte[] randomBytes = new byte[24];
         secureRandom.nextBytes(randomBytes);
+
         return base64Encoder.encodeToString(randomBytes);
     }
 
