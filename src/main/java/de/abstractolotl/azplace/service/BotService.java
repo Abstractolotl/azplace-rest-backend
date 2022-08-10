@@ -28,13 +28,11 @@ public class BotService {
         if(redis.opsForValue().get(("bots:" + botToken.getToken()).getBytes()) != null)
             lastRequest = Long.parseLong(new String(redis.opsForValue().get(("bots:" + botToken.getToken()).getBytes())));
 
-        if(System.currentTimeMillis() < lastRequest + (canvas.getCooldown() * 1.5))
+        if(System.currentTimeMillis() < lastRequest + (canvas.getCooldown() * 2))
             throw new UserCooldownException();
     }
 
     private void checkRateLimit(UserBotToken botToken){
-        JsonMapper jsonMapper = new JsonMapper();
-
         if(redis.opsForValue().get(("bots:rates:" + botToken.getToken()).getBytes()) == null){
             int rate = 1;
 
