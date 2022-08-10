@@ -3,6 +3,7 @@ package de.abstractolotl.azplace.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import de.abstractolotl.azplace.exceptions.board.InvalidColorIndex;
+import de.abstractolotl.azplace.exceptions.board.OutsideTimespanException;
 import de.abstractolotl.azplace.exceptions.board.PixelOutOfBoundsException;
 import de.abstractolotl.azplace.exceptions.board.UserCooldownException;
 import de.abstractolotl.azplace.exceptions.bot.RateLimitException;
@@ -67,13 +68,14 @@ public class BoardService {
     }
 
     private void checkPlaceRequest(Canvas canvas, PlaceRequest request){
-        if (canvas.getWidth() <= request.getX() || canvas.getHeight() <= request.getY()) {
-            throw new PixelOutOfBoundsException(request.getX(), request.getY(), canvas.getWidth(), canvas.getHeight());
-        }
+        if(System.currentTimeMillis() < canvas.getStartDate() || System.currentTimeMillis() > canvas.getStartDate() + canvas.getDuration())
+            throw new OutsideTimespanException();
 
-        if(request.getColorIndex() < 0 || request.getColorIndex() >= canvas.getColorPalette().getHexColors().length) {
+        if (canvas.getWidth() <= request.getX() || canvas.getHeight() <= request.getY())
+            throw new PixelOutOfBoundsException(request.getX(), request.getY(), canvas.getWidth(), canvas.getHeight());
+
+        if(request.getColorIndex() < 0 || request.getColorIndex() >= canvas.getColorPalette().getHexColors().length)
             throw new InvalidColorIndex(canvas.getColorPalette(), request.getColorIndex());
-        }
     }
 
     private void setPixelInBlob(Canvas canvas, int x, int y, byte color) {
