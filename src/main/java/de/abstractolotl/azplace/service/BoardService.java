@@ -53,6 +53,7 @@ public class BoardService {
 
     private void updatePixel(Canvas canvas, PlaceRequest request, User user){
         updatePixel(canvas, request, user, false);
+        cooldownService.reset(user, canvas);
     }
 
     private void updatePixel(Canvas canvas, PlaceRequest request, User user, boolean bot){
