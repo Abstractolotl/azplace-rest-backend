@@ -2,8 +2,10 @@ package de.abstractolotl.azplace.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.model.utility.WebSocketServerInfo;
+import de.abstractolotl.azplace.model.websocket.PixelBroadcast;
 import de.abstractolotl.azplace.model.websocket.WebsocketMessage;
 import de.abstractolotl.azplace.repositories.WebSocketRepo;
 import de.abstractolotl.azplace.websocket.BackendListener;
@@ -57,10 +59,10 @@ public class WebSocketService implements BackendListener {
         }
     }
 
-    public void broadcastPixel(PlaceRequest request) {
+    public void broadcastPixel(Canvas canvas, PlaceRequest request) {
         WebsocketMessage websocketMessage = WebsocketMessage.builder()
                 .method("broadcast")
-                .data(request)
+                .data(PixelBroadcast.convertRequest(canvas, request))
                 .build();
         try {
             String message = JSON.writeValueAsString(websocketMessage);
