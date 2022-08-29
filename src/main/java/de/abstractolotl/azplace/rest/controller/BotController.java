@@ -4,6 +4,7 @@ import de.abstractolotl.azplace.exceptions.board.CanvasNotFoundException;
 import de.abstractolotl.azplace.exceptions.bot.NoTokenFoundException;
 import de.abstractolotl.azplace.exceptions.bot.BotSystemBannedException;
 import de.abstractolotl.azplace.exceptions.bot.InvalidTokenException;
+import de.abstractolotl.azplace.exceptions.bot.TokenLimitReachedException;
 import de.abstractolotl.azplace.exceptions.punishment.UserBannedException;
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
@@ -46,7 +47,7 @@ public class BotController implements BotAPI {
         Optional<UserBotToken> tokenOptional = botRepo.findByUser(user);
 
         if(tokenOptional.isPresent())
-            throw new NoTokenFoundException();
+            throw new TokenLimitReachedException();
 
         UserBotToken userBotToken = UserBotToken.builder()
                 .user(user)
