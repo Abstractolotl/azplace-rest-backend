@@ -36,6 +36,7 @@ public class User implements Serializable {
 
     @Column(unique=true) @NotNull
     private String insideNetIdentifier;
+
     @Builder.Default
     private long timestampRegistered = System.currentTimeMillis();
 

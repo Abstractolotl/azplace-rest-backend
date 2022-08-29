@@ -62,6 +62,7 @@ public class BoardController implements BoardAPI {
 
         if(optionalPixelOwner.isEmpty()){
             return PixelInfoView.builder()
+                    .userId(-1)
                     .personId("0")
                     .username("unknown")
                     .timestamp(0)
@@ -81,7 +82,14 @@ public class BoardController implements BoardAPI {
             personId = pixelOwner.getUser().getInsideNetIdentifier();
         }
 
+        int userId = -1;
+        if(!authService.hasRole(pixelOwner.getUser(), "anonymous") ||
+                (user != null && authService.hasRole(user, "admin"))) {
+            userId = pixelOwner.getUser().getId();
+        }
+
         return PixelInfoView.builder()
+                .userId(userId)
                 .personId(personId)
                 .username(username)
                 .timestamp(pixelOwner.getTimestamp())

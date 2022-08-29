@@ -1,7 +1,7 @@
 package de.abstractolotl.azplace.rest.controller;
 
 import de.abstractolotl.azplace.exceptions.board.CanvasNotFoundException;
-import de.abstractolotl.azplace.exceptions.bot.BotLimitReachedException;
+import de.abstractolotl.azplace.exceptions.bot.NoTokenFoundException;
 import de.abstractolotl.azplace.exceptions.bot.BotSystemBannedException;
 import de.abstractolotl.azplace.exceptions.bot.InvalidTokenException;
 import de.abstractolotl.azplace.exceptions.punishment.UserBannedException;
@@ -20,10 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.SecureRandom;
-import java.util.Base64;
-import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 public class BotController implements BotAPI {
@@ -35,9 +33,6 @@ public class BotController implements BotAPI {
     @Autowired private BotRepo botRepo;
     @Autowired private CanvasRepo canvasRepo;
 
-    @Value("${bot.per-user:3}")
-    private Integer MAX_BOT_PER_USER;
-
     @Value("${bot.rate-limit:500}")
     private Integer DEFAULT_RATE_LIMIT;
 
@@ -48,14 +43,14 @@ public class BotController implements BotAPI {
         if(authenticationService.hasRole(user, "nobots"))
             throw new BotSystemBannedException();
 
-        List<UserBotToken> botTokenList = botRepo.findAllByUser(user);
+        Optional<UserBotToken> tokenOptional = botRepo.findByUser(user);
 
-        if(botTokenList.size() >= MAX_BOT_PER_USER)
-            throw new BotLimitReachedException();
+        if(tokenOptional.isPresent())
+            throw new NoTokenFoundException();
 
         UserBotToken userBotToken = UserBotToken.builder()
                 .user(user)
-                .token(generateToken(20))
+                .token(UUID.randomUUID().toString())
                 .rateLimit(DEFAULT_RATE_LIMIT)
                 .build();
         userBotToken = botRepo.save(userBotToken);
@@ -64,14 +59,37 @@ public class BotController implements BotAPI {
     }
 
     @Override
-    public List<BotView> getBotTokens() {
+    public BotView getBotToken() {
         User user = authenticationService.authUser();
 
         if(authenticationService.hasRole(user, "nobots"))
             throw new BotSystemBannedException();
 
-        List<UserBotToken> botTokenList = botRepo.findAllByUser(user);
-        return botTokenList.stream().map(BotView::fromUserBotToken).toList();
+        Optional<UserBotToken> tokenOptional = botRepo.findByUser(user);
+
+        if(tokenOptional.isEmpty())
+            throw new NoTokenFoundException();
+
+        return BotView.fromUserBotToken(tokenOptional.get());
+    }
+
+    @Override
+    public BotView refreshToken() {
+        User user = authenticationService.authUser();
+
+        if(authenticationService.hasRole(user, "nobots"))
+            throw new BotSystemBannedException();
+
+        Optional<UserBotToken> tokenOptional = botRepo.findByUser(user);
+
+        if(tokenOptional.isEmpty())
+            throw new NoTokenFoundException();
+
+        UserBotToken token = tokenOptional.get();
+
+        token.setToken(UUID.randomUUID().toString());
+
+        return BotView.fromUserBotToken(botRepo.save(token));
     }
 
     @Override
@@ -94,16 +112,6 @@ public class BotController implements BotAPI {
             throw new BotSystemBannedException();
 
         boardService.placePixel(botToken, canvas, placeRequest);
-    }
-
-    private String generateToken(int length){
-        SecureRandom secureRandom = new SecureRandom();
-        Base64.Encoder base64Encoder = Base64.getUrlEncoder();
-
-        byte[] randomBytes = new byte[24];
-        secureRandom.nextBytes(randomBytes);
-
-        return base64Encoder.encodeToString(randomBytes);
     }
 
 }

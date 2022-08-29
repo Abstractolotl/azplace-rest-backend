@@ -43,14 +43,23 @@ public interface BotAPI {
     })
     BotView createBotToken();
 
-    @GetMapping(value = "/list")
-    @Operation(summary = "Get all bot tokens created by you")
+    @GetMapping(value = "/info")
+    @Operation(summary = "Get your current bot token")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(schema = @Schema(implementation = BotView[].class))
+                    content = @Content(schema = @Schema(implementation = BotView.class))
             )
     })
-    List<BotView> getBotTokens();
+    BotView getBotToken();
+
+    @PostMapping(value = "/refresh")
+    @Operation(summary = "Regenerate your current bot token")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    content = @Content(schema = @Schema(implementation = BotView.class))
+            )
+    })
+    BotView refreshToken();
 
     @PostMapping(value = "/{canvasId}/place")
     @Operation(
