@@ -34,16 +34,18 @@ spring:
 
   elasticsearch:
     uris: http://elastic.azplace.azubi.server.lan
+    username: "azplace"
+    password: "zyf5NYC2vyd.qyu7hvr"
 
   jpa:
     hibernate:
       ddl-auto: update
 
   datasource:
-    url: jdbc:mysql://noucake.ddns.net:3306/aztube
+    url: jdbc:mariadb://noucake.ddns.net:3306/aztube
     username: root
     password: rootpw
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.mariadb.jdbc.Driver
 
 management:
   endpoints:
