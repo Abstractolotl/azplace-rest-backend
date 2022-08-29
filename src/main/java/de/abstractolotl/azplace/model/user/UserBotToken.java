@@ -19,12 +19,15 @@ public class UserBotToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne()
+    @OneToOne()
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(unique = true)
     private String token;
+
+    @Builder.Default
+    private Long registered = System.currentTimeMillis();
 
     private Integer rateLimit;
 

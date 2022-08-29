@@ -5,6 +5,7 @@ import de.abstractolotl.azplace.exceptions.bot.RateLimitException;
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.user.UserBotToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,9 @@ import java.time.temporal.ChronoUnit;
 
 @Service
 public class BotService {
+
+    @Value("${bot.rate-timeout:15}")
+    private int rateTimeout;
 
     @Autowired private RedisTemplate<byte[], byte[]> redis;
 
@@ -33,8 +37,7 @@ public class BotService {
     private void checkRateLimit(UserBotToken botToken){
         if(redis.opsForValue().get(("bots:rates:" + botToken.getToken()).getBytes()) == null){
             int rate = 1;
-
-            redis.opsForValue().set(("bots:rates:" + botToken.getToken()).getBytes(), String.valueOf(rate).getBytes(), Duration.of(1, ChronoUnit.MINUTES));
+            redis.opsForValue().set(("bots:rates:" + botToken.getToken()).getBytes(), String.valueOf(rate).getBytes(), Duration.of(rateTimeout, ChronoUnit.MINUTES));
             return;
         }
 

@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 @ResponseStatus(HttpStatus.FORBIDDEN)
-public class BotLimitReachedException extends ResponseStatusException {
+public class TokenLimitReachedException extends ResponseStatusException {
 
-    public BotLimitReachedException() {
-        super(HttpStatus.FORBIDDEN, "You have reached the maximum amount of bots");
+    public TokenLimitReachedException() {
+        super(HttpStatus.FORBIDDEN, "There is already a token connected with your user");
     }
 
 }
