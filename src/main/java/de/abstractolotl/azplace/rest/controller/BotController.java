@@ -10,6 +10,7 @@ import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.model.user.UserBotToken;
+import de.abstractolotl.azplace.model.user.UserRoles;
 import de.abstractolotl.azplace.model.view.BotView;
 import de.abstractolotl.azplace.repositories.BotRepo;
 import de.abstractolotl.azplace.repositories.CanvasRepo;
@@ -41,7 +42,7 @@ public class BotController implements BotAPI {
     public BotView createBotToken() {
         User user = authenticationService.authUser();
 
-        if(authenticationService.hasRole(user, "nobots"))
+        if(authenticationService.hasRole(user, UserRoles.NO_BOTS))
             throw new BotSystemBannedException();
 
         Optional<UserBotToken> tokenOptional = botRepo.findByUser(user);
@@ -63,7 +64,7 @@ public class BotController implements BotAPI {
     public BotView getBotToken() {
         User user = authenticationService.authUser();
 
-        if(authenticationService.hasRole(user, "nobots"))
+        if(authenticationService.hasRole(user, UserRoles.NO_BOTS))
             throw new BotSystemBannedException();
 
         Optional<UserBotToken> tokenOptional = botRepo.findByUser(user);
@@ -78,7 +79,7 @@ public class BotController implements BotAPI {
     public BotView refreshToken() {
         User user = authenticationService.authUser();
 
-        if(authenticationService.hasRole(user, "nobots"))
+        if(authenticationService.hasRole(user, UserRoles.NO_BOTS))
             throw new BotSystemBannedException();
 
         Optional<UserBotToken> tokenOptional = botRepo.findByUser(user);
@@ -109,7 +110,7 @@ public class BotController implements BotAPI {
         if(punishmentService.isBanned(botToken.getUser()))
             throw new UserBannedException();
 
-        if(authenticationService.hasRole(botToken.getUser(), "nobots"))
+        if(authenticationService.hasRole(botToken.getUser(), UserRoles.NO_BOTS))
             throw new BotSystemBannedException();
 
         boardService.placePixel(botToken, canvas, placeRequest);

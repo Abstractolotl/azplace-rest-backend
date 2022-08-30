@@ -1,6 +1,7 @@
 package de.abstractolotl.azplace.rest.controller;
 
 import de.abstractolotl.azplace.model.user.User;
+import de.abstractolotl.azplace.model.user.UserRoles;
 import de.abstractolotl.azplace.model.user.UserSettings;
 import de.abstractolotl.azplace.model.view.ProfileView;
 import de.abstractolotl.azplace.repositories.UserRepo;
@@ -31,14 +32,14 @@ public class UserController implements UserAPI {
     public void setSettings(UserSettings userSettings) {
         User user = authService.authUser();
 
-        if(userSettings.isAnonymize() && !authService.hasRole(user, "anonymous")){
+        if(userSettings.isAnonymize() && !authService.hasRole(user, UserRoles.ANONYMOUS)){
             List<String> roles = new ArrayList<>(Arrays.stream(user.getRoleArray()).toList());
 
             roles.add("anonymous");
             user.setRoles(String.join(",", roles));
 
             userRepo.save(user);
-        }else if(!userSettings.isAnonymize() && authService.hasRole(user, "anonymous")){
+        }else if(!userSettings.isAnonymize() && authService.hasRole(user, UserRoles.ANONYMOUS)){
             List<String> roles = new ArrayList<>(Arrays.stream(user.getRoleArray()).toList());
 
             roles.remove("anonymous");

@@ -2,6 +2,7 @@ package de.abstractolotl.azplace.rest.controller;
 
 import de.abstractolotl.azplace.exceptions.board.CanvasNotFoundException;
 import de.abstractolotl.azplace.model.user.User;
+import de.abstractolotl.azplace.model.user.UserRoles;
 import de.abstractolotl.azplace.rest.api.OperationAPI;
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.board.ColorPalette;
@@ -35,7 +36,7 @@ public class OperationController implements OperationAPI {
 
     @Override
     public Canvas getCanvas(Integer id) {
-        authService.authUserWithRole("admin");
+        authService.authUserWithRole(UserRoles.ADMIN);
 
         Optional<Canvas> canvas = canvasRepo.findById(id);
 
@@ -47,7 +48,7 @@ public class OperationController implements OperationAPI {
 
     @Override
     public Canvas createCanvas(CanvasRequest canvasRequest) {
-        authService.authUserWithRole("admin");
+        authService.authUserWithRole(UserRoles.ADMIN);
 
         Optional<ColorPalette> palette = paletteRepo.findById(canvasRequest.getColorPalette());
 
@@ -66,7 +67,7 @@ public class OperationController implements OperationAPI {
     public Canvas updateCanvas(Integer id, CanvasRequest canvasRequest) {
         User user = authService.authUser();
 
-        if(!authService.hasRole(user, "admin"))
+        if(!authService.hasRole(user, UserRoles.ADMIN))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
         return operationService.updateCanvas(id, canvasRequest);
@@ -74,7 +75,7 @@ public class OperationController implements OperationAPI {
 
     @Override
     public ResponseEntity<?> deleteCanvas(Integer id) {
-        authService.authUserWithRole("admin");
+        authService.authUserWithRole(UserRoles.ADMIN);
 
         Optional<Canvas> canvas = canvasRepo.findById(id);
 
@@ -93,7 +94,7 @@ public class OperationController implements OperationAPI {
 
     @Override
     public ColorPalette getPalette(Integer id) {
-        authService.authUserWithRole("admin");
+        authService.authUserWithRole(UserRoles.ADMIN);
 
         Optional<ColorPalette> palette = paletteRepo.findById(id);
 
@@ -105,21 +106,21 @@ public class OperationController implements OperationAPI {
 
     @Override
     public ColorPalette createPalette(PaletteRequest paletteRequest) {
-        authService.authUserWithRole("admin");
+        authService.authUserWithRole(UserRoles.ADMIN);
 
         return paletteRepo.save(paletteRequest.convert());
     }
 
     @Override
     public ColorPalette updatePalette(Integer id, PaletteRequest paletteRequest) {
-        authService.authUserWithRole("admin");
+        authService.authUserWithRole(UserRoles.ADMIN);
 
         return operationService.updatePalette(id, paletteRequest);
     }
 
     @Override
     public ResponseEntity<?> deletePalette(Integer id) {
-        authService.authUserWithRole("admin");
+        authService.authUserWithRole(UserRoles.ADMIN);
 
         Optional<ColorPalette> palette = paletteRepo.findById(id);
 

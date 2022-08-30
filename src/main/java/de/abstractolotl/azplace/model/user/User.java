@@ -32,7 +32,7 @@ public class User implements Serializable {
     private String lastName;
 
     @Builder.Default
-    private String roles = String.join(",", "anonymous");
+    private String roles = String.join(",", UserRoles.ANONYMOUS.format());
 
     @Column(unique=true) @NotNull
     private String insideNetIdentifier;

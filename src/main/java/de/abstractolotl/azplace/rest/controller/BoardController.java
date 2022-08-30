@@ -4,6 +4,7 @@ import de.abstractolotl.azplace.exceptions.auth.SessionNotAuthorizedException;
 import de.abstractolotl.azplace.exceptions.board.*;
 import de.abstractolotl.azplace.exceptions.punishment.UserBannedException;
 import de.abstractolotl.azplace.model.statistic.PixelOwner;
+import de.abstractolotl.azplace.model.user.UserRoles;
 import de.abstractolotl.azplace.model.view.ConfigView;
 import de.abstractolotl.azplace.model.view.CooldownView;
 import de.abstractolotl.azplace.model.view.PixelInfoView;
@@ -71,20 +72,20 @@ public class BoardController implements BoardAPI {
 
         PixelOwner pixelOwner = optionalPixelOwner.get();
         String username = "anonymous";
-        if(!authService.hasRole(pixelOwner.getUser(), "anonymous") ||
-                (user != null && authService.hasRole(user, "admin"))) {
+        if(!authService.hasRole(pixelOwner.getUser(), UserRoles.ANONYMOUS) ||
+                (user != null && authService.hasRole(user, UserRoles.ADMIN))) {
             username = pixelOwner.getUser().getFullName();
         }
 
         String personId = "0";
-        if(!authService.hasRole(pixelOwner.getUser(), "anonymous") ||
-                (user != null && authService.hasRole(user, "admin"))) {
+        if(!authService.hasRole(pixelOwner.getUser(), UserRoles.ANONYMOUS) ||
+                (user != null && authService.hasRole(user, UserRoles.ADMIN))) {
             personId = pixelOwner.getUser().getInsideNetIdentifier();
         }
 
         int userId = -1;
-        if(!authService.hasRole(pixelOwner.getUser(), "anonymous") ||
-                (user != null && authService.hasRole(user, "admin"))) {
+        if(!authService.hasRole(pixelOwner.getUser(), UserRoles.ANONYMOUS) ||
+                (user != null && authService.hasRole(user, UserRoles.ADMIN))) {
             userId = pixelOwner.getUser().getId();
         }
 

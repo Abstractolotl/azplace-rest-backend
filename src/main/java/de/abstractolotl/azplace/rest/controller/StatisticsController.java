@@ -1,5 +1,6 @@
 package de.abstractolotl.azplace.rest.controller;
 
+import de.abstractolotl.azplace.model.user.UserRoles;
 import de.abstractolotl.azplace.model.view.CountView;
 import de.abstractolotl.azplace.rest.api.StatisticsAPI;
 import de.abstractolotl.azplace.service.AuthenticationService;
@@ -22,7 +23,7 @@ public class StatisticsController implements StatisticsAPI {
 
     @Override
     public CountView pixels() {
-        authenticationService.authUserWithRole("statistics");
+        authenticationService.authUserWithRole(UserRoles.STATISTICS);
 
         long end = System.currentTimeMillis();
         long start = end - TIME_FRAME;
@@ -32,7 +33,7 @@ public class StatisticsController implements StatisticsAPI {
 
     @Override
     public CountView online() {
-        authenticationService.authUserWithRole("statistics");
+        authenticationService.authUserWithRole(UserRoles.STATISTICS);
 
         Set<?> keys = redis.keys("spring:session:sessions:expires:*".getBytes());
         return new CountView(keys.size());
