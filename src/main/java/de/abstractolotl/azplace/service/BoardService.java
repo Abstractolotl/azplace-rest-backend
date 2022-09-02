@@ -39,6 +39,7 @@ public class BoardService {
     public void placePixel(User user, Canvas canvas, PlaceRequest request){
         if(cooldownService.isOnCooldown(user, canvas))
             throw new UserCooldownException();
+        cooldownService.reset(user, canvas);
 
         updatePixel(canvas, request, user);
     }
@@ -53,7 +54,6 @@ public class BoardService {
 
     private void updatePixel(Canvas canvas, PlaceRequest request, User user){
         updatePixel(canvas, request, user, false);
-        cooldownService.reset(user, canvas);
     }
 
     private void updatePixel(Canvas canvas, PlaceRequest request, User user, boolean bot){
