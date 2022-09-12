@@ -1,6 +1,7 @@
 package de.abstractolotl.azplace.rest.controller;
 
 import de.abstractolotl.azplace.exceptions.board.CanvasNotFoundException;
+import de.abstractolotl.azplace.model.requests.ResetRequest;
 import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.model.user.UserRoles;
 import de.abstractolotl.azplace.rest.api.OperationAPI;
@@ -138,5 +139,10 @@ public class OperationController implements OperationAPI {
             put("message", "Color Palette " + id + " was deleted");
             put("success", true);
         }});
+    }
+
+    @Override
+    public ResponseEntity<?> resetPixel(Integer id, ResetRequest resetRequest) {
+        return null;
     }
 }
