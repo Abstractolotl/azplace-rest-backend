@@ -14,6 +14,7 @@ import de.abstractolotl.azplace.repositories.PaletteRepo;
 import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
 import de.abstractolotl.azplace.service.AuthenticationService;
 import de.abstractolotl.azplace.service.OperationService;
+import de.abstractolotl.azplace.service.ResetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,7 @@ public class OperationController implements OperationAPI {
 
     @Autowired private RedisTemplate<byte[], byte[]> redis;
     @Autowired private OperationService operationService;
+    @Autowired private ResetService resetService;
     @Autowired private AuthenticationService authService;
 
     @Override
@@ -143,6 +145,18 @@ public class OperationController implements OperationAPI {
 
     @Override
     public ResponseEntity<?> resetPixel(Integer id, ResetRequest resetRequest) {
-        return null;
+        authService.authUserWithRole(UserRoles.ADMIN);
+
+        Optional<Canvas> canvas = canvasRepo.findById(id);
+
+        if(canvas.isEmpty())
+            throw new CanvasNotFoundException(id);
+
+        resetService.resetPixel(canvas.get(), resetRequest);
+
+        return ResponseEntity.ok(new HashMap<>(){{
+            put("success", true);
+            put("message", "Pixels cleared successfully");
+        }});
     }
 }
