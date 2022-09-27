@@ -152,7 +152,7 @@ public class OperationController implements OperationAPI {
         if(canvas.isEmpty())
             throw new CanvasNotFoundException(id);
 
-        resetService.resetPixel(canvas.get(), resetRequest);
+        resetService.resetPixels(canvas.get(), resetRequest);
 
         return ResponseEntity.ok(new HashMap<>(){{
             put("success", true);

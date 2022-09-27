@@ -12,7 +12,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResetRequest {
 
-    private List<Integer> pixelList;
+    private List<Integer[]> pixelList;
     private PixelRegion pixelRegion;
 
 }

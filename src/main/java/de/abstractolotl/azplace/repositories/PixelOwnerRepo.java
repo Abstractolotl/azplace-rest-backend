@@ -15,4 +15,6 @@ public interface PixelOwnerRepo extends CrudRepository<PixelOwner, Integer> {
 
     Iterable<PixelOwner> findAllByCanvas(Canvas canvas);
 
+    void deleteByXAndYAndCanvas(int x, int y, Canvas canvas);
+
 }
