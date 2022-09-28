@@ -32,7 +32,13 @@ public class ResetService {
     }
 
     public void resetPixels(Canvas canvas, User user){
+        List<Integer[]> pixels = pixelOwnerRepo.findAllByCanvasAndUser(canvas, user).stream().map(pixelOwner -> {
+            return new Integer[]{pixelOwner.getX(), pixelOwner.getY()};
+        }).toList();
 
+        pixels.forEach(integers -> {
+            resetPixel(canvas, integers[0], integers[1]);
+        });
     }
 
     private void resetPixelList(Canvas canvas, List<Integer[]> pixelList){
@@ -61,8 +67,7 @@ public class ResetService {
         pixelOwnerRepo.deleteByXAndYAndCanvas(x, y, canvas);
 
         PlaceRequest placeRequest = PlaceRequest.builder()
-                .x(x)
-                .y(y)
+                .x(x).y(y)
                 .colorIndex(0).build();
 
         webSocketService.broadcastPixel(canvas, placeRequest);

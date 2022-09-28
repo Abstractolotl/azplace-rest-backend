@@ -12,4 +12,7 @@ public class BanRequest {
     public String reason;
     public long time = -1L;
 
+    @JsonProperty(value = "reset_pixels")
+    public boolean resetPixels = false;
+
 }

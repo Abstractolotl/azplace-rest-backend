@@ -1,6 +1,7 @@
 package de.abstractolotl.azplace.rest.controller;
 
 import de.abstractolotl.azplace.model.user.UserRoles;
+import de.abstractolotl.azplace.repositories.CanvasRepo;
 import de.abstractolotl.azplace.rest.api.PunishmentAPI;
 import de.abstractolotl.azplace.model.requests.BanRequest;
 import de.abstractolotl.azplace.model.user.User;
@@ -8,6 +9,7 @@ import de.abstractolotl.azplace.model.user.UserBan;
 import de.abstractolotl.azplace.repositories.BanRepo;
 import de.abstractolotl.azplace.repositories.UserRepo;
 import de.abstractolotl.azplace.service.AuthenticationService;
+import de.abstractolotl.azplace.service.ResetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,11 +20,12 @@ import java.util.Optional;
 @RestController
 public class PunishmentController implements PunishmentAPI {
 
-    @Autowired
-    private AuthenticationService authService;
+    @Autowired private AuthenticationService authService;
+    @Autowired private ResetService resetService;
 
     @Autowired private BanRepo banRepo;
     @Autowired private UserRepo userRepo;
+    @Autowired private CanvasRepo canvasRepo;
 
     @Override
     public UserBan banUser(BanRequest banRequest) {
@@ -35,6 +38,12 @@ public class PunishmentController implements PunishmentAPI {
         long end = -1L;
         if(banRequest.getTime() != -1L)
             end = System.currentTimeMillis() + banRequest.getTime();
+
+        if(banRequest.isResetPixels()) {
+            canvasRepo.findAll().forEach(canvas -> {
+                resetService.resetPixels(canvas, userOptional.get());
+            });
+        }
 
         return banRepo.save(UserBan.builder()
                 .created(System.currentTimeMillis())
