@@ -6,6 +6,10 @@ import de.abstractolotl.azplace.model.user.UserSettings;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @Data
 @Builder
 public class ProfileView {
@@ -18,12 +22,17 @@ public class ProfileView {
     @JsonProperty("timestamp_registered")
     private long timestampRegistered;
 
+    private List<String> roles;
+
     @JsonProperty("user_settings")
     private UserSettings userSettings;
 
     public static ProfileView fromUser(User user) {
+        List<String> roles = Arrays.asList(user.getRoleArray());
+        roles.remove("anonymous");
         return ProfileView.builder()
                 .personId(user.getInsideNetIdentifier())
+                .roles(roles)
                 .userSettings(new UserSettings(user.getRoles().contains("anonymous")))
                 .name(user.getFirstName() + " " + user.getLastName())
                 .timestampRegistered(user.getTimestampRegistered())
