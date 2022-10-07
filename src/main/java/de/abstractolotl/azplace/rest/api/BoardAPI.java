@@ -46,6 +46,10 @@ public interface BoardAPI {
 
     @GetMapping(value = "{canvasId}/pixel/{x}/{y}", produces = APPLICATION_JSON_VALUE)
     @Operation(summary = "Get Information about a pixel")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "PixelInfo returned",
+                content = @Content(schema = @Schema(implementation = PixelInfoView.class)))
+    })
     PixelInfoView pixel(@PathVariable int canvasId, @PathVariable int x, @PathVariable int y);
 
     @GetMapping("/{canvasId}/data")
