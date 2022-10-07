@@ -59,7 +59,7 @@ public class BoardController implements BoardAPI {
         if (canvasResp.isEmpty()) throw new CanvasNotFoundException(canvasId);
 
         Canvas canvas = canvasResp.get();
-        Optional<PixelOwner> optionalPixelOwner = pixelOwnerRepo.findByXAndYAndCanvas(x, y, canvas);
+        Optional<PixelOwner> optionalPixelOwner = pixelOwnerRepo.findFirstByXAndYAndCanvas(x, y, canvas);
 
         if(optionalPixelOwner.isEmpty()){
             return PixelInfoView.builder()
@@ -72,20 +72,12 @@ public class BoardController implements BoardAPI {
 
         PixelOwner pixelOwner = optionalPixelOwner.get();
         String username = "anonymous";
-        if(!authService.hasRole(pixelOwner.getUser(), UserRoles.ANONYMOUS) ||
-                (user != null && authService.hasRole(user, UserRoles.ADMIN))) {
-            username = pixelOwner.getUser().getFullName();
-        }
-
         String personId = "0";
-        if(!authService.hasRole(pixelOwner.getUser(), UserRoles.ANONYMOUS) ||
-                (user != null && authService.hasRole(user, UserRoles.ADMIN))) {
-            personId = pixelOwner.getUser().getInsideNetIdentifier();
-        }
-
         int userId = -1;
         if(!authService.hasRole(pixelOwner.getUser(), UserRoles.ANONYMOUS) ||
                 (user != null && authService.hasRole(user, UserRoles.ADMIN))) {
+            username = pixelOwner.getUser().getFullName();
+            personId = pixelOwner.getUser().getInsideNetIdentifier();
             userId = pixelOwner.getUser().getId();
         }
 
