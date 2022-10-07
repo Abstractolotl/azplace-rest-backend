@@ -32,12 +32,8 @@ public class ResetService {
     }
 
     public void resetPixels(Canvas canvas, User user){
-        List<Integer[]> pixels = pixelOwnerRepo.findAllByCanvasAndUser(canvas, user)
-                .stream().map(pixelOwner -> new Integer[]{pixelOwner.getX(), pixelOwner.getY()}).toList();
-
-        pixels.forEach(integers -> {
-            resetPixel(canvas, integers[0], integers[1]);
-        });
+        pixelOwnerRepo.findAllByCanvasAndUser(canvas, user)
+            .forEach(pixelOwner -> resetPixel(canvas, pixelOwner.getX(), pixelOwner.getY()));
     }
 
     private void resetPixelList(Canvas canvas, List<Integer[]> pixelList){
