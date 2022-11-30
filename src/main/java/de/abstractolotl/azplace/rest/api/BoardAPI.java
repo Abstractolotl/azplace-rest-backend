@@ -35,7 +35,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("board")
 public interface BoardAPI {
 
-    @PostMapping(value = "{canvasId}/place", consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "{canvasId}/place", consumes = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(
             summary = "Place a Pixel",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -44,7 +44,7 @@ public interface BoardAPI {
     )
     void place(@PathVariable int canvasId, @RequestBody PlaceRequest request);
 
-    @GetMapping(value = "{canvasId}/pixel/{x}/{y}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "{canvasId}/pixel/{x}/{y}", produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(summary = "Get Information about a pixel")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "PixelInfo returned",
@@ -56,7 +56,7 @@ public interface BoardAPI {
     @Operation(summary = "Get the current board data")
     byte[] boardData(@PathVariable int canvasId);
 
-    @GetMapping(value = "/{canvasId}/cooldown", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{canvasId}/cooldown", produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(summary = "Get your current cooldown information" )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Current user cooldown returned",
@@ -64,7 +64,7 @@ public interface BoardAPI {
     })
     CooldownView cooldown(@PathVariable int canvasId);
 
-    @GetMapping(value = "/{canvasId}/config", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{canvasId}/config", produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(summary = "Get board configuration" )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Current user cooldown returned",

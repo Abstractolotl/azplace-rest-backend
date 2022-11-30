@@ -36,7 +36,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "operation")
 public interface OperationAPI {
 
-    @GetMapping(value = "/canvas/{id}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/canvas/{id}", produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(method = "GET", summary = "Get current canvas data")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Canvas found and returned",
@@ -45,8 +45,8 @@ public interface OperationAPI {
     Canvas getCanvas(@PathVariable Integer id);
 
     @PostMapping(value = "/canvas",
-            consumes = APPLICATION_JSON_VALUE,
-            produces = APPLICATION_JSON_VALUE)
+            consumes = { APPLICATION_JSON_VALUE, "application/v1+json" },
+            produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(method = "POST", summary = "Create new canvas",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(schema = @Schema(implementation = CanvasRequest.class))
@@ -60,8 +60,8 @@ public interface OperationAPI {
     Canvas createCanvas(@RequestBody CanvasRequest canvasRequest);
 
     @PatchMapping(value = "/canvas/{id}",
-            consumes = APPLICATION_JSON_VALUE,
-            produces = APPLICATION_JSON_VALUE)
+            consumes = { APPLICATION_JSON_VALUE, "application/v1+json" },
+            produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(method = "PATCH", summary = "Update an existing canvas",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(schema = @Schema(implementation = CanvasRequest.class))
@@ -74,7 +74,7 @@ public interface OperationAPI {
     Canvas updateCanvas(@PathVariable Integer id, @RequestBody CanvasRequest canvasRequest);
 
     @DeleteMapping(value = "/canvas/{id}",
-            produces = APPLICATION_JSON_VALUE)
+            produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(method = "DELETE", summary = "Delete an existing canvas")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Canvas deleted successfully",
@@ -82,7 +82,7 @@ public interface OperationAPI {
     })
     ResponseEntity<?> deleteCanvas(@PathVariable Integer id);
 
-    @GetMapping(value = "/palette/{id}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/palette/{id}", produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(method = "GET", summary = "Get current palette data")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Palette found and returned",
@@ -91,8 +91,8 @@ public interface OperationAPI {
     ColorPalette getPalette(@PathVariable Integer id);
 
     @PostMapping(value = "/palette",
-            consumes = APPLICATION_JSON_VALUE,
-            produces = APPLICATION_JSON_VALUE)
+            consumes = { APPLICATION_JSON_VALUE, "application/v1+json" },
+            produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(method = "POST", summary = "Create new palette",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(schema = @Schema(implementation = PaletteRequest.class))
@@ -106,8 +106,8 @@ public interface OperationAPI {
     ColorPalette createPalette(@RequestBody PaletteRequest paletteRequest);
 
     @PatchMapping(value = "/palette/{id}",
-            consumes = APPLICATION_JSON_VALUE,
-            produces = APPLICATION_JSON_VALUE)
+            consumes = { APPLICATION_JSON_VALUE, "application/v1+json" },
+            produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(method = "PATCH", summary = "Update an existing palette",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(schema = @Schema(implementation = PaletteRequest.class))
@@ -120,7 +120,7 @@ public interface OperationAPI {
     ColorPalette updatePalette(@PathVariable Integer id, @RequestBody PaletteRequest paletteRequest);
 
     @DeleteMapping(value = "/palette/{id}",
-            produces = APPLICATION_JSON_VALUE)
+            produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(method = "DELETE", summary = "Delete an existing palette")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Palette deleted successfully",
