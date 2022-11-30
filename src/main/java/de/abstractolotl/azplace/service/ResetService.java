@@ -31,9 +31,15 @@ public class ResetService {
         }
     }
 
-    public void resetPixels(Canvas canvas, User user){
-        pixelOwnerRepo.findAllByCanvasAndUser(canvas, user)
-            .forEach(pixelOwner -> resetPixel(canvas, pixelOwner.getX(), pixelOwner.getY()));
+    public void resetPixels(Canvas canvas, User user, long timespan){
+        if(timespan != -1L){
+            long timestamp = System.currentTimeMillis() - timespan;
+            pixelOwnerRepo.findAllByCanvasAndUserAndTimestampGreaterThan(canvas, user, timestamp)
+                    .forEach(pixelOwner -> resetPixel(canvas, pixelOwner.getX(), pixelOwner.getY()));
+        } else {
+            pixelOwnerRepo.findAllByCanvasAndUser(canvas, user)
+                    .forEach(pixelOwner -> resetPixel(canvas, pixelOwner.getX(), pixelOwner.getY()));
+        }
     }
 
     private void resetPixelList(Canvas canvas, List<Integer[]> pixelList){
@@ -43,15 +49,15 @@ public class ResetService {
     }
 
     private void resetPixelRegion(Canvas canvas, PixelRegion pixelRegion){
-        for(int x = pixelRegion.getMinX(); x <= pixelRegion.getMaxX(); x++){
-            for(int y = pixelRegion.getMinY(); y <= pixelRegion.getMaxY(); y++){
+        for(int x = pixelRegion.getX(); x <= pixelRegion.getX() + pixelRegion.getWidth(); x++){
+            for(int y = pixelRegion.getY(); y <= pixelRegion.getY() + pixelRegion.getHeight(); y++){
                 resetPixel(canvas, x, y);
             }
         }
     }
 
     private boolean isInsideCanvas(Canvas canvas, int x, int y){
-        return  (canvas.getWidth() >= x && canvas.getHeight() >= y);
+        return (x >= 0 && y >= 0) && (canvas.getWidth() >= x && canvas.getHeight() >= y);
     }
 
     private void resetPixel(Canvas canvas, int x, int y){
@@ -65,7 +71,6 @@ public class ResetService {
                 .x(x).y(y)
                 .colorIndex(0).build();
 
-        webSocketService.broadcastPixel(canvas, placeRequest);
         elasticService.logPixel(canvas.getId(), 0,
                 placeRequest.getX(), placeRequest.getY(), placeRequest.getColorIndex(),
                 true);

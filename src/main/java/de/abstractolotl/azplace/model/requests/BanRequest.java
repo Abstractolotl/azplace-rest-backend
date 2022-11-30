@@ -15,4 +15,12 @@ public class BanRequest {
     @JsonProperty(value = "reset_pixels")
     public boolean resetPixels = false;
 
+    /*
+     Timespan in which pixels should be reset (in seconds).
+     Is only used if resetPixels is true.
+     Default is 1 hour.
+     */
+    @JsonProperty(value = "reset_timespan")
+    public long resetTimespan = 86400L;
+
 }

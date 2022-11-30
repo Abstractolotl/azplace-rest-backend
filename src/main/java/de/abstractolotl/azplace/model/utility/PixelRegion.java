@@ -9,10 +9,10 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PixelRegion {
 
-    private int minX;
-    private int minY;
+    private int x;
+    private int y;
 
-    private int maxX;
-    private int maxY;
+    private int width;
+    private int height;
 
 }

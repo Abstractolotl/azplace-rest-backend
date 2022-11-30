@@ -17,6 +17,8 @@ public interface PixelOwnerRepo extends CrudRepository<PixelOwner, Integer> {
 
     List<PixelOwner> findAllByCanvasAndUser(Canvas canvas, User user);
 
+    List<PixelOwner> findAllByCanvasAndUserAndTimestampGreaterThan(Canvas canvas, User user, long timestamp);
+
     void deleteByXAndYAndCanvas(int x, int y, Canvas canvas);
 
 }

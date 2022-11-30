@@ -129,8 +129,11 @@ public interface OperationAPI {
     })
     ResponseEntity<?> deletePalette(@PathVariable Integer id);
 
-    @PostMapping(value = "/reset/{id}",
-            consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(
+            value = "/reset/{id}",
+            consumes = {APPLICATION_JSON_VALUE, "application/v1+json"},
+            produces = {APPLICATION_JSON_VALUE, "application/v1+json"}
+    )
     @Operation(method = "POST", summary = "Reset all pixels included in this request",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                 content = @Content(schema = @Schema(implementation = ResetRequest.class))
