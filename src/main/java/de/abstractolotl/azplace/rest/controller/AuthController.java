@@ -23,6 +23,8 @@ import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.repositories.UserRepo;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpSession;
+
 @RestController
 public class AuthController implements AuthAPI {
 
@@ -60,9 +62,10 @@ public class AuthController implements AuthAPI {
     }
 
     @Override
-    public void logout(String sessionKey) {
+    public ResponseEntity<String> logout(HttpSession httpSession) {
         session.setUser(null);
-        //TODO: invalidate session
+        httpSession.invalidate();
+        return ResponseEntity.ok("User logged out successfully");
     }
 
     public CASUser validateTicket(String ticket) {
