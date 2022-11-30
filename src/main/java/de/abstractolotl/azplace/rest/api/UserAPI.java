@@ -35,7 +35,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("user")
 public interface UserAPI {
 
-    @GetMapping(value = "/", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/", produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(summary = "Get Profile of current user")
     @ApiResponses(value = {
             @ApiResponse(
@@ -52,7 +52,7 @@ public interface UserAPI {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Settings updated successfully")
     })
-    @PutMapping(value = "/settings", consumes = APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/settings", consumes = { APPLICATION_JSON_VALUE, "application/v1+json" })
     void setSettings(@RequestBody UserSettings userSettings);
 
 }

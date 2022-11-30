@@ -34,7 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("bot")
 public interface BotAPI {
 
-    @PostMapping(value = "/create")
+    @PostMapping(value = "/create", produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(summary = "Create a new bot token")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -43,7 +43,7 @@ public interface BotAPI {
     })
     BotView createBotToken();
 
-    @GetMapping(value = "/info")
+    @GetMapping(value = "/info", produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(summary = "Get your current bot token")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -52,7 +52,7 @@ public interface BotAPI {
     })
     BotView getBotToken();
 
-    @PostMapping(value = "/refresh")
+    @PostMapping(value = "/refresh", produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(summary = "Regenerate your current bot token")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -61,7 +61,7 @@ public interface BotAPI {
     })
     BotView refreshToken();
 
-    @PostMapping(value = "/{canvasId}/place")
+    @PostMapping(value = "/{canvasId}/place", consumes = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(
             summary = "Place a pixel via bot token",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(

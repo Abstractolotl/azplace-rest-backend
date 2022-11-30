@@ -33,7 +33,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("statistics")
 public interface StatisticsAPI {
 
-    @GetMapping(value = "/pixels", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/pixels", produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(summary = "Get placed pixels in the last 24h")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pixel statistics calculated and returned",
@@ -41,7 +41,7 @@ public interface StatisticsAPI {
     })
     CountView pixels();
 
-    @GetMapping(value = "/online", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/online", produces = { APPLICATION_JSON_VALUE, "application/v1+json" })
     @Operation(summary = "Get amount of currently online users")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Amount of currently online users returned",

@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,10 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.web.servlet.resource.HttpResource;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
@@ -41,7 +36,7 @@ import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 public interface AuthAPI {
 
     @Operation(summary = "Start login and redirect to CAS")
-    @GetMapping(path = "/login", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(path = "/login", produces = { MediaType.TEXT_HTML_VALUE, "text/v1+html" } )
     String login(@RequestHeader(HttpHeaders.HOST) String hostName);
 
     @Operation(
@@ -56,7 +51,7 @@ public interface AuthAPI {
                             - Backend caches SessionKey and User via Spring session
                         - It redirect to the frontend
                     """)
-    @GetMapping(path = "/verify", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(path = "/verify", produces = { MediaType.TEXT_HTML_VALUE, "text/v1+html" })
     @ResponseBody
     ResponseEntity<String> verify(@RequestParam("ticket") String ticket);
 
@@ -68,7 +63,7 @@ public interface AuthAPI {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK")
     })
-    @GetMapping(path = "/logout", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(path = "/logout", produces = { MediaType.TEXT_HTML_VALUE, "text/v1+html" })
     @ResponseBody
     ResponseEntity<String> logout(HttpSession httpSession);
 
