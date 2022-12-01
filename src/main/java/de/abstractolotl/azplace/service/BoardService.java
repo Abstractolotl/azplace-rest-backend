@@ -1,12 +1,9 @@
 package de.abstractolotl.azplace.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import de.abstractolotl.azplace.exceptions.board.InvalidColorIndex;
 import de.abstractolotl.azplace.exceptions.board.OutsideTimespanException;
 import de.abstractolotl.azplace.exceptions.board.PixelOutOfBoundsException;
 import de.abstractolotl.azplace.exceptions.board.UserCooldownException;
-import de.abstractolotl.azplace.exceptions.bot.RateLimitException;
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.model.statistic.PixelOwner;
@@ -19,9 +16,6 @@ import org.springframework.data.redis.connection.BitFieldSubCommands;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.util.HashMap;
 
 @Slf4j
 @Service @Transactional

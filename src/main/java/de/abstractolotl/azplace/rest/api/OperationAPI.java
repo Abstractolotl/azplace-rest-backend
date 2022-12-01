@@ -4,6 +4,7 @@ import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.board.ColorPalette;
 import de.abstractolotl.azplace.model.requests.CanvasRequest;
 import de.abstractolotl.azplace.model.requests.PaletteRequest;
+import de.abstractolotl.azplace.model.requests.ResetRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -127,5 +128,17 @@ public interface OperationAPI {
                     content = @Content(schema = @Schema(implementation = ResponseEntity.class))),
     })
     ResponseEntity<?> deletePalette(@PathVariable Integer id);
+
+    @PostMapping(
+            value = "/reset/{id}",
+            consumes = {APPLICATION_JSON_VALUE, "application/v1+json"},
+            produces = {APPLICATION_JSON_VALUE, "application/v1+json"}
+    )
+    @Operation(method = "POST", summary = "Reset all pixels included in this request",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                content = @Content(schema = @Schema(implementation = ResetRequest.class))
+            )
+    )
+    ResponseEntity<?> resetPixel(@PathVariable Integer id, ResetRequest resetRequest);
 
 }

@@ -1,6 +1,7 @@
 package de.abstractolotl.azplace.rest.controller;
 
 import de.abstractolotl.azplace.exceptions.board.CanvasNotFoundException;
+import de.abstractolotl.azplace.model.requests.ResetRequest;
 import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.model.user.UserRoles;
 import de.abstractolotl.azplace.rest.api.OperationAPI;
@@ -13,6 +14,7 @@ import de.abstractolotl.azplace.repositories.PaletteRepo;
 import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
 import de.abstractolotl.azplace.service.AuthenticationService;
 import de.abstractolotl.azplace.service.OperationService;
+import de.abstractolotl.azplace.service.ResetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,7 @@ public class OperationController implements OperationAPI {
 
     @Autowired private RedisTemplate<byte[], byte[]> redis;
     @Autowired private OperationService operationService;
+    @Autowired private ResetService resetService;
     @Autowired private AuthenticationService authService;
 
     @Override
@@ -137,6 +140,23 @@ public class OperationController implements OperationAPI {
         return ResponseEntity.ok(new HashMap<>(){{
             put("message", "Color Palette " + id + " was deleted");
             put("success", true);
+        }});
+    }
+
+    @Override
+    public ResponseEntity<?> resetPixel(Integer id, ResetRequest resetRequest) {
+        authService.authUserWithRole(UserRoles.ADMIN);
+
+        Optional<Canvas> canvas = canvasRepo.findById(id);
+
+        if(canvas.isEmpty())
+            throw new CanvasNotFoundException(id);
+
+        resetService.resetPixels(canvas.get(), resetRequest);
+
+        return ResponseEntity.ok(new HashMap<>(){{
+            put("success", true);
+            put("message", "Pixels cleared successfully");
         }});
     }
 }
