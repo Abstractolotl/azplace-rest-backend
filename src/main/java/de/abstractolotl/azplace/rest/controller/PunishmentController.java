@@ -41,7 +41,7 @@ public class PunishmentController implements PunishmentAPI {
 
         if(banRequest.isResetPixels()) {
             canvasRepo.findAll().forEach(canvas -> {
-                resetService.resetPixels(canvas, userOptional.get());
+                resetService.resetPixels(canvas, userOptional.get(),  banRequest.getResetTimespan());
             });
         }
 
