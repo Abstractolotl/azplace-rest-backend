@@ -88,7 +88,7 @@ public class BoardService {
     }
 
     private void setNewPixelOwner(Canvas canvas, int x, int y, User user) {
-        var        pixelResp = pixelOwnerRepo.findByXAndYAndCanvas(x, y, canvas);
+        var        pixelResp = pixelOwnerRepo.findFirstByXAndYAndCanvas(x, y, canvas);
         PixelOwner pixel     = pixelResp.orElseGet(() -> createPixelOwner(canvas, x, y));
         pixel.setTimestamp(System.currentTimeMillis());
         pixel.setUser(user);
