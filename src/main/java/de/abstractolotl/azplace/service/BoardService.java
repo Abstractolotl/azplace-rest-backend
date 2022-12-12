@@ -2,16 +2,14 @@ package de.abstractolotl.azplace.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import de.abstractolotl.azplace.exceptions.board.InvalidColorIndex;
-import de.abstractolotl.azplace.exceptions.board.OutsideTimespanException;
-import de.abstractolotl.azplace.exceptions.board.PixelOutOfBoundsException;
-import de.abstractolotl.azplace.exceptions.board.UserCooldownException;
+import de.abstractolotl.azplace.exceptions.board.*;
 import de.abstractolotl.azplace.exceptions.bot.RateLimitException;
 import de.abstractolotl.azplace.model.board.Canvas;
 import de.abstractolotl.azplace.model.requests.PlaceRequest;
 import de.abstractolotl.azplace.model.statistic.PixelOwner;
 import de.abstractolotl.azplace.model.user.User;
 import de.abstractolotl.azplace.model.user.UserBotToken;
+import de.abstractolotl.azplace.model.view.ConfigView;
 import de.abstractolotl.azplace.repositories.PixelOwnerRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +98,12 @@ public class BoardService {
         pixel.setUser(user);
 
         pixelOwnerRepo.save(pixel);
+    }
+
+    public ConfigView boardConfig(Canvas canvas){
+        ConfigView configView = ConfigView.fromCanvas(canvas);
+        configView.setBotCooldown(botService.getBotCooldown(canvas));
+        return configView;
     }
 
     private int getBlobOffsetForPixel(int width, int height, int x, int y) {
