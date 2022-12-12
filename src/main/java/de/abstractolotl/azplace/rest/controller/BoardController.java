@@ -125,7 +125,7 @@ public class BoardController implements BoardAPI {
             throw new CanvasNotFoundException(canvasId);
         }
 
-        return ConfigView.fromCanvas(canvasRsp.get());
+        return boardService.boardConfig(canvasRsp.get());
     }
 
 }

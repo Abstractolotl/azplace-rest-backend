@@ -23,7 +23,7 @@ public class ConfigView {
     public static ConfigView fromCanvas(Canvas canvas){
         return ConfigView.builder()
                 .cooldown(canvas.getCooldown())
-                .botCooldown(canvas.getCooldown() + (canvas.getCooldown() / 2))
+                .botCooldown(canvas.getCooldown())
                 .hexColors(canvas.getColorPalette().getHexColors())
                 .size(SizeView.fromCanvas(canvas))
                 .timespan(TimespanView.fromCanvas(canvas))
