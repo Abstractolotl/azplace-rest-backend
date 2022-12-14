@@ -18,6 +18,9 @@ public class BotService {
     @Value("${bot.rate-timeout:15}")
     private int rateTimeout;
 
+    @Value("${bot.cooldown-multiplier:2}")
+    private double cooldownMultiplier;
+
     @Autowired private RedisTemplate<byte[], byte[]> redis;
 
     public void checkAcceptance(Canvas canvas, UserBotToken userBotToken){
@@ -30,7 +33,7 @@ public class BotService {
         if(redis.opsForValue().get(("bots:" + botToken.getToken()).getBytes()) != null)
             lastRequest = Long.parseLong(new String(redis.opsForValue().get(("bots:" + botToken.getToken()).getBytes())));
 
-        if(System.currentTimeMillis() < lastRequest + (canvas.getCooldown() * 2))
+        if(System.currentTimeMillis() < lastRequest + getBotCooldown(canvas))
             throw new UserCooldownException();
     }
 
@@ -49,6 +52,10 @@ public class BotService {
             throw new RateLimitException();
 
         redis.opsForValue().increment(("bots:rates:" + botToken.getToken()).getBytes());
+    }
+
+    public long getBotCooldown(Canvas canvas){
+        return Math.round(canvas.getCooldown() * cooldownMultiplier);
     }
 
 }
