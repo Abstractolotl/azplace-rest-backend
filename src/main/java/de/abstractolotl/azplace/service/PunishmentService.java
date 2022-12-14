@@ -18,6 +18,9 @@ public class PunishmentService {
 
         UserBan userBan = banRepo.findByUserAndPardonedIsFalse(user);
 
+        if(userBan.getEnd() == -1)
+            return true;
+
         if(System.currentTimeMillis() >= userBan.getEnd()){
             userBan.setPardoned(true);
             banRepo.save(userBan);
