@@ -1,11 +1,15 @@
 package de.abstractolotl.azplace.service;
 
+import de.abstractolotl.azplace.model.history.HistoryData;
+import de.abstractolotl.azplace.model.history.PixelData;
 import de.abstractolotl.azplace.model.logging.LoginLog;
 import de.abstractolotl.azplace.model.logging.PixelLog;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.IndexQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
@@ -13,6 +17,8 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -25,6 +31,34 @@ public class ElasticService {
                 .withFilter(QueryBuilders.rangeQuery("timestamp")
                 .from(start, true)
                 .to(end, true))
+                .build();
+
+        return elasticsearchRestTemplate.count(searchQuery,
+                IndexCoordinates.of("backend-pixel"));
+    }
+
+    public List<PixelData> getPixels(int canvasId, long start, long end){
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withFilter(QueryBuilders.rangeQuery("timestamp")
+                .from(start, true)
+                .to(end, true))
+                .withQuery(QueryBuilders.matchQuery("canvasId", canvasId))
+                .build();
+
+        SearchHits<PixelLog> logs = elasticsearchRestTemplate.search(searchQuery, PixelLog.class, IndexCoordinates.of("backend-pixel"));
+        List<PixelData> pixels = new ArrayList<>();
+
+        logs.forEach(pixelLogSearchHit -> {
+            PixelLog pixelLog = pixelLogSearchHit.getContent();
+            pixels.add(new PixelData(pixelLog.getX(), pixelLog.getY(), pixelLog.getColor()));
+        });
+
+        return pixels;
+    }
+
+    public long getPixelCount(int canvasId){
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withFilter(QueryBuilders.termQuery("canvasId", canvasId))
                 .build();
 
         return elasticsearchRestTemplate.count(searchQuery,
@@ -58,6 +92,7 @@ public class ElasticService {
                 IndexCoordinates.of("backend-login"));
     }
 
+    @Deprecated
     public void createLogData (PixelLog log) {
         elasticsearchRestTemplate.index(new IndexQueryBuilder()
                 .withId(log.getId())
