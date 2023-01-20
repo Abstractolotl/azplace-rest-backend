@@ -24,6 +24,8 @@ import de.abstractolotl.azplace.repositories.UserRepo;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpSession;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 public class AuthController implements AuthAPI {
@@ -112,6 +114,21 @@ public class AuthController implements AuthAPI {
         }
 
         JsonNode attributes = getValue(parsedResponse.get("authenticationSuccess"), "attributes", true);
+
+        if(getAttribute(attributes, "firstName", true).startsWith("pseudo")
+                || getAttribute(attributes, "firstName", true).startsWith("Pseudo")){
+            throw new AuthenticationException("Pseudo accounts are not allowed");
+        }
+
+        if(getAttribute(attributes, "firstName", true).startsWith("tool")){
+            throw new AuthenticationException("Tool accounts are not allowed");
+        }
+
+        Matcher matcher = Pattern.compile("^sea[a-z]{2}[0-9].*").matcher(getAttribute(attributes, "firstName", true));
+        if(matcher.matches()){
+            throw new AuthenticationException("Secondary accounts are not allowed");
+        }
+
         return CASUser.builder()
                 .firstName(getAttribute(attributes, "firstName", true))
                 .lastName(getAttribute(attributes, "lastName", false))
