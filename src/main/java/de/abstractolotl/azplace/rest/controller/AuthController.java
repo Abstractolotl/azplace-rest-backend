@@ -124,7 +124,7 @@ public class AuthController implements AuthAPI {
             throw new AuthenticationException("Tool accounts are not allowed");
         }
 
-        Matcher matcher = Pattern.compile("^sea[a-z]{2}[0-9].*").matcher(getAttribute(attributes, "firstName", true));
+        Matcher matcher = Pattern.compile("^sea[a-z]{2}[0-9].*").matcher(getAttribute(attributes, "username", true));
         if(matcher.matches()){
             throw new AuthenticationException("Secondary accounts are not allowed");
         }
