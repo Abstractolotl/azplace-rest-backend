@@ -1,6 +1,8 @@
 package de.abstractolotl.azplace.model.user;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,24 +28,27 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotNull
+    @NotNull @JsonProperty("first_name")
     private String firstName;
-    @NotNull
+    @NotNull @JsonProperty("last_name")
     private String lastName;
 
-    @Builder.Default
+    @Builder.Default @JsonIgnore
     private String roles = String.join(",", UserRoles.ANONYMOUS.format());
 
     @Column(unique=true) @NotNull
+    @JsonProperty("inside_id")
     private String insideNetIdentifier;
 
-    @Builder.Default
+    @Builder.Default @JsonProperty("timestamp_registered")
     private long timestampRegistered = System.currentTimeMillis();
 
+    @JsonProperty("role_array")
     public String[] getRoleArray(){
         return roles.split(",");
     }
 
+    @JsonIgnore
     public String getFullName(){
         return firstName + " " + lastName;
     }

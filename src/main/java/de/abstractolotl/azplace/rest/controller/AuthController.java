@@ -1,5 +1,6 @@
 package de.abstractolotl.azplace.rest.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -10,11 +11,12 @@ import de.abstractolotl.azplace.model.utility.CASUser;
 import de.abstractolotl.azplace.rest.api.AuthAPI;
 import de.abstractolotl.azplace.service.AuthenticationService;
 import de.abstractolotl.azplace.service.ElasticService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -24,42 +26,83 @@ import de.abstractolotl.azplace.repositories.UserRepo;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpSession;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@RestController
+@RestController @Slf4j
 public class AuthController implements AuthAPI {
 
     private final static JsonMapper jsonMapper = new JsonMapper();
 
-    @Value("${app.cas.redirecturl}") private String redirectUrl;
-    @Value("${app.defaultKeyValidTime}") private int defaultKeyValidTime;
-    @Value("${app.cas.url}") private String casUrl;
-    @Value("${app.cas.apiurl}") private String apiUrl;
+    @Value("${oauth.redirectUrl}")
+    private String redirectUrl;
+    @Value("${oauth.authorizationEndpoint}")
+    private String authorizationEndpoint;
+    @Value("${oauth.tokenEndpoint}")
+    private String tokenEndpoint;
+    @Value("${oauth.userInfoEndpoint}")
+    private String userInfoEndpoint;
 
-    @Autowired private AuthenticationService authService;
-    @Autowired private ElasticService elasticService;
+    @Value("${oauth.clientId}")
+    private String clientId;
+    @Value("${oauth.clientSecret}")
+    private String clientSecret;
 
-    @Autowired private UserRepo userRepo;
+    @Value("${oauth.frontendUrl}")
+    private String frontendUrl;
 
-    @Autowired private UserSession session;
+    private final AuthenticationService authService;
+    private final ElasticService elasticService;
+
+    private final UserRepo userRepo;
+
+    private final UserSession session;
+
+    @Autowired
+    public AuthController(AuthenticationService authService, ElasticService elasticService, UserRepo userRepo, UserSession session) {
+        this.authService = authService;
+        this.elasticService = elasticService;
+        this.userRepo = userRepo;
+        this.session = session;
+    }
 
     @Override
     public String login(String hostName) {
-        String url = casUrl + "/login?service=https://" + hostName + "/auth/verify";
+        String url = authorizationEndpoint + "?response_type=code&client_id=" + clientId + "&redirect_uri=" + redirectUrl + "&scope=openid profile";
         return "<meta http-equiv=\"refresh\" content=\"0; url=" + url + "\" />";
     }
 
     @Override
-    public ResponseEntity<String> verify(String ticket) {
-        CASUser casUser = validateTicket(ticket);
-        User user = createOrGetUser(casUser);
+    public ResponseEntity<String> verify(String code) {
+        String validateCode = validateCode(code);
 
-        session.setUser(user);
-        elasticService.logLogin();
+        try {
+            JsonNode json = jsonMapper.readValue(validateCode, ObjectNode.class);
+            String accessToken = json.get("access_token").textValue();
+
+            String userInfo = getUserInfo(accessToken);
+            JsonNode userInfoJson = jsonMapper.readValue(userInfo, ObjectNode.class);
+
+            String username = userInfoJson.get("preferred_username").textValue();
+            String firstName = userInfoJson.get("given_name").textValue();
+            String lastName = userInfoJson.get("family_name").textValue();
+
+            CASUser casUser = CASUser.builder()
+                    .insideNetIdentifier(username)
+                    .firstName(firstName)
+                    .lastName(lastName)
+                    .build();
+            User user = createOrGetUser(casUser);
+
+            session.setUser(user);
+            elasticService.logLogin();
+        } catch (JsonProcessingException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while parsing JSON");
+        }
 
         HttpHeaders headers = new HttpHeaders();
-        String body = "<meta http-equiv=\"refresh\" content=\"0; url=" + redirectUrl + "\" />";
+        String body = "<meta http-equiv=\"refresh\" content=\"0; url=" + frontendUrl + "\" />";
         return new ResponseEntity<>(body, headers, HttpStatus.OK);
     }
 
@@ -70,15 +113,46 @@ public class AuthController implements AuthAPI {
         return ResponseEntity.ok("User logged out successfully");
     }
 
-    public CASUser validateTicket(String ticket) {
+    private String validateCode(String code){
         final RestTemplate template = new RestTemplate();
+        final String requestUrl = tokenEndpoint;
 
-        final String requestUrl = casUrl + "/serviceValidate?service=" + apiUrl + "&ticket=" + ticket +"&format=json";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+
+        map.add("grant_type", "authorization_code");
+
+        map.add("client_id", clientId);
+        map.add("client_secret", clientSecret);
+        map.add("code", code);
+        map.add("redirect_uri", redirectUrl);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
         try {
-            String response = template.getForObject(requestUrl, String.class);
-            return getUserDataFromCASResponse(response);
+            return template.postForObject(requestUrl, request, String.class);
         } catch (HttpClientErrorException e) {
-            throw new CASValidationException(e.getResponseBodyAsString());
+            throw new AuthenticationException(e.getResponseBodyAsString());
+        }
+    }
+
+    private String getUserInfo(String accessToken){
+        final RestTemplate template = new RestTemplate();
+        final String requestUrl = userInfoEndpoint;
+
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.set(HttpHeaders.HOST, "localhost:8080");
+        headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+
+        try {
+            HttpEntity request = new HttpEntity(headers);
+            ResponseEntity<String> response = template.exchange(requestUrl, HttpMethod.GET, request, String.class);
+            return response.getBody();
+        } catch (HttpClientErrorException e) {
+            throw new AuthenticationException(e.getResponseBodyAsString());
         }
     }
 
