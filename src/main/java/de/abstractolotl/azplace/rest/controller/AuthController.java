@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.abstractolotl.azplace.exceptions.auth.AuthenticationException;
 import de.abstractolotl.azplace.exceptions.auth.CASValidationException;
 import de.abstractolotl.azplace.model.user.UserSession;
-import de.abstractolotl.azplace.model.utility.CASUser;
+import de.abstractolotl.azplace.model.utility.AuthUser;
 import de.abstractolotl.azplace.rest.api.AuthAPI;
 import de.abstractolotl.azplace.service.AuthenticationService;
 import de.abstractolotl.azplace.service.ElasticService;
@@ -26,7 +26,6 @@ import de.abstractolotl.azplace.repositories.UserRepo;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpSession;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -82,18 +81,8 @@ public class AuthController implements AuthAPI {
             String accessToken = json.get("access_token").textValue();
 
             String userInfo = getUserInfo(accessToken);
-            JsonNode userInfoJson = jsonMapper.readValue(userInfo, ObjectNode.class);
-
-            String username = userInfoJson.get("preferred_username").textValue();
-            String firstName = userInfoJson.get("given_name").textValue();
-            String lastName = userInfoJson.get("family_name").textValue();
-
-            CASUser casUser = CASUser.builder()
-                    .insideNetIdentifier(username)
-                    .firstName(firstName)
-                    .lastName(lastName)
-                    .build();
-            User user = createOrGetUser(casUser);
+            AuthUser authUser = jsonMapper.readValue(userInfo, AuthUser.class);
+            User user = createOrGetUser(authUser);
 
             session.setUser(user);
             elasticService.logLogin();
@@ -156,7 +145,7 @@ public class AuthController implements AuthAPI {
         }
     }
 
-    private User createOrGetUser(CASUser cas) {
+    private User createOrGetUser(AuthUser cas) {
         var userResp = userRepo.findByInsideNetIdentifier(cas.getInsideNetIdentifier());
 
         if(userResp.isPresent()) return userResp.get();
@@ -180,7 +169,7 @@ public class AuthController implements AuthAPI {
         return json;
     }
 
-    private CASUser getUserDataFromCASResponse(String response) {
+    private AuthUser getUserDataFromCASResponse(String response) {
         JsonNode parsedResponse = parseCASResponse(response);
 
         if(parsedResponse.has("authenticationFailure")){
@@ -203,7 +192,7 @@ public class AuthController implements AuthAPI {
             throw new AuthenticationException("Secondary accounts are not allowed");
         }
 
-        return CASUser.builder()
+        return AuthUser.builder()
                 .firstName(getAttribute(attributes, "firstName", true))
                 .lastName(getAttribute(attributes, "lastName", false))
                 .insideNetIdentifier(getAttribute(attributes, "personId", true))
