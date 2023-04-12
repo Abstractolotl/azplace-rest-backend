@@ -73,21 +73,21 @@ public class AuthController implements AuthAPI {
     }
 
     @Override
-    public ResponseEntity<String> verify(String code) {
+    public ResponseEntity<String> verify(String hostname, String code) {
         String validateCode = validateCode(code);
 
         try {
             JsonNode json = jsonMapper.readValue(validateCode, ObjectNode.class);
             String accessToken = json.get("access_token").textValue();
 
-            String userInfo = getUserInfo(accessToken);
+            String userInfo = getUserInfo(hostname, accessToken);
             AuthUser authUser = jsonMapper.readValue(userInfo, AuthUser.class);
             User user = createOrGetUser(authUser);
 
             session.setUser(user);
             elasticService.logLogin();
-        } catch (JsonProcessingException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while parsing JSON");
+        } catch (JsonProcessingException exception) {
+            log.error("Error while parsing JSON", exception);
         }
 
         HttpHeaders headers = new HttpHeaders();
@@ -126,14 +126,14 @@ public class AuthController implements AuthAPI {
         }
     }
 
-    private String getUserInfo(String accessToken){
+    private String getUserInfo(String hostname, String accessToken){
         final RestTemplate template = new RestTemplate();
         final String requestUrl = userInfoEndpoint;
 
         HttpHeaders headers = new HttpHeaders();
 
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.set(HttpHeaders.HOST, "localhost:8080");
+        headers.set(HttpHeaders.HOST, hostname);
         headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
 
         try {
