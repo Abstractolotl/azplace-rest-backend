@@ -44,7 +44,7 @@ public interface AuthAPI {
             summary = "Verify authentication token")
     @GetMapping(path = "/callback", produces = MediaType.TEXT_HTML_VALUE)
     @ResponseBody
-    ResponseEntity<String> verify(@RequestParam("code") String code);
+    ResponseEntity<String> verify(@RequestHeader(HttpHeaders.HOST) String hostName, @RequestParam("code") String code);
 
     @Operation(
             summary = "Log out",
