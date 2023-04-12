@@ -81,8 +81,8 @@ public class AuthController implements AuthAPI {
             String accessToken = json.get("access_token").textValue();
 
             String userInfo = getUserInfo(hostname, accessToken);
-            AuthUser authUser = jsonMapper.readValue(userInfo, AuthUser.class);
-            User user = createOrGetUser(authUser);
+            JsonNode jsonNode = jsonMapper.readValue(userInfo, JsonNode.class);
+            User user = createOrGetUser(AuthUser.fromOauthResponse(jsonNode));
 
             session.setUser(user);
             elasticService.logLogin();
