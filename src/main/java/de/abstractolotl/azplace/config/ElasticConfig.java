@@ -19,8 +19,10 @@ import java.security.cert.X509Certificate;
 @ComponentScan
 public class ElasticConfig extends AbstractElasticsearchConfiguration {
 
-    @Value("${spring.elasticsearch.uris}")
-    public String elasticsearchUris;
+    @Value("${spring.elasticsearch.host}")
+    public String elasticsearchHost;
+    @Value("${spring.elasticsearch.port}")
+    public int elasticsearchPort;
     @Value("${spring.elasticsearch.username}")
     public String elasticsearchUsername;
     @Value("${spring.elasticsearch.password}")
@@ -30,7 +32,7 @@ public class ElasticConfig extends AbstractElasticsearchConfiguration {
     public RestHighLevelClient elasticsearchClient() {
         try {
             final ClientConfiguration clientConfiguration = ClientConfiguration.builder()
-                    .connectedTo(elasticsearchUris)
+                    .connectedTo(elasticsearchHost + ":" + elasticsearchPort)
                     .usingSsl(sslContext())
                     .withBasicAuth(elasticsearchUsername, elasticsearchPassword)
                     .build();
@@ -54,6 +56,7 @@ public class ElasticConfig extends AbstractElasticsearchConfiguration {
 
         SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+
         return sslContext;
     }
 
