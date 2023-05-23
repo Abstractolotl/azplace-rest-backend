@@ -13,6 +13,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.net.InetSocketAddress;
 import java.security.cert.X509Certificate;
 
 @Configuration
@@ -32,7 +33,7 @@ public class ElasticConfig extends AbstractElasticsearchConfiguration {
     public RestHighLevelClient elasticsearchClient() {
         try {
             final ClientConfiguration clientConfiguration = ClientConfiguration.builder()
-                    .connectedTo(elasticsearchHost + ":" + elasticsearchPort)
+                    .connectedTo(InetSocketAddress.createUnresolved(elasticsearchHost, elasticsearchPort))
                     .usingSsl(sslContext())
                     .withBasicAuth(elasticsearchUsername, elasticsearchPassword)
                     .build();
