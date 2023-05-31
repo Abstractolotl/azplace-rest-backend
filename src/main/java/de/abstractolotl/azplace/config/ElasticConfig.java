@@ -49,7 +49,7 @@ public class ElasticConfig extends AbstractElasticsearchConfiguration {
     }
 
     @Bean
-    ElasticsearchRestTemplate elasticsearchTemplate() {
+    ElasticsearchRestTemplate elasticsearchRestTemplate() {
         return new ElasticsearchRestTemplate(elasticsearchClient());
     }
 }
