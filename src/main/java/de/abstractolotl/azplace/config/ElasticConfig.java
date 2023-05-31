@@ -16,13 +16,13 @@ import javax.net.ssl.SSLContext;
 @ComponentScan
 public class ElasticConfig extends AbstractElasticsearchConfiguration {
 
-    @Value("${elasticsearch.host}")
+    @Value("${spring.elasticsearch.host}")
     public String elasticsearchUrl;
-    @Value("${elasticsearch.port}")
+    @Value("${spring.elasticsearch.port}")
     public String elasticsearchPort;
-    @Value("${elasticsearch.username}")
+    @Value("${spring.elasticsearch.username}")
     public String elasticsearchUsername;
-    @Value("${elasticsearch.password}")
+    @Value("${spring.elasticsearch.password}")
     public String elasticsearchPassword;
 
     private SSLConfig sslConfig;
