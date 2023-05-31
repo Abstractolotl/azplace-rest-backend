@@ -3,6 +3,7 @@ package de.abstractolotl.azplace.config;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
+import org.springframework.context.annotation.Bean;
 
 import javax.net.ssl.SSLContext;
 import java.io.File;
@@ -21,6 +22,11 @@ public class SSLConfig {
 
     public SSLConfig() throws Exception {
         keyStoreFile = this.generateKeyStoreFile();
+    }
+
+    @Bean
+    SSLContext sslContext() throws Exception {
+        return this.getSSLContext();
     }
 
     Certificate generateCert() throws Exception {
