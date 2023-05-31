@@ -24,11 +24,6 @@ public class SSLConfig {
         keyStoreFile = this.generateKeyStoreFile();
     }
 
-    @Bean
-    SSLContext sslContext() throws Exception {
-        return this.getSSLContext();
-    }
-
     Certificate generateCert() throws Exception {
         InputStream inStream = new FileInputStream(certPathName);
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
